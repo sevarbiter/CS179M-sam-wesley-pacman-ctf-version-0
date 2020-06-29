@@ -58,7 +58,7 @@ from game import Grid
 from game import Configuration
 from game import Agent
 from game import reconstituteGrid
-import sys, util, types, time, random, importlib
+import sys, util, types, time, random, importlib.util
 import keyboardAgents
 
 # If you change these, you won't affect the server, so you can't cheat
