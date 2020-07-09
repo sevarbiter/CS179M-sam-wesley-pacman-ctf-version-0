@@ -13,16 +13,18 @@
 
 
 from captureAgents import CaptureAgent
-import random, time, util
+import distanceCalculator
+import random, time, util, sys
 from game import Directions
 import game
+from util import nearestPoint
 
 #################
 # Team creation #
 #################
 
 def createTeam(firstIndex, secondIndex, isRed,
-               first = 'OffensiveAgent', second = 'DummyAgent'):
+               first = 'OffensiveAgent', second = 'DefensiveDummyAgent'):
   """
   This function should return a list of two agents that will form the
   team, initialized using firstIndex and secondIndex as their agent
@@ -296,3 +298,93 @@ class OffensiveAgent(DummyAgent):
       return maxCost
   
     return miniMax(gameState, self.index, self.myDepth, self.action)
+    
+
+class DefensiveDummyAgent(DummyAgent):
+  
+  def chooseAction(self, gameState):
+    """
+    Picks among actions randomly.
+    """
+    actions = gameState.getLegalActions(self.index)
+
+    '''
+    You should change this in your own agent.
+    '''
+    #print("Actions")
+    values = [self.evaluate(gameState, a) for a in actions]
+
+    maxValue = max(values)
+    bestActions = [a for a, v in zip(actions, values) if v == maxValue]
+    #print("best actions")
+    #print(bestActions)
+
+    return random.choice(bestActions)
+
+  def getSuccessor(self, gameState, action):
+    successor = gameState.generateSuccessor(self.index, action)
+    pos = successor.getAgentState(self.index).getPosition()
+    if pos != nearestPoint(pos):
+      return successor.generateSuccessor(self.index, action)
+    else:
+      return successor
+
+  def evaluate(self, gameState, action):
+    features = self.getFeatures(gameState, action)
+    weights = self.getWeights(gameState, action)
+    #print(action)
+    #print(features)
+    #print(features * weights)
+    return features * weights
+
+  def getFeatures(self, gameState, action):
+    features = util.Counter()
+    successor = self.getSuccessor(gameState, action)
+
+    myState = successor.getAgentState(self.index)
+    myPos = myState.getPosition()
+
+    features['defending'] = 1
+    if myState.isPacman:
+      features['defending'] = 0
+    
+    pellets = gameState.getCapsules()
+    bestDist = 1000
+    for a in pellets:
+      thisDist = self.getMazeDistance(myPos, a)
+      if thisDist < bestDist:
+        bestDist = thisDist
+        features['pelletDistance'] = self.getMazeDistance(myPos, a)
+
+    distances = gameState.getAgentDistances()
+    if gameState.isOnRedTeam(self.index):
+      if distances[1] < distances[3]:
+        features['hazzyDist'] = distances[1]
+      else:
+        features['hazzyDist'] = distances[3]
+    else:
+      if distances[0] < distances[2]:
+        features['hazzyDist'] = distances[0]
+      else:
+        features['hazzyDist'] = distances[2] 
+
+    print(features['hazzyDist'])
+
+    enemies = [successor.getAgentState(i) for i in self.getOpponents(successor)]
+    invaders = [a for a in enemies if a.isPacman and a.getPosition() != None]
+    features['numInvaders'] = len(invaders)
+    if len(invaders) > 0:
+      dists = [self.getMazeDistance(myPos, a.getPosition()) for a in invaders]
+      features['invaderDistance'] = min(dists)
+
+    if action == Directions.STOP: 
+      features['stop'] = 1
+    rev = Directions.REVERSE[gameState.getAgentState(self.index).configuration.direction]
+    if action == rev:
+      features['reverse'] = 1
+
+
+    return features
+
+  def getWeights(self, gameState, action):
+    return {'numInvaders':-1000, 'defending':100, 'invaderDistance':-10, 'stop':-100, 'reverse': -2, 'pelletDistance':-7, 'hazzyDist':-1}
