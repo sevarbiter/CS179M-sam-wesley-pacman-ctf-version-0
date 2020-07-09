@@ -223,8 +223,9 @@ class OffensiveAgent(DummyAgent):
     successor = self.getSuccessor(gameState, action)
     foodList = self.getFood(successor).asList()
     myState = successor.getAgentState(self.index)
-    print('agent distances: %s'% gameState.getAgentDistances())
-    print('numCarrying: %d' % myState.numCarrying)
+    myPos = myState.getPosition()
+    # print('agent distances: %s'% gameState.getAgentDistances())
+    # print('numCarrying: %d' % myState.numCarrying)
 
     if self.localCarry == self.maxCarry:
       defFoodList = self.getFoodYouAreDefending(successor).asList()
@@ -246,6 +247,17 @@ class OffensiveAgent(DummyAgent):
       myPos = successor.getAgentState(self.index).getPosition()
       minDistance = min([self.getMazeDistance(myPos, food) for food in defFoodList])
       features['distanceToFood'] = minDistance
+    
+    # Computes distance to ghosts we can see in order to avoid
+    enemies = [successor.getAgentState(i) for i in self.getOpponents(successor)]
+    ghosts = [a for a in enemies if not a.isPacman and a.getPosition() != None]
+    print('numGhosts: %s' % ghosts)
+    features['numGhosts'] = len(ghosts)
+    if len(ghosts) > 0:
+      dists = [self.getMazeDistance(myPos, a.getPosition()) for a in ghosts]
+      features['ghostDistance'] = min(dists)
+
+    if action == Directions.STOP: features['stop'] = 1
 
     return features
   
@@ -254,7 +266,7 @@ class OffensiveAgent(DummyAgent):
     # weights to be used as a multiplier for the given features
     # for example if successorScore is -20 & distanceToFood is 30 then
     # the total weight is -20*100 + -1*30 = -2030  
-    return {'successorScore': 100, 'distanceToFood': -1, 'enemyDistance': -10}
+    return {'successorScore': 100, 'distanceToFood': -1, 'numGhosts': -10, 'ghostDistance': 90, 'stop': -100}
   
   def minimax(self, gameState):
     
