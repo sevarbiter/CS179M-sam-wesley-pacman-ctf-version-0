@@ -178,14 +178,19 @@ class OffensiveAgent(DummyAgent):
     bestActions = [a for a, v in zip(actions, values) if v == maxValue]
     print('bestActions: %s'% bestActions)
 
-    
+    myState = gameState.getAgentState(self.index)
+    print(myState.isPacman) 
     foodLeft = len(self.getFood(gameState).asList())
+
+    #checks to see if a
     if self.getPreviousObservation():
       previousStateFood = len(self.getFood(self.getPreviousObservation()).asList())
       if foodLeft < previousStateFood:
         self.localCarry += 1
         # print(self.localCarry)
-      if gameState.getScore() > self.getPreviousObservation().getScore():
+        # if gameState.getScore() > self.getPreviousObservation().getScore():
+        # self.localCarry = 0
+      if myState.isPacman == False:
         self.localCarry = 0
     
 
@@ -217,7 +222,9 @@ class OffensiveAgent(DummyAgent):
     features = util.Counter()
     successor = self.getSuccessor(gameState, action)
     foodList = self.getFood(successor).asList()
+    myState = successor.getAgentState(self.index)
     print('agent distances: %s'% gameState.getAgentDistances())
+    print('numCarrying: %d' % myState.numCarrying)
 
     if self.localCarry == self.maxCarry:
       defFoodList = self.getFoodYouAreDefending(successor).asList()
@@ -242,11 +249,12 @@ class OffensiveAgent(DummyAgent):
 
     return features
   
+
   def getWeights(self, gameState, action):
     # weights to be used as a multiplier for the given features
     # for example if successorScore is -20 & distanceToFood is 30 then
     # the total weight is -20*100 + -1*30 = -2030  
-    return {'successorScore': 100, 'distanceToFood': -1}
+    return {'successorScore': 100, 'distanceToFood': -1, 'enemyDistance': -10}
   
   def minimax(self, gameState):
     
