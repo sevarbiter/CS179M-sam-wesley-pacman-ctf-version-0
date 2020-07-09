@@ -67,14 +67,20 @@ class ReflexCaptureAgent(CaptureAgent):
     Picks among the actions with the highest Q(s,a).
     """
     actions = gameState.getLegalActions(self.index)
+    
+    # print(actions)
 
     # You can profile your evaluation time by uncommenting these lines
     # start = time.time()
     values = [self.evaluate(gameState, a) for a in actions]
     # print('eval time for agent %d: %.4f' % (self.index, time.time() - start))
 
+    # print(values)
+
     maxValue = max(values)
     bestActions = [a for a, v in zip(actions, values) if v == maxValue]
+    
+    # print(bestActions)
 
     foodLeft = len(self.getFood(gameState).asList())
 
@@ -82,6 +88,7 @@ class ReflexCaptureAgent(CaptureAgent):
       bestDist = 9999
       for action in actions:
         successor = self.getSuccessor(gameState, action)
+        print(successor)
         pos2 = successor.getAgentPosition(self.index)
         dist = self.getMazeDistance(self.start,pos2)
         if dist < bestDist:
@@ -145,6 +152,7 @@ class OffensiveReflexAgent(ReflexCaptureAgent):
       myPos = successor.getAgentState(self.index).getPosition()
       minDistance = min([self.getMazeDistance(myPos, food) for food in foodList])
       features['distanceToFood'] = minDistance
+    # print(features)
     return features
 
   def getWeights(self, gameState, action):
