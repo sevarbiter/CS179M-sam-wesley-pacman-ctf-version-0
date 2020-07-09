@@ -407,4 +407,4 @@ class DefensiveDummyAgent(DummyAgent):
     return features
 
   def getWeights(self, gameState, action):
-    return {'numInvaders':-1000, 'defending':100, 'invaderDistance':-10, 'stop':-100, 'reverse': -2, 'pelletDistance':-7, 'hazzyDist':-1}
+    return {'numInvaders':-1000, 'defending':100, 'invaderDistance':-10, 'stop':-100, 'reverse': -2, 'pelletDistance':-6, 'hazzyDist':-1}
