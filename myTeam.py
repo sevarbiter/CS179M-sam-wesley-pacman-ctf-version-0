@@ -277,25 +277,32 @@ class MiniMaxAgent(OffensiveAgent):
     return action
   
   def minMax(self,gameState, index, depth, max = True, action = Directions.STOP):
-    if gameState.isOver() or depth == 0:
-      return self.evaluate(gameState, action)
     print('index: %d'% index)
+
+    if gameState.isOver() or depth == 0:
+      print('depth reached')
+      return self.evaluate(gameState, action)
+    
+
     actions = gameState.getLegalActions(index)
+
     print(actions)
     if max:
       print('max')
-      values = [self.minMax(gameState.generateSuccessor(index, action), depth-1, index+1, False) for action in actions]
+      values = [self.minMax(gameState.generateSuccessor(index, action), index, depth-1, False) for action in actions]
+      print(values)
       maxValue = max(values)
+      print(maxValue)
       bestActions = [a for a, v in zip(actions,values) if v == maxValue]
       return maxValue, actions[random.choice(bestActions)]
     else:
       maxValue = []
       if index == gameState.getNumAgents() - 1:
         print('else index 0')
-        values = [self.minMax(gameState.generateSuccessor(index, action), depth-1, 0,False) for action in actions]
+        values = [self.minMax(gameState.generateSuccessor(index, action), index, depth-1, True) for action in actions]
       else:
         print('else index + 2')
-        values = [self.minMax(gameState.generateSuccessor(index, action), depth-1, index+2,False) for action in actions]
+        values = [self.minMax(gameState.generateSuccessor(index, action), index, depth-1, False) for action in actions]
       maxValue = max(values)
       bestActions = [a for a, v in zip(actions,values) if v == maxValue]
       return maxValue, actions[random.choice(bestActions)]
