@@ -24,7 +24,7 @@ from util import nearestPoint
 #################
 
 def createTeam(firstIndex, secondIndex, isRed,
-               first = 'OffensiveAgent', second = 'DefensiveDummyAgent'):
+               first = 'MiniMaxAgent', second = 'DefensiveDummyAgent'):
   """
   This function should return a list of two agents that will form the
   team, initialized using firstIndex and secondIndex as their agent
@@ -267,58 +267,97 @@ class OffensiveAgent(DummyAgent):
     # for example if successorScore is -20 & distanceToFood is 30 then
     # the total weight is -20*100 + -1*30 = -2030  
     return {'successorScore': 100, 'distanceToFood': -1, 'numGhosts': -10, 'ghostDistance': 90, 'stop': -100}
-  
-  def minimax(self, gameState):
-    
-    self.numAgents = gameState.getNumAgents()
-    self.myDepth = 0
-    self.action = Directions.STOP
-    self.maxFood = 4
 
-    #very small value (-inf)
-    def miniMax(gameState, index, depth, action):
-      maxCost = float('-inf')
-      legalMoves = gameState.getLegalActions(self.index)
-      for move in legalMoves:
-        tempValue = maxCost
-        successor = gameState.generateSuccessor(self.index, move)
-        maxCost = minValue(successor, index + 1, depth)
-        if maxCost > tempValue:
-          action = move
-      return action
+class MiniMaxAgent(OffensiveAgent):
   
-    def minValue(successor, index, depth):
-      if gameState.isWin() or gameState.isLose() or depth == depth:
-        return self.evaluate(successor, self.action)
-      
-      #very big value (inf)
-      minCost = float('inf')
-      legalMoves = gameState.getLegalActions(self.index)
-      if index + 1 == self.numAgents:
-        for move in legalMoves:
-          successor = gameState.generateSuccessor(index, move)
-          minCost = min(minCost, maxValue(successor, index, depth+1))
+  myDepth = 4
+
+  def chooseAction(self, gameState):
+    action = self.minMax(gameState, self.index, self.myDepth)
+    return action
+  
+  def minMax(self,gameState, index, depth, max = True, action = Directions.STOP):
+    if gameState.isOver() or depth == 0:
+      return self.evaluate(gameState, action)
+    print('index: %d'% index)
+    actions = gameState.getLegalActions(index)
+    print(actions)
+    if max:
+      print('max')
+      values = [self.minMax(gameState.generateSuccessor(index, action), depth-1, index+1, False) for action in actions]
+      maxValue = max(values)
+      bestActions = [a for a, v in zip(actions,values) if v == maxValue]
+      return maxValue, actions[random.choice(bestActions)]
+    else:
+      maxValue = []
+      if index == gameState.getNumAgents() - 1:
+        print('else index 0')
+        values = [self.minMax(gameState.generateSuccessor(index, action), depth-1, 0,False) for action in actions]
       else:
-        for move in legalMoves:
-          successor = gameState.generateSuccessor(index, move)
-          minCost = min(minCost, minValue(successor, index+1, depth))
-      return minCost
-    
-    def maxValue(successor, index, depth):
-      if gameState.isWin() or gameState.isLose() or depth == depth:
-        #need to create evaluate function
-        return self.evaluate(successor, self.action) 
+        print('else index + 2')
+        values = [self.minMax(gameState.generateSuccessor(index, action), depth-1, index+2,False) for action in actions]
+      maxValue = max(values)
+      bestActions = [a for a, v in zip(actions,values) if v == maxValue]
+      return maxValue, actions[random.choice(bestActions)]
 
-      index %= (self.numAgents - 1)
-      maxCost = float('-inf')
-      legalMoves = gameState.getLegalActions(index)
-      for move in legalMoves:
-        successor = gameState.generateSuccessor(index, move)
-        maxCost = max(maxCost, minValue(successor, index+1, depth))
-      return maxCost
-  
-    return miniMax(gameState, self.index, self.myDepth, self.action)
+
+
+
+  def miniMax(self, gameState, index, depth):
+    print('---miniMax---')
+    maxCost = float('-inf')
+    print(index)
+    actions = gameState.getLegalActions(index)
+    print('index: %d'% index)
+    print(actions)
+    for move in actions:
+      tempValue = maxCost
+      successor = gameState.generateSuccessor(index, move)
+      maxCost = self.minValue(successor, index + 1, depth, move)
+      if maxCost > tempValue:
+        action = move
+    return action
+
+  def minValue(self, gameState, index, depth, action):
+    print('--minValue--')
+    if gameState.isOver() or depth == 0:
+      return self.evaluate(gameState, action)
     
+    #very big value (inf)
+    minCost = float('inf')
+    print('index: %d'% index)
+    if gameState.getAgentPosition(index) != None:
+      #if we can see opponent move then we calculate move
+      actions = gameState.getLegalActions(index)
+      print(actions)
+      for move in actions:
+        successor = gameState.generateSuccessor(index, move)
+        minCost = min(minCost, self.minValue(successor, index+2, depth-1, move))
+      return minCost
+    elif gameState.getAgentPosition(index+2) != None:
+      #else we look for second opponent
+      actions = gameState.getLegalActions(index+2)
+      for move in actions:
+        successor = gameState.generateSuccessor(index+2, move)
+        minCost = min(minCost, self.maxValue(successor, self.index, depth-1, move))
+      return minCost
+    else:
+      return self.evaluate(gameState, action)
+  
+  def maxValue(self, gameState, index, depth, action):
+    print('--maxValue--')
+    if gameState.isOver() or depth == depth:
+      #need to create evaluate function
+      return self.evaluate(gameState, action) 
+
+    # index %= (gameState.getNumAgents() - 1)
+    maxCost = float('-inf')
+    if gameState.getAgentPosition(index) != None:
+      actions = gameState.getLegalActions(index)
+      for move in actions:
+        successor = gameState.generateSuccessor(index, move)
+        maxCost = max(maxCost, self.minValue(successor, index+1, depth, move))
+    return maxCost
 
 class DefensiveDummyAgent(DummyAgent):
   
