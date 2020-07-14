@@ -215,10 +215,11 @@ class OffensiveAgent(DummyAgent):
     # print(features)
     weights = self.getWeights(gameState, action)
     # print(weights)
-    # print('evalutate: %d'% (features * weights))
+    print('evalutate: %d'% (features * weights))
     return features * weights
 
   def getFeatures(self, gameState, action):
+    # print('getFeatures cost')
     features = util.Counter()
     successor = self.getSuccessor(gameState, action)
     foodList = self.getFood(successor).asList()
@@ -241,7 +242,7 @@ class OffensiveAgent(DummyAgent):
       myPos = successor.getAgentState(self.index).getPosition()
       #finds all food positions and returns the closest one to the agent
       minDistance = min([self.getMazeDistance(myPos, food) for food in foodList])
-      print(action, minDistance)
+      # print(action, minDistance)
       features['distanceToFood'] = minDistance
     else:
       myPos = successor.getAgentState(self.index).getPosition()
@@ -258,7 +259,6 @@ class OffensiveAgent(DummyAgent):
       features['ghostDistance'] = min(dists)
 
     if action == Directions.STOP: features['stop'] = 1
-
     return features
   
 
@@ -274,38 +274,49 @@ class MiniMaxAgent(OffensiveAgent):
 
   def chooseAction(self, gameState):
     action = self.minMax(gameState, self.index, self.myDepth)
+    print('action to proceed: %s'% action)
     return action
   
-  def minMax(self,gameState, index, depth, max = True, action = Directions.STOP):
-    print('index: %d'% index)
+  def minMax(self,gameState, index, depth, maxi = True, action = Directions.STOP):
+    print('agent: %d'% index)
 
     if gameState.isOver() or depth == 0:
       print('depth reached')
       return self.evaluate(gameState, action)
     
-
-    actions = gameState.getLegalActions(index)
-
-    print(actions)
-    if max:
-      print('max')
-      values = [self.minMax(gameState.generateSuccessor(index, action), index, depth-1, False) for action in actions]
-      print(values)
-      maxValue = max(values)
-      print(maxValue)
-      bestActions = [a for a, v in zip(actions,values) if v == maxValue]
-      return maxValue, actions[random.choice(bestActions)]
+    if gameState.getAgentPosition(index) != None:
+      actions = gameState.getLegalActions(index)
+      print('move to take: %s' %actions)
     else:
-      maxValue = []
-      if index == gameState.getNumAgents() - 1:
-        print('else index 0')
-        values = [self.minMax(gameState.generateSuccessor(index, action), index, depth-1, True) for action in actions]
-      else:
-        print('else index + 2')
-        values = [self.minMax(gameState.generateSuccessor(index, action), index, depth-1, False) for action in actions]
+      return
+    
+    if maxi:
+      print('values for pacman')
+      values = [self.minMax(gameState.generateSuccessor(index, action), index, depth-1, False) for action in actions]
+      print('values: %s'%values)
       maxValue = max(values)
+      print('maxi value: %s' %maxValue)
       bestActions = [a for a, v in zip(actions,values) if v == maxValue]
-      return maxValue, actions[random.choice(bestActions)]
+      print('maxi bestActions: %s '%bestActions)
+      # return (maxValue, actions[random.choice(bestActions)])
+      # return random.choice(bestActions)
+      return random.choice(bestActions)
+    else:
+      values = []
+      if index in self.getOpponents(gameState):
+        print('values for opponent')
+        values = [self.minMax(gameState.generateSuccessor(index, action), index+2, depth-1, False) for action in actions]
+      else:
+        print('values for pacman')
+        values = [self.minMax(gameState.generateSuccessor(index, action), self.index, depth-1, True) for action in actions]
+      print('printing mini values: %s'%values)
+      minValue = max(values)
+      print(minValue)
+      # bestActions = [a for a, v in zip(actions,values) if v == minValue]
+      # print(bestActions)
+      return minValue
+      # return actions[random.choice(bestActions)]
+      # return (minValue, actions[random.choice(bestActions)])
 
 
 
