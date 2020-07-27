@@ -19,7 +19,7 @@ from game import Directions
 import game
 from util import nearestPoint
 from util import raiseNotDefined
-from learningAgents import ReinforcementAgent
+#from learningAgents import ReinforcementAgent
 
 #################
 # Team creation #
