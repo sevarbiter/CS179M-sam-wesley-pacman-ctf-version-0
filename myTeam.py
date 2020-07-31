@@ -19,14 +19,95 @@ from game import Directions
 import game
 from util import nearestPoint
 from util import raiseNotDefined
-from learningAgents import ReinforcementAgent
+import math
+#from learningAgents import ReinforcementAgent
 
 #################
 # Team creation #
 #################
 
+class finder:
+
+  def __init__(self):
+    self.list1 = []
+    self.list2 = []
+    self.index1 = 0
+    self.index2 = 0
+    self.test = 0
+    self.enemy1 = (0,0)
+    self.enemy2 = (0,0)
+    self.location1 = (0,0)
+    self.location2 = (0,0)
+
+  def increment(self):
+    self.test = self.test+1
+    print(self.test)
+
+  def addDistance(self, index, distances, position):
+    if index == 0 or index == 1:
+      self.index1 = index
+    else:
+      self.index2 = index
+    temp = distances
+    if index == self.index1:
+      self.list1.append(distances)
+      self.location1 = position
+    else:
+      self.list2.append(distances)
+      self.location2 = position
+    if len(self.list1) > 5:
+      del self.list1[0]
+    if len(self.list2) > 5:
+      del self.list2[0]
+    self.updateLocations()
+
+  def updateLocations(self):
+    enemy1_distance1=0
+    enemy2_distance1=0
+    enemy1_distance2=0
+    enemy2_distance2=0
+    count = 0
+    for x in self.list1:
+      count=count+1
+      if self.index1 == 0:
+        enemy1_distance1=enemy1_distance1+x[1]
+        enemy2_distance1=enemy2_distance1+x[3]
+      else:
+        enemy1_distance1=enemy1_distance1+x[0]
+        enemy2_distance1=enemy2_distance1+x[2]
+    if count>0:
+      enemy1_distance1=enemy1_distance1/count
+      enemy2_distance1=enemy2_distance1/count
+    count = 0
+    for y in self.list2:
+      count=count+1
+      if self.index2 == 2:
+        enemy1_distance2=enemy1_distance2+y[1]
+        enemy2_distance2=enemy2_distance2+y[3]
+      else:
+        enemy1_distance2=enemy1_distance2+y[0]
+        enemy2_distance2=enemy2_distance2+y[2]
+    if count>0:
+      enemy1_distance2=enemy1_distance2/count
+      enemy2_distance2=enemy2_distance2/count
+    print(enemy1_distance1)
+    print(enemy2_distance1)
+    print(enemy1_distance2)
+    print(enemy2_distance2)
+    distance = math.sqrt(pow((self.location2[0]-self.location1[0]),2) + pow((self.location2[1]-self.location2[1]),2))
+    print(distance)
+
+  def getEnemies(self):
+    return (enemy1, enemy2)
+
+  def print(self):
+    print(self.location1)
+    print(self.list1)
+    print(self.location2)
+    print(self.list2)
+
 def createTeam(firstIndex, secondIndex, isRed,
-               first = 'OffensiveAgent', second = 'DefensiveDummyAgent'):
+               first = 'DummyAgent', second = 'DummyAgent'):
   """
   This function should return a list of two agents that will form the
   team, initialized using firstIndex and secondIndex as their agent
@@ -41,9 +122,16 @@ def createTeam(firstIndex, secondIndex, isRed,
   any extra arguments, so you should make sure that the default
   behavior is what you want for the nightly contest.
   """
-
+  # (firstindex, sharedobj)
   # The following line is an example only; feel free to change it.
-  return [eval(first)(firstIndex), eval(second)(secondIndex)]
+  locationFinder = finder()
+  locationFinder.__init__()
+  #locationFinder.increment()
+  print(firstIndex)
+  print(secondIndex)
+  #return [eval(first)(firstIndex), eval(second)(secondIndex)]
+  return [OffensiveAgent(firstIndex, locationFinder), DefensiveDummyAgent(secondIndex, locationFinder)]
+  #return [eval(first)(firstIndex, locationFinder), eval(second)(secondIndex, locationFinder)]
 
 ##########
 # Agents #
@@ -56,7 +144,7 @@ class DummyAgent(CaptureAgent):
   create an agent as this is the bare minimum.
   """
 
-  def registerInitialState(self, gameState):
+  def registerInitialState(self, gameState, locationFinder=finder()):
     """
     This method handles the initial setup of the
     agent to populate useful fields (such as what team
@@ -81,6 +169,7 @@ class DummyAgent(CaptureAgent):
     #at the start of the game we will have an index of 1 and 2 meaning
     #we have 2 ghost on the board
     self.start = gameState.getAgentPosition(self.index)
+    self.location_finder = locationFinder
     #prints none at the start of game
     CaptureAgent.registerInitialState(self, gameState)
 
@@ -103,7 +192,7 @@ class DummyAgent(CaptureAgent):
     bestActions = [a for a, v in zip(actions, values) if v == maxValue]
     
     foodLeft = len(self.getFood(gameState).asList())
-
+    self.location_finder.increment()
     if foodLeft <= 2:
       bestDist = 9999
       for action in actions:
@@ -143,7 +232,19 @@ class DummyAgent(CaptureAgent):
     features = util.Counter()
     successor = self.getSuccessor(gameState, action)
     features['successorScore'] = self.getScore(successor)
+    features['ghostDistance'] = self.emptyFunction()
+    features['closestFood'] = self.emptyFunction()
+    features['ghostsNear'] = self.emptyFunction()
+    features['pacmanNear'] = self.emptyFunction()
+    features['inTunnel'] = self.emptyFunction()
+    features['inDeadend'] = self.emptyFunction()
+    features['scaredGhostNear'] = self.emptyFunction()
+    features['foodCarrying'] = self.emptyFunction()
+
     return features
+
+  def emptyFunction(self):
+    pass
 
   def getWeights(self, gameState, action):
     """
@@ -195,7 +296,8 @@ class OffensiveAgent(DummyAgent):
       if myState.isPacman == False:
         self.localCarry = 0
     
-
+    self.location_finder.addDistance(self.index, gameState.getAgentDistances(), gameState.getAgentState(self.index).getPosition())
+    self.location_finder.print()
     # if foodLeft <= 2:
     #   bestDist = 9999
     #   for action in actions:
@@ -397,7 +499,8 @@ class DefensiveDummyAgent(DummyAgent):
     bestActions = [a for a, v in zip(actions, values) if v == maxValue]
     #print("best actions")
     #print(bestActions)
-
+    self.location_finder.addDistance(self.index ,gameState.getAgentDistances(), gameState.getAgentState(self.index).getPosition())
+    self.location_finder.print()
     return random.choice(bestActions)
 
   def getSuccessor(self, gameState, action):
@@ -447,7 +550,7 @@ class DefensiveDummyAgent(DummyAgent):
       else:
         features['hazzyDist'] = distances[2] 
 
-    print(features['hazzyDist'])
+    print(gameState.getAgentState(0))
 
     enemies = [successor.getAgentState(i) for i in self.getOpponents(successor)]
     invaders = [a for a in enemies if a.isPacman and a.getPosition() != None]
