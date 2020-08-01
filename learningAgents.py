@@ -1,4 +1,3 @@
-learningAgents.py (original)
 # learningAgents.py
 # -----------------
 # Licensing Information:  You are free to use or extend these projects for
@@ -12,12 +11,12 @@ learningAgents.py (original)
 # Student side autograding was added by Brad Miller, Nick Hay, and
 # Pieter Abbeel (pabbeel@cs.berkeley.edu).
 
-
+from captureAgents import CaptureAgent
 from game import Directions, Agent, Actions
 
 import random,util,time
 
-class ValueEstimationAgent(Agent):
+class ValueEstimationAgent(CaptureAgent):
     """
       Abstract agent which assigns values to (state,action)
       Q-Values for an environment. As well as a value to a
@@ -78,12 +77,12 @@ class ValueEstimationAgent(Agent):
         """
         util.raiseNotDefined()
 
-    def getAction(self, state):
-        """
-        state: can call state.getLegalActions()
-        Choose an action and return it.
-        """
-        util.raiseNotDefined()
+    # def getAction(self, state):
+    #     """
+    #     state: can call state.getLegalActions()
+    #     Choose an action and return it.
+    #     """
+    #     util.raiseNotDefined()
 
 class ReinforcementAgent(ValueEstimationAgent):
     """
@@ -161,7 +160,7 @@ class ReinforcementAgent(ValueEstimationAgent):
     def isInTesting(self):
         return not self.isInTraining()
 
-    def __init__(self, actionFn = None, numTraining=100, epsilon=0.5, alpha=0.5, gamma=1):
+    def __init__(self, index, timeForComputing=0.1, actionFn = None, numTraining=100, epsilon=0.5, alpha=0.5, gamma=1):
         """
         actionFn: Function which takes a state and returns the list of legal actions
 
@@ -170,6 +169,7 @@ class ReinforcementAgent(ValueEstimationAgent):
         gamma    - discount factor
         numTraining - number of training episodes, i.e. no learning after these many episodes
         """
+        CaptureAgent.__init__(self, index, timeForComputing)
         if actionFn == None:
             actionFn = lambda state: state.getLegalActions()
         self.actionFn = actionFn
@@ -217,7 +217,7 @@ class ReinforcementAgent(ValueEstimationAgent):
     def registerInitialState(self, state):
         self.startEpisode()
         if self.episodesSoFar == 0:
-            print 'Beginning %d episodes of Training' % (self.numTraining)
+            print('Beginning %d episodes of Training' % (self.numTraining))
 
     def final(self, state):
         """
@@ -236,26 +236,26 @@ class ReinforcementAgent(ValueEstimationAgent):
 
         NUM_EPS_UPDATE = 100
         if self.episodesSoFar % NUM_EPS_UPDATE == 0:
-            print 'Reinforcement Learning Status:'
+            print('Reinforcement Learning Status:')
             windowAvg = self.lastWindowAccumRewards / float(NUM_EPS_UPDATE)
             if self.episodesSoFar <= self.numTraining:
                 trainAvg = self.accumTrainRewards / float(self.episodesSoFar)
-                print '\tCompleted %d out of %d training episodes' % (
-                       self.episodesSoFar,self.numTraining)
-                print '\tAverage Rewards over all training: %.2f' % (
-                        trainAvg)
+                print('\tCompleted %d out of %d training episodes' % (
+                       self.episodesSoFar,self.numTraining))
+                print('\tAverage Rewards over all training: %.2f' % (
+                        trainAvg))
             else:
                 testAvg = float(self.accumTestRewards) / (self.episodesSoFar - self.numTraining)
-                print '\tCompleted %d test episodes' % (self.episodesSoFar - self.numTraining)
-                print '\tAverage Rewards over testing: %.2f' % testAvg
-            print '\tAverage Rewards for last %d episodes: %.2f'  % (
-                    NUM_EPS_UPDATE,windowAvg)
-            print '\tEpisode took %.2f seconds' % (time.time() - self.episodeStartTime)
+                print('\tCompleted %d test episodes' % (self.episodesSoFar - self.numTraining))
+                print(')\tAverage Rewards over testing: %.2f' % testAvg)
+            print('\tAverage Rewards for last %d episodes: %.2f'  % (
+                    NUM_EPS_UPDATE,windowAvg))
+            print('\tEpisode took %.2f seconds' % (time.time() - self.episodeStartTime))
             self.lastWindowAccumRewards = 0.0
             self.episodeStartTime = time.time()
 
         if self.episodesSoFar == self.numTraining:
             msg = 'Training Done (turning off epsilon and alpha)'
-            print '%s\n%s' % (msg,'-' * len(msg))
+            print('%s\n%s' % (msg,'-' * len(msg)))
 
   
