@@ -478,8 +478,8 @@ class DefensiveDummyAgent(DummyAgent):
 class QLearningAgent(ReinforcementAgent):
   """
     Q-Learning Agent
-
-    Functions you should fill in:
+    
+    Functions:
       - computeValueFromQValues
       - computeActionFromQValues
       - getQValue
@@ -488,6 +488,11 @@ class QLearningAgent(ReinforcementAgent):
   """
 
   def __init__(self, **args):
+    """
+    init parent class with parameters that are called from 
+    Agent1 subclass qValues is a dict that stores all the 
+    values of that state and action
+    """
     ReinforcementAgent.__init__(self, **args)
     self.qValues = util.Counter()
 
@@ -502,9 +507,8 @@ class QLearningAgent(ReinforcementAgent):
   def computeValueFromQValues(self, state):
     """
       Returns max_action Q(state,action)
-      where the max is over legal actions.  Note that if
-      there are no legal actions, which is the case at the
-      terminal state, you should return a value of 0.0.
+      where the max is over legal actions.
+      If no legalActions available return 0.
     """
     if len(state.getLegalActions(self.index)) == 0:
       return 0.0
@@ -519,11 +523,9 @@ class QLearningAgent(ReinforcementAgent):
 
   def computeActionFromQValues(self, state):
     """
-      Compute the best action to take in a state.  Note that if there
-      are no legal actions, which is the case at the terminal state,
-      you should return None.
+      Compute the best action to take in a state.
+      If no legal actions are availabe return NONE.
     """
-    "*** YOUR CODE HERE ***"
     legalActions = state.getLegalActions(self.index)
     maxValue = 0
     maxAction = None
@@ -539,16 +541,14 @@ class QLearningAgent(ReinforcementAgent):
     """
       Compute the action to take in the current state.  With
       probability self.epsilon, we should take a random action and
-      take the best policy action otherwise.  Note that if there are
-      no legal actions, which is the case at the terminal state, you
-      should choose None as the action.
-
-      HINT: You might want to use util.flipCoin(prob)
-      HINT: To pick randomly from a list, use random.choice(list)
-
+      take the best policy action otherwise. 
+      If no legal actions are availabe return NONE.
     """
-    # Pick Action
+    # Pick Action 
     legalActions = state.getLegalActions(self.index)
+    if len(legalActions) == 0:
+      return None
+    
     if Directions.STOP in legalActions:
       legalActions.remove(Directions.STOP)
 
@@ -587,8 +587,8 @@ class QLearningAgent(ReinforcementAgent):
   def getValue(self, state):
     return self.computeValueFromQValues(state)
   
-  def final(self, state):
-    print('GAME FINISH!')
+  # def final(self, state):
+  #   print('GAME FINISH!')
 
 
 class Agent1(QLearningAgent):
