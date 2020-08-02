@@ -201,7 +201,11 @@ class finder:
     print(self.list2)
 
 def createTeam(firstIndex, secondIndex, isRed,
+<<<<<<< HEAD
                first = 'DummyAgent', second = 'DummyAgent'):
+=======
+               first = 'Agent1', second = 'DummyAgent'):
+>>>>>>> agent1Sam
   """
   This function should return a list of two agents that will form the
   team, initialized using firstIndex and secondIndex as their agent
@@ -256,7 +260,7 @@ class DummyAgent(CaptureAgent):
     CaptureAgent.registerInitialState in captureAgents.py.
     '''
     #prints agent's position for red it will print (1,2)
-    #pacman is 0
+    #pacman = 0
     #ghost >= 1
     #at the start of the game we will have an index of 1 and 2 meaning
     #we have 2 ghost on the board
@@ -726,31 +730,29 @@ class DefensiveDummyAgent(DummyAgent):
 #     Reinforcement Learning       #
 ####################################
 
-class agent1(DummyAgent):
+#To run game with training session and small map
+#python3 capture.py -r myteam -b baselineteam -q --numGames 10 -l tinycapture
+
+class QLearningAgent(ReinforcementAgent):
   """
     Q-Learning Agent
-
-    Functions you should fill in:
+    
+    Functions:
       - computeValueFromQValues
       - computeActionFromQValues
       - getQValue
       - getAction
       - update
-
-    Instance variables you have access to
-      - self.epsilon (exploration prob)
-      - self.alpha (learning rate)
-      - self.discount (discount rate)
-
-    Functions you should use
-      - self.getLegalActions(state)
-        which returns legal actions for a state
   """
-  def __init__(self, **args):
-    "You can initialize Q-values here..."
-    ReinforcementAgent.__init__(self, **args)
 
-    "*** YOUR CODE HERE ***"
+  def __init__(self, **args):
+    """
+    init parent class with parameters that are called from 
+    Agent1 subclass qValues is a dict that stores all the 
+    values of that state and action
+    """
+    ReinforcementAgent.__init__(self, **args)
+    self.qValues = util.Counter()
 
   def getQValue(self, state, action):
     """
@@ -758,47 +760,70 @@ class agent1(DummyAgent):
       Should return 0.0 if we have never seen a state
       or the Q node value otherwise
     """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
-
+    return self.qValues[(state, action)]
 
   def computeValueFromQValues(self, state):
     """
       Returns max_action Q(state,action)
-      where the max is over legal actions.  Note that if
-      there are no legal actions, which is the case at the
-      terminal state, you should return a value of 0.0.
+      where the max is over legal actions.
+      If no legalActions available return 0.
     """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    if len(state.getLegalActions(self.index)) == 0:
+      return 0.0
+    else:
+      values = []
+      legalActions = state.getLegalActions(self.index)
+    print(legalActions)
+    for action in legalActions:
+      values.append(self.getQValue(state,action))
+
+
+    return max(values)
 
   def computeActionFromQValues(self, state):
     """
-      Compute the best action to take in a state.  Note that if there
-      are no legal actions, which is the case at the terminal state,
-      you should return None.
+      Compute the best action to take in a state.
+      If no legal actions are availabe return NONE.
     """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    legalActions = state.getLegalActions(self.index)
+    maxValue = 0
+    maxAction = None
 
-  def getAction(self, state):
+    for action in legalActions:
+      value = self.getQValue(state, action)
+      if value > maxValue or maxAction is None:
+        maxValue = value
+        maxAction = action
+    return maxAction
+
+  def chooseAction(self, state):
     """
       Compute the action to take in the current state.  With
       probability self.epsilon, we should take a random action and
-      take the best policy action otherwise.  Note that if there are
-      no legal actions, which is the case at the terminal state, you
-      should choose None as the action.
-
-      HINT: You might want to use util.flipCoin(prob)
-      HINT: To pick randomly from a list, use random.choice(list)
-
+      take the best policy action otherwise. 
+      If no legal actions are availabe return NONE.
     """
-    # Pick Action
+    # Pick Action 
     legalActions = state.getLegalActions(self.index)
-    action = None
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    if len(legalActions) == 0:
+      return None
+    
+    if Directions.STOP in legalActions:
+      legalActions.remove(Directions.STOP)
 
+    #update q values
+    
+
+    #explore before exploit
+    if util.flipCoin(self.epsilon):
+      action = random.choice(legalActions)
+    else:
+      action = self.computeActionFromQValues(state)
+
+    #update q values
+    # reward = state
+    # print(legalActions)
+    "*** YOUR CODE HERE ***"
     return action
 
   def update(self, state, action, nextState, reward):
@@ -810,14 +835,58 @@ class agent1(DummyAgent):
       NOTE: You should never call this function,
       it will be called on your behalf
     """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    # QLearning - Compute running average as we go (off policy learning)
+    # Q(s,a) = (1-alpha)*Q(s,a)+(alpha)[r + gamma * maxQ(s',a'))]
+    
+    # DEBUGGING
+    print('updating state qvalue')
+    value = (1-self.alpha) * (self.getQValue(state,action)) + self.alpha * (reward + self.discount * self.computeValueFromQValues(state))
+    self.qValues[(state,action)] = value
+    print(value)
+    
+    # WORKING CODE
+    # self.qValues[(state,action)] = (1-self.alpha) * (self.getQValue(state,action)) + self.alpha * (reward + self.discount * self.computeValueFromQValues(state))
+    
 
   def getPolicy(self, state):
     return self.computeActionFromQValues(state)
 
   def getValue(self, state):
     return self.computeValueFromQValues(state)
+  
+  # def final(self, state):
+  #   print('GAME FINISH!')
+
+
+class Agent1(QLearningAgent):
+
+  def __init__(self, index, numTraining=100, epsilon=0.5, alpha=0.5, gamma=1, **args):
+    """
+    index       - agent index
+    alpha       - learning rate
+    epsilon     - exploration rate
+    gamma       - discount factor
+    numTraining - number of training episodes, i.e. no learning after these many episodes
+
+    """
+    args['index'] = index
+    args['epsilon'] = epsilon
+    args['gamma'] = gamma
+    args['alpha'] = alpha
+    args['numTraining'] = numTraining
+    QLearningAgent.__init__(self, **args)
+  
+  def getAction(self, state):
+    """
+    Simply calls the getAction method of QLearningAgent and then
+    informs parent of action for Pacman.  Do not change or remove this
+    method.
+    """
+    action = QLearningAgent.getAction(self,state)
+    self.doAction(state,action)
+    return action
+
+    
 
 
 
