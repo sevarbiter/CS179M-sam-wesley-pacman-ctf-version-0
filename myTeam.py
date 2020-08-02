@@ -515,9 +515,10 @@ class QLearningAgent(ReinforcementAgent):
     else:
       values = []
       legalActions = state.getLegalActions(self.index)
-
+    print(legalActions)
     for action in legalActions:
       values.append(self.getQValue(state,action))
+
 
     return max(values)
 
@@ -578,8 +579,16 @@ class QLearningAgent(ReinforcementAgent):
     """
     # QLearning - Compute running average as we go (off policy learning)
     # Q(s,a) = (1-alpha)*Q(s,a)+(alpha)[r + gamma * maxQ(s',a'))]
-
-    self.qValues[(state,action)] =  (1-self.alpha) * (self.getQValue(state,action)) + self.alpha * (reward + self.discount * self.computeValueFromQValues(state))
+    
+    # DEBUGGING
+    print('updating state qvalue')
+    value = (1-self.alpha) * (self.getQValue(state,action)) + self.alpha * (reward + self.discount * self.computeValueFromQValues(state))
+    self.qValues[(state,action)] = value
+    print(value)
+    
+    # WORKING CODE
+    # self.qValues[(state,action)] = (1-self.alpha) * (self.getQValue(state,action)) + self.alpha * (reward + self.discount * self.computeValueFromQValues(state))
+    
 
   def getPolicy(self, state):
     return self.computeActionFromQValues(state)
@@ -593,7 +602,7 @@ class QLearningAgent(ReinforcementAgent):
 
 class Agent1(QLearningAgent):
 
-  def __init__(self, index, numTraining=5, epsilon=0.5, alpha=0.5, gamma=1, **args):
+  def __init__(self, index, numTraining=100, epsilon=0.5, alpha=0.5, gamma=1, **args):
     """
     index       - agent index
     alpha       - learning rate
