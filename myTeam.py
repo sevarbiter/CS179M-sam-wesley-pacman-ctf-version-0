@@ -41,18 +41,18 @@ class finder:
     self.location2 = (1,1)
     self.x = 0
     self.y = 0
-    self.gameState = 0
 
   def increment(self):
     self.test = self.test+1
     print(self.test)
 
   def getGrid(self, gameState):
-    self.gameState = gameState
     self.y = gameState.data.food.height
     self.x = gameState.data.food.width
+    print(self.y)
+    print(self.x)
 
-  def addDistance(self, index, distances, position):
+  def addDistance(self, index, distances, position, gameState):
     if self.startup < 10:
       self.startup=self.startup+1
     if index == 0 or index == 1:
@@ -71,9 +71,9 @@ class finder:
     if len(self.list2) > 5:
       del self.list2[0]
     if self.startup > 4:
-      self.updateLocations()
+      self.updateLocations(gameState)
 
-  def updateLocations(self):
+  def updateLocations(self, gameState):
     a1=0
     a2=0
     b1=0
@@ -117,65 +117,71 @@ class finder:
     #enemy1
     x1 = int(abs((pow(a1, 2) - pow(b1, 2) + pow(c,2))/(2*c)))
     y1 = int(abs(math.sqrt(abs(pow(a1,2) - pow(x1,2)))))
-    if x1 >= self.x:
+    if x1 >= self.x-1:
       x1 = self.x-2
-    if y1 >= self.y:
+    if y1 >= self.y-1:
       y1 = self.y-2
-    if self.gameState.hasWall(x1, y1):
+    if x1 <= 0:
+      x1 = 2
+    if y1 <= 0:
+      y1 = 2
+    if gameState.hasWall(x1, y1):
       tuplelist = []
       #cross  
-      if x1 < self.x-1 and (not self.gameState.hasWall(x1+1, y1)):
+      if (not gameState.hasWall(x1+1, y1)):
         tuplelist.append((x1+1,y1))
-      if x1 > 0 and (not self.gameState.hasWall(x1-1, y1)):
+      if (not gameState.hasWall(x1-1, y1)):
         tuplelist.append((x1-1,y1))
-      if y1 < self.y-1 and (not self.gameState.hasWall(x1, y1+1)):
+      if (not gameState.hasWall(x1, y1+1)):
         tuplelist.append((x1,y1+1))
-      if y1 > 0 and (not self.gameState.hasWall(x1, y1-1)):
+      if (not gameState.hasWall(x1, y1-1)):
         tuplelist.append((x1,y1-1))
       #x
-      if x1 < self.x-1 and y1 < self.y-1 and (not self.gameState.hasWall(x1+1, y1+1)):
+      if (not gameState.hasWall(x1+1, y1+1)):
         tuplelist.append((x1+1,y1+1))
-      if x1 > 0 and y1 < self.y-1 and (not self.gameState.hasWall(x1-1, y1+1)):
+      if (not gameState.hasWall(x1-1, y1+1)):
         tuplelist.append((x1-1,y1+1))
-      if y1 > 0 and x1 < self.x-1 and (not self.gameState.hasWall(x1+1, y1-1)):
+      if (not gameState.hasWall(x1+1, y1-1)):
         tuplelist.append((x1+1,y1-1))
-      if y1 > 0 and x1 > 0 and (not self.gameState.hasWall(x1-1, y1-1)):
+      if (not gameState.hasWall(x1-1, y1-1)):
         tuplelist.append((x1-1,y1-1))
-      if len(tuplelist) > 0:
-        temptuple = random.choice(tuplelist)
-        x1 = temptuple[0]
-        y1 = temptuple[1]
+      temptuple = random.choice(tuplelist)
+      x1 = temptuple[0]
+      y1 = temptuple[1]
     #enemy2
     x2 = int(abs((pow(a2, 2) - pow(b2, 2) + pow(c,2))/(2*c)))
     y2 = int(abs(math.sqrt(abs(pow(a1,2) - pow(x2,2)))))
-    if x2 >= self.x:
+    if x2 >= self.x-1:
       x2 = self.x-2
-    if y2 >= self.y:
+    if y2 >= self.y-1:
       y2 = self.y-2
-    if self.gameState.hasWall(x2, y2):
+    if x2 <= 0:
+      x2 = 2
+    if y2 <= 0:
+      y2 = 2
+    if gameState.hasWall(x2, y2):
       tuplelist = []
       #cross
-      if x2 < self.x-1 and (not self.gameState.hasWall(x2+1, y2)):
+      if (not gameState.hasWall(x2+1, y2)):
         tuplelist.append((x2+1,y2))
-      if x2 > 0 and (not self.gameState.hasWall(x2-1, y2)):
+      if (not gameState.hasWall(x2-1, y2)):
         tuplelist.append((x2-1,y2))
-      if y2 < self.y-1 and (not self.gameState.hasWall(x1, y2+1)):
+      if (not gameState.hasWall(x2, y2+1)):
         tuplelist.append((x2,y2+1))
-      if y2 > 0 and (not self.gameState.hasWall(x2, y2-1)):
+      if (not gameState.hasWall(x2, y2-1)):
         tuplelist.append((x2,y2-1))
       #x
-      if x2 < self.x-1 and y2 < self.y-1 and (not self.gameState.hasWall(x2+1, y2+1)):
+      if (not gameState.hasWall(x2+1, y2+1)):
         tuplelist.append((x2+1,y2+1))
-      if x2 > 0 and y2 < self.y-1 and (not self.gameState.hasWall(x2-1, y2+1)):
+      if (not gameState.hasWall(x2-1, y2+1)):
         tuplelist.append((x2-1,y2+1))
-      if y2 > 0 and x2 < self.x-1 and (not self.gameState.hasWall(x2+1, y2-1)):
+      if (not gameState.hasWall(x2+1, y2-1)):
         tuplelist.append((x2+1,y2-1))
-      if y2 > 0 and x2 > 0 and (not self.gameState.hasWall(x2-1, y2-1)):
+      if (not gameState.hasWall(x2-1, y2-1)):
         tuplelist.append((x2-1,y2-1))
-      if len(tuplelist) > 0:
-        temptuple = random.choice(tuplelist)
-        x2 = temptuple[0]
-        y2 = temptuple[1]
+      temptuple = random.choice(tuplelist)
+      x2 = temptuple[0]
+      y2 = temptuple[1]
 
     self.enemy1 = (x1, y1)
     self.enemy2 = (x2, y2)
@@ -276,7 +282,7 @@ class DummyAgent(CaptureAgent):
     bestActions = [a for a, v in zip(actions, values) if v == maxValue]
     
     foodLeft = len(self.getFood(gameState).asList())
-    self.location_finder.addDistance(self.index, gameState.getAgentDistances(), gameState.getAgentState(self.index).getPosition())
+    self.location_finder.addDistance(self.index, gameState.getAgentDistances(), gameState.getAgentState(self.index).getPosition(), gameState)
 
     if foodLeft <= 2:
       bestDist = 9999
@@ -439,7 +445,7 @@ class OffensiveAgent(DummyAgent):
       if myState.isPacman == False:
         self.localCarry = 0
     
-    self.location_finder.addDistance(self.index, gameState.getAgentDistances(), gameState.getAgentState(self.index).getPosition())
+    self.location_finder.addDistance(self.index, gameState.getAgentDistances(), gameState.getAgentState(self.index).getPosition(), gameState)
     # if foodLeft <= 2:
     #   bestDist = 9999
     #   for action in actions:
@@ -641,7 +647,7 @@ class DefensiveDummyAgent(DummyAgent):
     bestActions = [a for a, v in zip(actions, values) if v == maxValue]
     #print("best actions")
     #print(bestActions)
-    self.location_finder.addDistance(self.index ,gameState.getAgentDistances(), gameState.getAgentState(self.index).getPosition())
+    self.location_finder.addDistance(self.index ,gameState.getAgentDistances(), gameState.getAgentState(self.index).getPosition(), gameState)
     self.location_finder.print()
     return random.choice(bestActions)
 
