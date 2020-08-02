@@ -29,21 +29,32 @@ import math
 class finder:
 
   def __init__(self):
+    self.startup = 0
     self.list1 = []
     self.list2 = []
     self.index1 = 0
     self.index2 = 0
     self.test = 0
-    self.enemy1 = (0,0)
-    self.enemy2 = (0,0)
-    self.location1 = (0,0)
-    self.location2 = (0,0)
+    self.enemy1 = (1,1)
+    self.enemy2 = (1,1)
+    self.location1 = (1,1)
+    self.location2 = (1,1)
+    self.x = 0
+    self.y = 0
+    self.gameState = 0
 
   def increment(self):
     self.test = self.test+1
     print(self.test)
 
+  def getGrid(self, gameState):
+    self.gameState = gameState
+    self.y = gameState.data.food.height
+    self.x = gameState.data.food.width
+
   def addDistance(self, index, distances, position):
+    if self.startup < 10:
+      self.startup=self.startup+1
     if index == 0 or index == 1:
       self.index1 = index
     else:
@@ -59,46 +70,120 @@ class finder:
       del self.list1[0]
     if len(self.list2) > 5:
       del self.list2[0]
-    self.updateLocations()
+    if self.startup > 4:
+      self.updateLocations()
 
   def updateLocations(self):
-    enemy1_distance1=0
-    enemy2_distance1=0
-    enemy1_distance2=0
-    enemy2_distance2=0
+    a1=0
+    a2=0
+    b1=0
+    b2=0
     count = 0
     for x in self.list1:
       count=count+1
       if self.index1 == 0:
-        enemy1_distance1=enemy1_distance1+x[1]
-        enemy2_distance1=enemy2_distance1+x[3]
+        a1=a1+x[1]
+        a2=a2+x[3]
       else:
-        enemy1_distance1=enemy1_distance1+x[0]
-        enemy2_distance1=enemy2_distance1+x[2]
+        a1=a1+x[0]
+        a2=a2+x[2]
     if count>0:
-      enemy1_distance1=enemy1_distance1/count
-      enemy2_distance1=enemy2_distance1/count
+      a1=a1/count
+      a2=a2/count
     count = 0
     for y in self.list2:
       count=count+1
       if self.index2 == 2:
-        enemy1_distance2=enemy1_distance2+y[1]
-        enemy2_distance2=enemy2_distance2+y[3]
+        b1=b1+y[1]
+        b2=b2+y[3]
       else:
-        enemy1_distance2=enemy1_distance2+y[0]
-        enemy2_distance2=enemy2_distance2+y[2]
+        b1=b1+y[0]
+        b2=b2+y[2]
     if count>0:
-      enemy1_distance2=enemy1_distance2/count
-      enemy2_distance2=enemy2_distance2/count
-    print(enemy1_distance1)
-    print(enemy2_distance1)
-    print(enemy1_distance2)
-    print(enemy2_distance2)
-    distance = math.sqrt(pow((self.location2[0]-self.location1[0]),2) + pow((self.location2[1]-self.location2[1]),2))
-    print(distance)
+      b1=b1/count
+      b2=b2/count
+    #print(a1)
+    #print(a2)
+    #print(b1)
+    #print(b2)
+    a1=a1-4
+    a2=a2-4
+    b1=b1-4
+    b2=b2-4
+    c = math.sqrt(pow((self.location2[0]-self.location1[0]),2) + pow((self.location2[1]-self.location2[1]),2))
+    #print(c)
+    if c == 0:
+      c=1
+    #enemy1
+    x1 = int(abs((pow(a1, 2) - pow(b1, 2) + pow(c,2))/(2*c)))
+    y1 = int(abs(math.sqrt(abs(pow(a1,2) - pow(x1,2)))))
+    if x1 >= self.x:
+      x1 = self.x-2
+    if y1 >= self.y:
+      y1 = self.y-2
+    if self.gameState.hasWall(x1, y1):
+      tuplelist = []
+      #cross  
+      if x1 < self.x-1 and (not self.gameState.hasWall(x1+1, y1)):
+        tuplelist.append((x1+1,y1))
+      if x1 > 0 and (not self.gameState.hasWall(x1-1, y1)):
+        tuplelist.append((x1-1,y1))
+      if y1 < self.y-1 and (not self.gameState.hasWall(x1, y1+1)):
+        tuplelist.append((x1,y1+1))
+      if y1 > 0 and (not self.gameState.hasWall(x1, y1-1)):
+        tuplelist.append((x1,y1-1))
+      #x
+      if x1 < self.x-1 and y1 < self.y-1 and (not self.gameState.hasWall(x1+1, y1+1)):
+        tuplelist.append((x1+1,y1+1))
+      if x1 > 0 and y1 < self.y-1 and (not self.gameState.hasWall(x1-1, y1+1)):
+        tuplelist.append((x1-1,y1+1))
+      if y1 > 0 and x1 < self.x-1 and (not self.gameState.hasWall(x1+1, y1-1)):
+        tuplelist.append((x1+1,y1-1))
+      if y1 > 0 and x1 > 0 and (not self.gameState.hasWall(x1-1, y1-1)):
+        tuplelist.append((x1-1,y1-1))
+      if len(tuplelist) > 0:
+        temptuple = random.choice(tuplelist)
+        x1 = temptuple[0]
+        y1 = temptuple[1]
+    #enemy2
+    x2 = int(abs((pow(a2, 2) - pow(b2, 2) + pow(c,2))/(2*c)))
+    y2 = int(abs(math.sqrt(abs(pow(a1,2) - pow(x2,2)))))
+    if x2 >= self.x:
+      x2 = self.x-2
+    if y2 >= self.y:
+      y2 = self.y-2
+    if self.gameState.hasWall(x2, y2):
+      tuplelist = []
+      #cross
+      if x2 < self.x-1 and (not self.gameState.hasWall(x2+1, y2)):
+        tuplelist.append((x2+1,y2))
+      if x2 > 0 and (not self.gameState.hasWall(x2-1, y2)):
+        tuplelist.append((x2-1,y2))
+      if y2 < self.y-1 and (not self.gameState.hasWall(x1, y2+1)):
+        tuplelist.append((x2,y2+1))
+      if y2 > 0 and (not self.gameState.hasWall(x2, y2-1)):
+        tuplelist.append((x2,y2-1))
+      #x
+      if x2 < self.x-1 and y2 < self.y-1 and (not self.gameState.hasWall(x2+1, y2+1)):
+        tuplelist.append((x2+1,y2+1))
+      if x2 > 0 and y2 < self.y-1 and (not self.gameState.hasWall(x2-1, y2+1)):
+        tuplelist.append((x2-1,y2+1))
+      if y2 > 0 and x2 < self.x-1 and (not self.gameState.hasWall(x2+1, y2-1)):
+        tuplelist.append((x2+1,y2-1))
+      if y2 > 0 and x2 > 0 and (not self.gameState.hasWall(x2-1, y2-1)):
+        tuplelist.append((x2-1,y2-1))
+      if len(tuplelist) > 0:
+        temptuple = random.choice(tuplelist)
+        x2 = temptuple[0]
+        y2 = temptuple[1]
+
+    self.enemy1 = (x1, y1)
+    self.enemy2 = (x2, y2)
+    #print(self.enemy1)
+    #print(self.enemy2)
 
   def getEnemies(self):
-    return (enemy1, enemy2)
+    return (self.enemy1, self.enemy2)
 
   def print(self):
     print(self.location1)
@@ -127,10 +212,8 @@ def createTeam(firstIndex, secondIndex, isRed,
   locationFinder = finder()
   locationFinder.__init__()
   #locationFinder.increment()
-  print(firstIndex)
-  print(secondIndex)
   #return [eval(first)(firstIndex), eval(second)(secondIndex)]
-  return [OffensiveAgent(firstIndex, locationFinder), DefensiveDummyAgent(secondIndex, locationFinder)]
+  return [OffensiveAgent(firstIndex, locationFinder), DummyAgent(secondIndex, locationFinder)]
   #return [eval(first)(firstIndex, locationFinder), eval(second)(secondIndex, locationFinder)]
 
 ##########
@@ -170,6 +253,7 @@ class DummyAgent(CaptureAgent):
     #we have 2 ghost on the board
     self.start = gameState.getAgentPosition(self.index)
     self.location_finder = locationFinder
+    self.location_finder.getGrid(gameState)
     #prints none at the start of game
     CaptureAgent.registerInitialState(self, gameState)
 
@@ -192,7 +276,8 @@ class DummyAgent(CaptureAgent):
     bestActions = [a for a, v in zip(actions, values) if v == maxValue]
     
     foodLeft = len(self.getFood(gameState).asList())
-    self.location_finder.increment()
+    self.location_finder.addDistance(self.index, gameState.getAgentDistances(), gameState.getAgentState(self.index).getPosition())
+
     if foodLeft <= 2:
       bestDist = 9999
       for action in actions:
@@ -232,19 +317,77 @@ class DummyAgent(CaptureAgent):
     features = util.Counter()
     successor = self.getSuccessor(gameState, action)
     features['successorScore'] = self.getScore(successor)
-    features['ghostDistance'] = self.emptyFunction()
-    features['closestFood'] = self.emptyFunction()
-    features['ghostsNear'] = self.emptyFunction()
-    features['pacmanNear'] = self.emptyFunction()
-    features['inTunnel'] = self.emptyFunction()
-    features['inDeadend'] = self.emptyFunction()
-    features['scaredGhostNear'] = self.emptyFunction()
-    features['foodCarrying'] = self.emptyFunction()
-
+    features['ghostDistance'] = self.nearby(gameState, 3)
+    features['closestFood'] = self.closestFood(gameState)
+    features['ghostsNear'] = self.nearby(gameState, 0)
+    features['pacmanNear'] = self.nearby(gameState, 1)
+    features['inTunnel'] = self.inTunnel(gameState)
+    features['inDeadend'] = self.inDeadend(gameState)
+    features['scaredGhostNear'] = self.nearby(gameState, 2)
+    features['foodCarrying'] = self.foodCarrying(gameState)
     return features
 
-  def emptyFunction(self):
-    pass
+  def closestFood(self, gameState):
+    foodList = self.getFood(gameState).asList()
+    if len(foodList) > 0:
+      #myPos current position of agent on board as tuple ex. (1,2)
+      myPos = gameState.getAgentState(self.index).getPosition()
+      #finds all food positions and returns the closest one to the agent
+      minDistance = min([self.getMazeDistance(myPos, food) for food in foodList])
+    return minDistance
+    
+  def nearby(self, gameState, option):
+    enemies = [gameState.getAgentState(i) for i in self.getOpponents(gameState)]
+    if option == 1:
+      invaders = [a for a in enemies if a.isPacman and a.getPosition() != None]
+      return len(invaders)
+    if option == 0:
+      ghosts = [a for a in enemies if (not a.isPacman) and a.getPosition() != None]
+      return len(ghosts)
+    if option == 2:
+      scaredy_cats = [a for a in enemies if a.scaredTimer > 0 and a.getPosition() != None]
+      return len(scaredy_cats)
+    if option == 3:
+      myPos = gameState.getAgentState(self.index).getPosition()
+      x = int(myPos[0])
+      y = int(myPos[1])
+      myPosInt = (x, y)
+      places = self.location_finder.getEnemies()
+      dists = [self.getMazeDistance(myPosInt, a) for a in places]
+      return min(dists)
+    return 0
+
+  def inTunnel(self, gameState):
+    myState = gameState.getAgentState(self.index)
+    myPos = myState.getPosition()
+    x = int(myPos[0])
+    y = int(myPos[1])
+    if gameState.hasWall(x,y+1) and gameState.hasWall(x,y-1):
+      return 1
+    if gameState.hasWall(x+1,y) and gameState.hasWall(x-1,y):
+      return 1
+    return 0
+
+  def inDeadend(self, gameState):
+    myState = gameState.getAgentState(self.index)
+    myPos = myState.getPosition()
+    x = int(myPos[0])
+    y = int(myPos[1])
+    count = 0
+    if gameState.hasWall(x+1,y):
+      count=count+1
+    if gameState.hasWall(x-1,y):
+      count=count+1
+    if gameState.hasWall(x,y+1):
+      count=count+1
+    if gameState.hasWall(x,y-1):
+      count=count+1
+    if count == 3:
+      return 1
+    return 0
+
+  def foodCarrying(self, gameState):
+    return gameState.getAgentState(self.index).numCarrying
 
   def getWeights(self, gameState, action):
     """
@@ -297,7 +440,6 @@ class OffensiveAgent(DummyAgent):
         self.localCarry = 0
     
     self.location_finder.addDistance(self.index, gameState.getAgentDistances(), gameState.getAgentState(self.index).getPosition())
-    self.location_finder.print()
     # if foodLeft <= 2:
     #   bestDist = 9999
     #   for action in actions:
