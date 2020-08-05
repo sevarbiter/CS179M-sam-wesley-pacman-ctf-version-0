@@ -215,6 +215,7 @@ class ReinforcementAgent(ValueEstimationAgent):
         self.startEpisode()
         if self.episodesSoFar == 0:
             print('Beginning %d episodes of Training' % (self.numTraining))
+        print('call done')
 
     def final(self, state):
         """

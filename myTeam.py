@@ -447,7 +447,7 @@ class DefensiveDummyAgent(DummyAgent):
       else:
         features['hazzyDist'] = distances[2] 
 
-    print(features['hazzyDist'])
+    # print(features['hazzyDist'])
 
     enemies = [successor.getAgentState(i) for i in self.getOpponents(successor)]
     invaders = [a for a in enemies if a.isPacman and a.getPosition() != None]
