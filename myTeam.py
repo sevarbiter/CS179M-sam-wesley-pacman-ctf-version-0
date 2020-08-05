@@ -510,15 +510,19 @@ class QLearningAgent(ReinforcementAgent):
       where the max is over legal actions.
       If no legalActions available return 0.
     """
-    if len(state.getLegalActions(self.index)) == 0:
+    #remove STOP as from possible actions to take
+    legalActions = state.getLegalActions(self.index)
+
+    if Directions.STOP in legalActions:
+      legalActions.remove(Directions.STOP)
+
+    if len(legalActions) == 0:
       return 0.0
     else:
       values = []
-      legalActions = state.getLegalActions(self.index)
     print(legalActions)
     for action in legalActions:
       values.append(self.getQValue(state,action))
-
 
     return max(values)
 
@@ -545,26 +549,23 @@ class QLearningAgent(ReinforcementAgent):
       take the best policy action otherwise. 
       If no legal actions are availabe return NONE.
     """
-    # Pick Action 
+    # Pick Action
     legalActions = state.getLegalActions(self.index)
     if len(legalActions) == 0:
       return None
     
+    #remove STOP as from possible actions to take
     if Directions.STOP in legalActions:
       legalActions.remove(Directions.STOP)
 
-    #update q values
-    
-
     #explore before exploit
     if util.flipCoin(self.epsilon):
+      print('exploring')
       action = random.choice(legalActions)
     else:
+      print('exploiting')
       action = self.computeActionFromQValues(state)
 
-    #update q values
-    # reward = state
-    # print(legalActions)
     "*** YOUR CODE HERE ***"
     return action
 
@@ -585,7 +586,6 @@ class QLearningAgent(ReinforcementAgent):
     value = (1-self.alpha) * (self.getQValue(state,action)) + self.alpha * (reward + self.discount * self.computeValueFromQValues(state))
     self.qValues[(state,action)] = value
     print(value)
-    
     # WORKING CODE
     # self.qValues[(state,action)] = (1-self.alpha) * (self.getQValue(state,action)) + self.alpha * (reward + self.discount * self.computeValueFromQValues(state))
     
@@ -596,13 +596,25 @@ class QLearningAgent(ReinforcementAgent):
   def getValue(self, state):
     return self.computeValueFromQValues(state)
   
+  def getSuccessor(self, gameState, action):
+    """
+    Finds the next successor which is a grid position (location tuple).
+    """
+    successor = gameState.generateSuccessor(self.index, action)
+    pos = successor.getAgentState(self.index).getPosition()
+    if pos != util.nearestPoint(pos):
+      # Only half a grid position was covered
+      return successor.generateSuccessor(self.index, action)
+    else:
+      return successor
+  
   # def final(self, state):
   #   print('GAME FINISH!')
 
 
 class Agent1(QLearningAgent):
 
-  def __init__(self, index, numTraining=100, epsilon=0.5, alpha=0.5, gamma=1, **args):
+  def __init__(self, index, numTraining=100, epsilon=0.8, alpha=0.5, gamma=1, **args):
     """
     index       - agent index
     alpha       - learning rate
@@ -627,9 +639,3 @@ class Agent1(QLearningAgent):
     action = QLearningAgent.getAction(self,state)
     self.doAction(state,action)
     return action
-
-    
-
-
-
-
