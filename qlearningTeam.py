@@ -7,6 +7,7 @@ from util import nearestPoint
 from util import raiseNotDefined
 from learningAgents import ReinforcementAgent
 from myTeam import DefensiveDummyAgent
+from finder import Finder
 
 #################
 # Team creation #
@@ -28,7 +29,10 @@ def createTeam(firstIndex, secondIndex, isRed,
   any extra arguments, so you should make sure that the default
   behavior is what you want for the nightly contest.
   """
-  return [eval(first)(firstIndex), eval(second)(secondIndex)]
+  locationFinder = Finder()
+  locationFinder.__init__()
+
+  return [eval(first)(firstIndex, locationFinder), eval(second)(secondIndex, locationFinder)]
 
   ####################################
 #     Reinforcement Learning       #
@@ -176,7 +180,7 @@ class QLearningAgent(ReinforcementAgent):
 
 class Agent1(QLearningAgent):
 
-  def __init__(self, index, numTraining=100, epsilon=0.8, alpha=0.5, gamma=1, **args):
+  def __init__(self, numTraining=100, epsilon=0.8, alpha=0.5, gamma=1, **args):
     """
     index       - agent index
     alpha       - learning rate
@@ -185,7 +189,6 @@ class Agent1(QLearningAgent):
     numTraining - number of training episodes, i.e. no learning after these many episodes
 
     """
-    args['index'] = index
     args['epsilon'] = epsilon
     args['gamma'] = gamma
     args['alpha'] = alpha
