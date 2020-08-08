@@ -132,6 +132,16 @@ class QLearningAgent(ReinforcementAgent):
       print('exploiting')
       action = self.computeActionFromQValues(state)
 
+    self.locationFinder.getGrid(state)
+    self.locationFinder.addDistance(self.index, state.getAgentDistances(), state.getAgentState(self.index).getPosition(), state)
+    print("agent1")
+    print(self.index)
+    print("distances")
+    print(state.getAgentDistances())
+    print("position")
+    print(state.getAgentState(self.index).getPosition())
+    print("finder")
+    self.locationFinder.print()
     "*** YOUR CODE HERE ***"
     return action
 
@@ -180,7 +190,7 @@ class QLearningAgent(ReinforcementAgent):
 
 class Agent1(QLearningAgent):
 
-  def __init__(self, numTraining=100, epsilon=0.8, alpha=0.5, gamma=1, **args):
+  def __init__(self, index, locationFinder, numTraining=100, epsilon=0.8, alpha=0.5, gamma=1, **args):
     """
     index       - agent index
     alpha       - learning rate
@@ -189,10 +199,17 @@ class Agent1(QLearningAgent):
     numTraining - number of training episodes, i.e. no learning after these many episodes
 
     """
+    args['index'] = index
+    args['locationFinder'] = locationFinder
     args['epsilon'] = epsilon
     args['gamma'] = gamma
     args['alpha'] = alpha
     args['numTraining'] = numTraining
+    args['locationFinder'].print()
+    print(args['epsilon'])
+    print(args['gamma'])
+    print(args['alpha'])
+    print(args['numTraining'])
     QLearningAgent.__init__(self, **args)
   
   def getAction(self, state):

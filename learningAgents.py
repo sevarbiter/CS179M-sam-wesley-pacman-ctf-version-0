@@ -81,7 +81,7 @@ class ValueEstimationAgent(CaptureAgent):
     #     """
     #     util.raiseNotDefined()
 
-class ReinforcementAgent(ValueEstimationAgent):
+class ReinforcementAgent(CaptureAgent):
     """
       Abstract Reinforcemnt Agent: A ValueEstimationAgent
       which estimates Q-Values (as well as policies) from experience
@@ -155,7 +155,7 @@ class ReinforcementAgent(ValueEstimationAgent):
     def isInTesting(self):
         return not self.isInTraining()
 
-    def __init__(self, actionFn = None, numTraining=100, epsilon=0.5, alpha=0.5, gamma=1):
+    def __init__(self, index, locationFinder, timeForComputing=0.1, actionFn = None, numTraining=100, epsilon=0.5, alpha=0.5, gamma=1):
         """
         actionFn: Function which takes a state and returns the list of legal actions
 
@@ -164,9 +164,10 @@ class ReinforcementAgent(ValueEstimationAgent):
         gamma    - discount factor
         numTraining - number of training episodes, i.e. no learning after these many episodes
         """
-        #CaptureAgent.__init__(self, index, timeForComputing)
+        CaptureAgent.__init__(self, index, timeForComputing)
         if actionFn == None:
             actionFn = lambda state: state.getLegalActions()
+        self.locationFinder = locationFinder
         self.actionFn = actionFn
         self.episodesSoFar = 0
         self.accumTrainRewards = 0.0
@@ -211,11 +212,9 @@ class ReinforcementAgent(ValueEstimationAgent):
             self.observeTransition(self.lastState, self.lastAction, state, reward)
         return state
 
-    def registerInitialState(self, state, locationFinder=Finder()):
-        self.startEpisode()
+    def registerInitialState(self, state):
         CaptureAgent.registerInitialState(self, state)
-        self.location_finder = locationFinder
-        self.location_finder.getGrid(state)
+        self.startEpisode()
         if self.episodesSoFar == 0:
             print('Beginning %d episodes of Training' % (self.numTraining))
 

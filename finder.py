@@ -29,8 +29,8 @@ class Finder:
   def getGrid(self, gameState):
     self.y = gameState.data.food.height
     self.x = gameState.data.food.width
-    print(self.y)
-    print(self.x)
+    #print(self.y)
+    #print(self.x)
 
   def addDistance(self, index, distances, position, gameState):
     if self.startup < 10:
