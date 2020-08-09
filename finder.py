@@ -176,3 +176,54 @@ class Finder:
     print(self.list1)
     print(self.location2)
     print(self.list2)
+
+  def getFeatures(self, gameState, action):
+    """
+    Returns a counter of features for the state
+    """
+    features = util.Counter()
+    successor = self.getSuccessor(gameState, action)
+    features['successorScore'] = self.getScore(successor)
+    features['ghostDistance'] = self.nearby(gameState, 3)
+    print('ghostDistance')
+    print(features['ghostDistance'])
+    features['closestFood'] = self.closestFood(gameState)
+    print('closestfood')
+    print(features['closestFood'])
+    features['ghostsNear'] = self.nearby(gameState, 0)
+    print('ghostsNear')
+    print(features['ghostsNear'])
+    features['pacmanNear'] = self.nearby(gameState, 1)
+    print('pacmanNear')
+    print(features['pacmanNear'])
+    features['inTunnel'] = self.inTunnel(gameState)
+    print('inTunnel')
+
+    print(features['inTunnel'])
+    features['inDeadend'] = self.inDeadend(gameState)
+    print('inDeadend')
+
+    print(features['inDeadend'])
+    features['scaredGhostNear'] = self.nearby(gameState, 2)
+    print('scaredGhostNear')
+
+    print(features['scaredGhostNear'])
+    features['foodCarrying'] = self.foodCarrying(gameState)
+    print('foodCarrying')
+
+    print(features['foodCarrying'])
+    return features
+
+  def closestFood(self, gameState):
+    foodList = self.getFood(gameState).asList()
+    if len(foodList) > 0:
+      #myPos current position of agent on board as tuple ex. (1,2)
+      myPos = gameState.getAgentState(self.index).getPosition()
+      #finds all food positions and returns the closest one to the agent
+      minDistance = min([self.getMazeDistance(myPos, food) for food in foodList])
+    return minDistance
+    
+  def nearby(self, gameState, option):
+    enemies = [gameState.getAgentState(i) for i in self.getOpponents(gameState)]
+    if option == 1:
+      invaders = [a for a in enemies if a.isPacman and a.getPosition() != None]
