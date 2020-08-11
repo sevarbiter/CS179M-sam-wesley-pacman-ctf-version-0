@@ -184,33 +184,21 @@ class Finder:
     features = util.Counter()
     
     features['ghostDistance'] = self.nearby(gameState, 3, agent)
-    print('ghostDistance')
-    print(features['ghostDistance'])
+
     features['closestFood'] = self.closestFood(gameState, agent)
-    print('closestfood')
-    print(features['closestFood'])
+
     features['ghostsNear'] = self.nearby(gameState, 0, agent)
-    print('ghostsNear')
-    print(features['ghostsNear'])
+
     features['pacmanNear'] = self.nearby(gameState, 1, agent)
-    print('pacmanNear')
-    print(features['pacmanNear'])
+
     features['inTunnel'] = self.inTunnel(gameState, agent)
-    print('inTunnel')
 
-    print(features['inTunnel'])
     features['inDeadend'] = self.inDeadend(gameState, agent)
-    print('inDeadend')
 
-    print(features['inDeadend'])
     features['scaredGhostNear'] = self.nearby(gameState, 2, agent)
-    print('scaredGhostNear')
 
-    print(features['scaredGhostNear'])
     features['foodCarrying'] = self.foodCarrying(gameState, agent)
-    print('foodCarrying')
 
-    print(features['foodCarrying'])
     return features
 
   def closestFood(self, gameState, agent):

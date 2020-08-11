@@ -14,7 +14,7 @@ from finder import Finder
 #################
 
 def createTeam(firstIndex, secondIndex, isRed,
-               first = 'Agent1', second = 'DefensiveDummyAgent'):
+               first = 'DefensiveDummyAgent', second = 'Agent1'):
   """
   This function should return a list of two agents that will form the
   team, initialized using firstIndex and secondIndex as their agent
@@ -133,15 +133,7 @@ class QLearningAgent(ReinforcementAgent):
       action = self.computeActionFromQValues(state)
 
     self.locationFinder.getGrid(state)
-    self.locationFinder.addDistance(self.index, state.getAgentDistances(), state.getAgentState(self.index).getPosition(), state)
-    print("agent1")
-    print(self.index)
-    print("distances")
-    print(state.getAgentDistances())
-    print("position")
-    print(state.getAgentState(self.index).getPosition())
-    print("finder")
-    self.locationFinder.print()
+    self.locationFinder.addDistance(self.index, state.getAgentDistances(), state.getAgentState(self.index).getPosition(), state) 
     "*** YOUR CODE HERE ***"
     return action
 
@@ -217,7 +209,7 @@ class Agent1(QLearningAgent):
     Simply calls the getAction method of QLearningAgent and then
     informs parent of action for Pacman.  Do not change or remove this
     method.
-    """
+    """ 
     action = QLearningAgent.getAction(self,state)
     self.doAction(state,action)
     return action

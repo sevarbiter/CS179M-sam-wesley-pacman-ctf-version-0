@@ -210,7 +210,7 @@ class ReinforcementAgent(CaptureAgent):
             #reward = state.getScore() - self.lastState.getScore()
             reward = self.getScore(state) - self.lastState.getScore()
             self.observeTransition(self.lastState, self.lastAction, state, reward)
-        return state
+        return state.makeObservation(self.index)
 
     def registerInitialState(self, state):
         CaptureAgent.registerInitialState(self, state)
