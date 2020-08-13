@@ -205,7 +205,7 @@ class ReinforcementAgent(ValueEstimationAgent):
         The simulation should somehow ensure this is called
         """
         if not self.lastState is None:
-            print('UPDATING REWARD')
+            #print('UPDATING REWARD')
             #reward = state.getScore() - self.lastState.getScore()
             reward = self.getScore(state) - self.lastState.getScore()
             self.observeTransition(self.lastState, self.lastAction, state, reward)
@@ -220,7 +220,7 @@ class ReinforcementAgent(ValueEstimationAgent):
         """
         Called by Pacman game at the terminal state
         """
-        print('FINAL CALL')
+        # print('FINAL CALL')
         deltaReward = self.getScore(state) - self.lastState.getScore()
         self.observeTransition(self.lastState, self.lastAction, state, deltaReward)
         self.stopEpisode()

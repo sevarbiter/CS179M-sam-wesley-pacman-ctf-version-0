@@ -82,7 +82,7 @@ class QLearningAgent(ReinforcementAgent):
       return 0.0
     else:
       values = []
-    print(legalActions)
+    # print(legalActions)
     for action in legalActions:
       values.append(self.getQValue(state,action))
 
@@ -122,10 +122,10 @@ class QLearningAgent(ReinforcementAgent):
 
     #explore before exploit
     if util.flipCoin(self.epsilon):
-      print('exploring')
+    #   print('exploring')
       action = random.choice(legalActions)
     else:
-      print('exploiting')
+    #   print('exploiting')
       action = self.computeActionFromQValues(state)
 
     "*** YOUR CODE HERE ***"
@@ -144,10 +144,10 @@ class QLearningAgent(ReinforcementAgent):
     # Q(s,a) = (1-alpha)*Q(s,a)+(alpha)[r + gamma * maxQ(s',a'))]
     
     # DEBUGGING
-    print('updating state qvalue')
+    # print('updating state qvalue')
     value = (1-self.alpha) * (self.getQValue(state,action)) + self.alpha * (reward + self.discount * self.computeValueFromQValues(state))
     self.qValues[(state,action)] = value
-    print('print state values: %d' % value)
+    # print('print state values: %d' % value)
     # WORKING CODE
     # self.qValues[(state,action)] = (1-self.alpha) * (self.getQValue(state,action)) + self.alpha * (reward + self.discount * self.computeValueFromQValues(state))
     
