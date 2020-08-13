@@ -29,8 +29,8 @@ class Finder:
   def getGrid(self, gameState):
     self.y = gameState.data.food.height
     self.x = gameState.data.food.width
-    print(self.y)
-    print(self.x)
+    #print(self.y)
+    #print(self.x)
 
   def addDistance(self, index, distances, position, gameState):
     if self.startup < 10:
@@ -176,3 +176,90 @@ class Finder:
     print(self.list1)
     print(self.location2)
     print(self.list2)
+
+  def getFeatures(self, gameState, agent):
+    """
+    Returns a counter of features for the state
+    """
+    features = util.Counter()
+    
+    features['ghostDistance'] = self.nearby(gameState, 3, agent)
+
+    features['closestFood'] = self.closestFood(gameState, agent)
+
+    features['ghostsNear'] = self.nearby(gameState, 0, agent)
+
+    features['pacmanNear'] = self.nearby(gameState, 1, agent)
+
+    features['inTunnel'] = self.inTunnel(gameState, agent)
+
+    features['inDeadend'] = self.inDeadend(gameState, agent)
+
+    features['scaredGhostNear'] = self.nearby(gameState, 2, agent)
+
+    features['foodCarrying'] = self.foodCarrying(gameState, agent)
+
+    return features
+
+  def closestFood(self, gameState, agent):
+    foodList = agent.getFood(gameState).asList()
+    if len(foodList) > 0:
+      #myPos current position of agent on board as tuple ex. (1,2)
+      myPos = gameState.getAgentState(agent.index).getPosition()
+      #finds all food positions and returns the closest one to the agent
+      minDistance = min([agent.getMazeDistance(myPos, food) for food in foodList])
+    return minDistance
+    
+  def nearby(self, gameState, option, agent):
+    enemies = [gameState.getAgentState(i) for i in agent.getOpponents(gameState)]
+    if option == 1:
+      invaders = [a for a in enemies if a.isPacman and a.getPosition() != None]
+      return len(invaders)
+    if option == 0:
+      ghosts = [a for a in enemies if (not a.isPacman) and a.getPosition() != None]
+      return len(ghosts)
+    if option == 2:
+      scaredy_cats = [a for a in enemies if a.scaredTimer > 0 and a.getPosition() != None]
+      return len(scaredy_cats)
+    if option == 3:
+      myPos = gameState.getAgentState(agent.index).getPosition()
+      x = int(myPos[0])
+      y = int(myPos[1])
+      myPosInt = (x, y)
+      places = self.getEnemies()
+      dists = [agent.getMazeDistance(myPosInt, a) for a in places]
+      return min(dists)
+    return 0
+
+  def inTunnel(self, gameState, agent):
+    myState = gameState.getAgentState(agent.index)
+    myPos = myState.getPosition()
+    x = int(myPos[0])
+    y = int(myPos[1])
+    if gameState.hasWall(x,y+1) and gameState.hasWall(x,y-1):
+      return 1
+    if gameState.hasWall(x+1,y) and gameState.hasWall(x-1,y):
+      return 1
+    return 0
+
+  def inDeadend(self, gameState, agent):
+    myState = gameState.getAgentState(agent.index)
+    myPos = myState.getPosition()
+    x = int(myPos[0])
+    y = int(myPos[1])
+    count = 0
+    if gameState.hasWall(x+1,y):
+      count=count+1
+    if gameState.hasWall(x-1,y):
+      count=count+1
+    if gameState.hasWall(x,y+1):
+      count=count+1
+    if gameState.hasWall(x,y-1):
+      count=count+1
+    if count == 3:
+      return 1
+    return 0
+
+  def foodCarrying(self, gameState, agent):
+    return gameState.getAgentState(agent.index).numCarrying
+

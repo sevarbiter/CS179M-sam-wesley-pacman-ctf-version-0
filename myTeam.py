@@ -20,6 +20,7 @@ import game
 from util import nearestPoint
 from util import raiseNotDefined
 from learningAgents import ReinforcementAgent
+from finder import Finder
 
 #################
 # Team creation #
@@ -41,9 +42,10 @@ def createTeam(firstIndex, secondIndex, isRed,
   any extra arguments, so you should make sure that the default
   behavior is what you want for the nightly contest.
   """
-
+  locationFinder=Finder()
+  locationFinder.__init__()
   # The following line is an example only; feel free to change it.
-  return [eval(first)(firstIndex), eval(second)(secondIndex)]
+  return [eval(first)(firstIndex, locationFinder), eval(second)(secondIndex, locationFinder)]
 
 ##########
 # Agents #
@@ -55,6 +57,11 @@ class DummyAgent(CaptureAgent):
   You should look at baselineTeam.py for more details about how to
   create an agent as this is the bare minimum.
   """
+
+  def __init__(self, index, locationFinder):
+    CaptureAgent.__init__(self, index)
+    self.index = index
+    self.locationFinder = locationFinder
 
   def registerInitialState(self, gameState):
     """
@@ -194,8 +201,8 @@ class OffensiveAgent(DummyAgent):
         # self.localCarry = 0
       if myState.isPacman == False:
         self.localCarry = 0
-    
-
+ 
+    self.location_finder.addDistance(self.index, gameState.getAgentDistances(), gameState.getAgentState(self.index).getPosition(), gameState)
     # if foodLeft <= 2:
     #   bestDist = 9999
     #   for action in actions:
@@ -381,6 +388,9 @@ class MiniMaxAgent(OffensiveAgent):
 
 class DefensiveDummyAgent(DummyAgent):
   
+  def __init__(self, index, locationFinder):
+    DummyAgent.__init__(self, index, locationFinder)
+
   def chooseAction(self, gameState):
     """
     Picks among actions randomly.
@@ -397,7 +407,9 @@ class DefensiveDummyAgent(DummyAgent):
     bestActions = [a for a, v in zip(actions, values) if v == maxValue]
     #print("best actions")
     #print(bestActions)
-
+    self.locationFinder.getGrid(gameState)
+    self.locationFinder.addDistance(self.index, gameState.getAgentDistances(), gameState.getAgentState(self.index).getPosition(), gameState) 
+    self.locationFinder.getFeatures(gameState, self)
     return random.choice(bestActions)
 
   def getSuccessor(self, gameState, action):

@@ -7,13 +7,14 @@ from util import nearestPoint
 from util import raiseNotDefined
 from learningAgents import ReinforcementAgent
 from myTeam import DefensiveDummyAgent
+from finder import Finder
 
 #################
 # Team creation #
 #################
 
 def createTeam(firstIndex, secondIndex, isRed,
-               first = 'Agent1', second = 'DefensiveDummyAgent'):
+               first = 'DefensiveDummyAgent', second = 'Agent1'):
   """
   This function should return a list of two agents that will form the
   team, initialized using firstIndex and secondIndex as their agent
@@ -28,7 +29,10 @@ def createTeam(firstIndex, secondIndex, isRed,
   any extra arguments, so you should make sure that the default
   behavior is what you want for the nightly contest.
   """
-  return [eval(first)(firstIndex), eval(second)(secondIndex)]
+  locationFinder = Finder()
+  locationFinder.__init__()
+
+  return [eval(first)(firstIndex, locationFinder), eval(second)(secondIndex, locationFinder)]
 
   ####################################
 #     Reinforcement Learning       #
@@ -128,6 +132,8 @@ class QLearningAgent(ReinforcementAgent):
     #   print('exploiting')
       action = self.computeActionFromQValues(state)
 
+    self.locationFinder.getGrid(state)
+    self.locationFinder.addDistance(self.index, state.getAgentDistances(), state.getAgentState(self.index).getPosition(), state) 
     "*** YOUR CODE HERE ***"
     return action
 
@@ -176,7 +182,7 @@ class QLearningAgent(ReinforcementAgent):
 
 class Agent1(QLearningAgent):
 
-  def __init__(self, index, numTraining=100, epsilon=0.8, alpha=0.5, gamma=1, **args):
+  def __init__(self, index, locationFinder, numTraining=100, epsilon=0.8, alpha=0.5, gamma=1, **args):
     """
     index       - agent index
     alpha       - learning rate
@@ -186,10 +192,16 @@ class Agent1(QLearningAgent):
 
     """
     args['index'] = index
+    args['locationFinder'] = locationFinder
     args['epsilon'] = epsilon
     args['gamma'] = gamma
     args['alpha'] = alpha
     args['numTraining'] = numTraining
+    args['locationFinder'].print()
+    print(args['epsilon'])
+    print(args['gamma'])
+    print(args['alpha'])
+    print(args['numTraining'])
     QLearningAgent.__init__(self, **args)
   
   def getAction(self, state):
@@ -197,7 +209,7 @@ class Agent1(QLearningAgent):
     Simply calls the getAction method of QLearningAgent and then
     informs parent of action for Pacman.  Do not change or remove this
     method.
-    """
+    """ 
     action = QLearningAgent.getAction(self,state)
     self.doAction(state,action)
     return action
