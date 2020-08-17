@@ -76,22 +76,41 @@ class QLearningAgent(ReinforcementAgent):
       If no legalActions available return 0.
     """
     #remove STOP as from possible actions to take
-    legalActions = state.getLegalActions(self.index)
+    # legalActions = state.getLegalActions(self.index)
 
+    # if Directions.STOP in legalActions:
+    #   legalActions.remove(Directions.STOP)
+
+    # if len(legalActions) == 0:
+    #   return 0.0
+    # else:
+    #   values = []
+
+    # print(legalActions)
+
+    # for action in legalActions:
+    #   values.append(self.getQValue(state,action))
+
+    # return max(values)
+    legalActions = state.getLegalActions(self.index)
+    print(legalActions)
     if Directions.STOP in legalActions:
       legalActions.remove(Directions.STOP)
-
-    if len(legalActions) == 0:
-      return 0.0
-    else:
-      values = []
-
-    print(legalActions)
-
+    
+    values = []
     for action in legalActions:
-      values.append(self.getQValue(state,action))
-
-    return max(values)
+        newState = state.generateSuccessor(self.index,action)
+        print(newState.getAgentPosition(self.index))
+        successor = self.getQValue(state, action)
+        # print(successor)
+        values.append(successor)
+    
+    # values = [self.getQValue(state, action) for action in state.getLegalActions(self.index)]
+    print('Values ', values)
+    if len(values) > 0:
+        return max(values)
+    else:
+        return 0.0
 
   def computeActionFromQValues(self, state):
     """
@@ -177,7 +196,7 @@ class QLearningAgent(ReinforcementAgent):
 
 class Agent1(QLearningAgent):
 
-    def __init__(self, index, locationFinder, numTraining=100, epsilon=0.8, alpha=0.5, gamma=1, **args):
+    def __init__(self, index, locationFinder, numTraining=2900, epsilon=0.8, alpha=0.5, gamma=1, **args):
         """
         index       - agent index
         alpha       - learning rate
@@ -218,13 +237,13 @@ class Agent1(QLearningAgent):
         where * is the dotProduct operator
         """
         qValue = 0
-        counter = 0
         features = self.locationFinder.getFeatures(state, self)
-        # print('GET QVALUE Func')
+        print('features: ',features)
+        print('weights: ',self.getWeights())
+
         for feature in features:
             qValue += features[feature] * self.weights[feature]
-            counter += 1
-        # print(counter)
+
         return qValue
 
     def update(self, state, action, nextState, reward):
@@ -234,18 +253,35 @@ class Agent1(QLearningAgent):
         features = self.locationFinder.getFeatures(state, self)
         # featuresList = features.sortedKeys()
         # print(features)
-        counter = 0
+        # counter = 0
+        # for feature in features:
+        #     difference = 0
+        #     if len(self.getLegalActions(nextState)) == 0:
+        #         difference = reward - self.getQValue(state, action)
+        #     else:
+        #         # maxList = []
+        #         # for action in self.getLegalActions(state):
+        #         #   successor = state.generateSuccessor(self.index, action)
+        #         #   maxList.append(self.getQValue(successor,action))
+        #         # maxQ = max(maxList)
+        # maxQ = max([self.getQValue(nextState, nextAction) for nextAction in self.getLegalActions(nextState)])
+        #         difference = (reward + self.discount * maxQ - self.getQValue(state, action))
+        #         print('maxQ: %d' % maxQ)
+        #         print(difference)
+        #     self.weights[feature] = (self.weights[feature] + self.alpha * difference * features[feature]) % 10 
+        #     print(self.getWeights())
+        #     counter += 1
+        # print(self.getWeights())
+        getValue = self.getValue(nextState)
+        getQValue = self.getQValue(state, action)
+        print('Discount: %d' % self.discount)
+        print('GetValue: %d' % getValue)
+        print('GetQValue: %d' % getQValue)
+        difference = reward + (self.discount * getValue - getQValue)
+
         for feature in features:
-            difference = 0
-            if len(self.getLegalActions(nextState)) == 0:
-                difference = reward - self.getQValue(state, action)
-            else:
-                difference = (reward + self.discount * max([self.getQValue(nextState, nextAction) for nextAction in self.getLegalActions(nextState)])) - self.getQValue(state, action)
-                print(difference)
-            self.weights[feature] = self.weights[feature] + self.alpha * difference * features[feature]
-            print(self.getWeights())
-            counter += 1
-        # print(counter)
+          self.weights[feature] += (self.alpha * features[feature] * difference) % 10
+        # print(self.getWeights())
 
     def final(self, state):
         "Called at the end of each game."

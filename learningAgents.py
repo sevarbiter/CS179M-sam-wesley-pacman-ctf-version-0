@@ -124,7 +124,7 @@ class ReinforcementAgent(CaptureAgent):
 
         NOTE: Do *not* override or call this function
         """
-        print('TRANSITION')
+        # print('TRANSITION')
         self.episodeRewards += deltaReward
         self.update(state,action,nextState,deltaReward)
 
@@ -214,7 +214,8 @@ class ReinforcementAgent(CaptureAgent):
                 reward += self.getScore(state) - self.lastState.getScore() + 2
             foodList = self.getFood(state).asList()
             prevFood = self.getFood(self.lastState).asList()
-            reward += len(foodList) - len(prevFood)
+            if len(foodList) > len(prevFood):
+                reward += len(foodList) - len(prevFood)
             if self.locationFinder.closestFood(state, self) < self.locationFinder.closestFood(self.lastState, self):
                 reward += .5
             self.observeTransition(self.lastState, self.lastAction, state, reward)
@@ -242,7 +243,7 @@ class ReinforcementAgent(CaptureAgent):
             self.lastWindowAccumRewards = 0.0
         self.lastWindowAccumRewards += self.getScore(state)
 
-        NUM_EPS_UPDATE = 5
+        NUM_EPS_UPDATE = 100
         if self.episodesSoFar % NUM_EPS_UPDATE == 0:
             print('Reinforcement Learning Status:')
             windowAvg = self.lastWindowAccumRewards / float(NUM_EPS_UPDATE)
