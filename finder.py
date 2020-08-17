@@ -181,21 +181,22 @@ class Finder:
     """
     Returns a counter of features for the state
     """
+    print('inside getFeatures ', gameState.getAgentPosition(agent.index))
     features = util.Counter()
     
-    features['ghostDistance'] = self.nearby(gameState, 3, agent)
+    features['ghostDistance'] = -(self.nearby(gameState, 3, agent))
 
-    features['closestFood'] = self.closestFood(gameState, agent)
+    features['closestFood'] = -(self.closestFood(gameState, agent))
 
-    features['ghostsNear'] = self.nearby(gameState, 0, agent)
+    features['ghostsNear'] = -(self.nearby(gameState, 0, agent))
 
-    features['pacmanNear'] = self.nearby(gameState, 1, agent)
+    features['pacmanNear'] = -(self.nearby(gameState, 1, agent))
 
     features['inTunnel'] = self.inTunnel(gameState, agent)
 
     features['inDeadend'] = self.inDeadend(gameState, agent)
 
-    features['scaredGhostNear'] = self.nearby(gameState, 2, agent)
+    features['scaredGhostNear'] = -(self.nearby(gameState, 2, agent))
 
     features['foodCarrying'] = self.foodCarrying(gameState, agent)
 
@@ -222,7 +223,9 @@ class Finder:
       scaredy_cats = [a for a in enemies if a.scaredTimer > 0 and a.getPosition() != None]
       return len(scaredy_cats)
     if option == 3:
-      myPos = gameState.getAgentState(agent.index).getPosition()
+      myPos = gameState.getAgentPosition(agent.index)
+      print('index: %d' % agent.index)
+      print('inside nearby ',myPos)
       x = int(myPos[0])
       y = int(myPos[1])
       myPosInt = (x, y)

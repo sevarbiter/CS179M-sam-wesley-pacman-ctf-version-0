@@ -409,7 +409,7 @@ class DefensiveDummyAgent(DummyAgent):
     #print(bestActions)
     self.locationFinder.getGrid(gameState)
     self.locationFinder.addDistance(self.index, gameState.getAgentDistances(), gameState.getAgentState(self.index).getPosition(), gameState) 
-    self.locationFinder.getFeatures(gameState, self)
+    #self.locationFinder.getFeatures(gameState, self)
     return random.choice(bestActions)
 
   def getSuccessor(self, gameState, action):
