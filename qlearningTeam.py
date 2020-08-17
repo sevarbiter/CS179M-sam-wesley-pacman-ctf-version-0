@@ -100,7 +100,7 @@ class QLearningAgent(ReinforcementAgent):
     values = []
     for action in legalActions:
         newState = state.generateSuccessor(self.index,action)
-        print(newState.getAgentPosition(self.index))
+        print('Taking Action :', action, 'Position :', newState.getAgentPosition(self.index))
         successor = self.getQValue(state, action)
         # print(successor)
         values.append(successor)
@@ -272,7 +272,10 @@ class Agent1(QLearningAgent):
         #     print(self.getWeights())
         #     counter += 1
         # print(self.getWeights())
+
+
         getValue = self.getValue(nextState)
+        print('Best Action :', action, 'Position :', state.getAgentPosition(self.index))
         getQValue = self.getQValue(state, action)
         print('Discount: %d' % self.discount)
         print('GetValue: %d' % getValue)
@@ -292,10 +295,14 @@ class Agent1(QLearningAgent):
         if self.episodesSoFar == self.numTraining: 
             # you might want to print your weights here for debugging
             "*** YOUR CODE HERE ***"
-            print(self.getWeights())
+            # print(self.getWeights())
             pass
+<<<<<<< HEAD
         print(self.getWeights())
         self.printToFile()
+=======
+        # print(self.getWeights())
+>>>>>>> 3c145582fff79c47ea4df8211b1bda7df986c6f3
 
     def printToFile(self):
       f= open("qPolicy0.txt","w+")
