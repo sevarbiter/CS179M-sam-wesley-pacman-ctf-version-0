@@ -124,6 +124,7 @@ class ReinforcementAgent(CaptureAgent):
 
         NOTE: Do *not* override or call this function
         """
+        print('TRANSITION')
         self.episodeRewards += deltaReward
         self.update(state,action,nextState,deltaReward)
 
@@ -208,7 +209,14 @@ class ReinforcementAgent(CaptureAgent):
         if not self.lastState is None:
             #print('UPDATING REWARD')
             #reward = state.getScore() - self.lastState.getScore()
-            reward = self.getScore(state) - self.lastState.getScore()
+            reward = 0
+            if self.getScore(state) > self.lastState.getScore():
+                reward += self.getScore(state) - self.lastState.getScore() + 2
+            foodList = self.getFood(state).asList()
+            prevFood = self.getFood(self.lastState).asList()
+            reward += len(foodList) - len(prevFood)
+            if self.locationFinder.closestFood(state, self) < self.locationFinder.closestFood(self.lastState, self):
+                reward += .5
             self.observeTransition(self.lastState, self.lastAction, state, reward)
         return state.makeObservation(self.index)
 

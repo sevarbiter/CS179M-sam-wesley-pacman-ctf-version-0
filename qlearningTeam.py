@@ -85,7 +85,9 @@ class QLearningAgent(ReinforcementAgent):
       return 0.0
     else:
       values = []
+
     print(legalActions)
+
     for action in legalActions:
       values.append(self.getQValue(state,action))
 
@@ -122,7 +124,6 @@ class QLearningAgent(ReinforcementAgent):
     #remove STOP as from possible actions to take
     if Directions.STOP in legalActions:
       legalActions.remove(Directions.STOP)
-
     #explore before exploit
     if util.flipCoin(self.epsilon):
     #   print('exploring')
@@ -130,7 +131,7 @@ class QLearningAgent(ReinforcementAgent):
     else:
     #   print('exploiting')
       action = self.computeActionFromQValues(state)
-
+    # print(action)
     self.locationFinder.getGrid(state)
     self.locationFinder.addDistance(self.index, state.getAgentDistances(), state.getAgentState(self.index).getPosition(), state) 
     return action
@@ -219,10 +220,11 @@ class Agent1(QLearningAgent):
         qValue = 0
         counter = 0
         features = self.locationFinder.getFeatures(state, self)
-        print('GET QVALUE Func')
+        # print('GET QVALUE Func')
         for feature in features:
             qValue += features[feature] * self.weights[feature]
             counter += 1
+        # print(counter)
         return qValue
 
     def update(self, state, action, nextState, reward):
@@ -231,6 +233,7 @@ class Agent1(QLearningAgent):
         """
         features = self.locationFinder.getFeatures(state, self)
         # featuresList = features.sortedKeys()
+        # print(features)
         counter = 0
         for feature in features:
             difference = 0
@@ -238,9 +241,11 @@ class Agent1(QLearningAgent):
                 difference = reward - self.getQValue(state, action)
             else:
                 difference = (reward + self.discount * max([self.getQValue(nextState, nextAction) for nextAction in self.getLegalActions(nextState)])) - self.getQValue(state, action)
+                print(difference)
             self.weights[feature] = self.weights[feature] + self.alpha * difference * features[feature]
             print(self.getWeights())
             counter += 1
+        # print(counter)
 
     def final(self, state):
         "Called at the end of each game."
