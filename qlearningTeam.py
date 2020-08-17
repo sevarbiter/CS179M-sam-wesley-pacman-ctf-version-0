@@ -218,15 +218,17 @@ class Agent1(QLearningAgent):
         print(args['alpha'])
         print(args['numTraining'])
         QLearningAgent.__init__(self, **args)
-        # if os.stat("qPolicy0.txt").st_size == 0:
-        #   self.weights = util.Counter()
-        # else:
-        #   self.weights = util.Counter()
-        #   test = open("qPolicy0.txt", 'r').read()
-        #   print("FILE READ: ",test)
-        #   self.weights = json.load(test)
-        #   print(self.getWeights())
-        self.weights = util.Counter()
+        if os.stat("qPolicy0.txt").st_size == 0:
+          self.weights = util.Counter()
+        else:
+          self.weights = util.Counter()
+          test = open("qPolicy0.txt", 'r').read()
+          print("FILE READ: ",test)
+          parsedDict = json.loads(test)
+          for features in parsedDict:
+            self.weights[features] = parsedDict[features]
+          print('STARTING FEATURES: ',self.getWeights())
+        # self.weights = util.Counter()
 
     
     def getAction(self, state):
