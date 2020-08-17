@@ -210,14 +210,22 @@ class ReinforcementAgent(CaptureAgent):
             #print('UPDATING REWARD')
             #reward = state.getScore() - self.lastState.getScore()
             reward = 0
+            #returned food
             if self.getScore(state) > self.lastState.getScore():
                 reward += self.getScore(state) - self.lastState.getScore() + 2
             foodList = self.getFood(state).asList()
             prevFood = self.getFood(self.lastState).asList()
+            #ate food
             if len(foodList) > len(prevFood):
                 reward += len(foodList) - len(prevFood)
+            #move towards food
             if self.locationFinder.closestFood(state, self) < self.locationFinder.closestFood(self.lastState, self):
-                reward += .5
+                reward += 1
+            #died
+            if state.getAgentPosition(self.index) == state.getInitialAgentPosition(self.index):
+              reward += -2
+            print('REWARD: %d' % reward)
+            #ate pacman
             self.observeTransition(self.lastState, self.lastAction, state, reward)
         return state.makeObservation(self.index)
 
