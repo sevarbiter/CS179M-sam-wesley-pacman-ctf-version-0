@@ -188,7 +188,7 @@ class Finder:
 
     features['closestFood'] = -(self.closestFood(gameState, agent))
 
-    features['ghostsNear'] = -(self.nearby(gameState, 0, agent))
+    features['ghostsNear'] = (self.nearby(gameState, 0, agent))
 
     features['pacmanNear'] = -(self.nearby(gameState, 1, agent))
 

@@ -243,7 +243,7 @@ class ReinforcementAgent(CaptureAgent):
             self.lastWindowAccumRewards = 0.0
         self.lastWindowAccumRewards += self.getScore(state)
 
-        NUM_EPS_UPDATE = 100
+        NUM_EPS_UPDATE = 20
         if self.episodesSoFar % NUM_EPS_UPDATE == 0:
             print('Reinforcement Learning Status:')
             windowAvg = self.lastWindowAccumRewards / float(NUM_EPS_UPDATE)

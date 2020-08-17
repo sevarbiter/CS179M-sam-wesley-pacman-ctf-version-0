@@ -9,6 +9,7 @@ from learningAgents import ReinforcementAgent
 from myTeam import DefensiveDummyAgent
 from finder import Finder
 import os
+import json
 
 #################
 # Team creation #
@@ -197,7 +198,7 @@ class QLearningAgent(ReinforcementAgent):
 
 class Agent1(QLearningAgent):
 
-    def __init__(self, index, locationFinder, numTraining=100, epsilon=0.8, alpha=0.5, gamma=1, **args):
+    def __init__(self, index, locationFinder, numTraining=95, epsilon=0.8, alpha=0.5, gamma=1, **args):
         """
         index       - agent index
         alpha       - learning rate
@@ -217,10 +218,14 @@ class Agent1(QLearningAgent):
         print(args['alpha'])
         print(args['numTraining'])
         QLearningAgent.__init__(self, **args)
-        # if os.stat("qPolicy0").st_size == 0:
+        # if os.stat("qPolicy0.txt").st_size == 0:
         #   self.weights = util.Counter()
-        # else
-        #   self.weights = 
+        # else:
+        #   self.weights = util.Counter()
+        #   test = open("qPolicy0.txt", 'r').read()
+        #   print("FILE READ: ",test)
+        #   self.weights = json.load(test)
+        #   print(self.getWeights())
         self.weights = util.Counter()
 
     
@@ -289,7 +294,9 @@ class Agent1(QLearningAgent):
         difference = reward + (self.discount * getValue - getQValue)
 
         for feature in features:
-          self.weights[feature] += (self.alpha * features[feature] * difference) % 10
+          self.weights[feature] += (self.alpha * features[feature] * difference)
+          self.weights[feature] = self.weights[feature] % 10
+          # self.weights.normalize()
         # print(self.getWeights())
 
     def final(self, state):
@@ -304,15 +311,11 @@ class Agent1(QLearningAgent):
             # print(self.getWeights())
             self.printToFile()
             pass
-<<<<<<< HEAD
         print(self.getWeights())
         self.printToFile()
-=======
-        # print(self.getWeights())
->>>>>>> 3c145582fff79c47ea4df8211b1bda7df986c6f3
 
     def printToFile(self):
-      f= open("qPolicy0.txt","w+")
+      f = open("qPolicy0.txt","w+")
       f.write(str(self.getWeights()))
       f.close()
 
