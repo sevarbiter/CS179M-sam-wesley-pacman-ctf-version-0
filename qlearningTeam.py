@@ -8,6 +8,7 @@ from util import raiseNotDefined
 from learningAgents import ReinforcementAgent
 from myTeam import DefensiveDummyAgent
 from finder import Finder
+import os
 
 #################
 # Team creation #
@@ -196,7 +197,7 @@ class QLearningAgent(ReinforcementAgent):
 
 class Agent1(QLearningAgent):
 
-    def __init__(self, index, locationFinder, numTraining=2900, epsilon=0.8, alpha=0.5, gamma=1, **args):
+    def __init__(self, index, locationFinder, numTraining=100, epsilon=0.8, alpha=0.5, gamma=1, **args):
         """
         index       - agent index
         alpha       - learning rate
@@ -216,7 +217,12 @@ class Agent1(QLearningAgent):
         print(args['alpha'])
         print(args['numTraining'])
         QLearningAgent.__init__(self, **args)
+        # if os.stat("qPolicy0").st_size == 0:
+        #   self.weights = util.Counter()
+        # else
+        #   self.weights = 
         self.weights = util.Counter()
+
     
     def getAction(self, state):
         """
@@ -296,6 +302,7 @@ class Agent1(QLearningAgent):
             # you might want to print your weights here for debugging
             "*** YOUR CODE HERE ***"
             # print(self.getWeights())
+            self.printToFile()
             pass
         # print(self.getWeights())
 
