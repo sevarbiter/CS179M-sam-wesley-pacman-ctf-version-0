@@ -295,7 +295,10 @@ class Agent1(QLearningAgent):
             print(self.getWeights())
             pass
         print(self.getWeights())
+        self.printToFile()
 
     def printToFile(self):
-      pass
+      f= open("qPolicy0.txt","w+")
+      f.write(str(self.getWeights()))
+      f.close()
 
