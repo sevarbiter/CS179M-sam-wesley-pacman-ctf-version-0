@@ -171,24 +171,24 @@ class OffensiveAgent(DummyAgent):
     """
     Picks among the actions with the highest Q(s,a).
     """
-    print('---START---')
+    #print('---START---')
     actions = gameState.getLegalActions(self.index)
     
-    print(actions)
+    #print(actions)
 
     # You can profile your evaluation time by uncommenting these lines
     # start = time.time()
     values = [self.evaluate(gameState, a) for a in actions]
     # print('eval time for agent %d: %.4f' % (self.index, time.time() - start))
 
-    print(values)
+    #print(values)
 
     maxValue = max(values)
     bestActions = [a for a, v in zip(actions, values) if v == maxValue]
-    print('bestActions: %s'% bestActions)
+    #print('bestActions: %s'% bestActions)
 
     myState = gameState.getAgentState(self.index)
-    print(myState.isPacman) 
+    #print(myState.isPacman) 
     foodLeft = len(self.getFood(gameState).asList())
 
     #checks to see if a
@@ -202,7 +202,13 @@ class OffensiveAgent(DummyAgent):
       if myState.isPacman == False:
         self.localCarry = 0
  
-    self.location_finder.addDistance(self.index, gameState.getAgentDistances(), gameState.getAgentState(self.index).getPosition(), gameState)
+    self.locationFinder.getGrid(gameState)
+    self.locationFinder.addDistance(self.index, gameState.getAgentDistances(), gameState.getAgentState(self.index).getPosition(), gameState)
+    if self.index == 3:
+      #print("Actual Position 2")
+      print('Actual2: ', gameState.getAgentState(self.index).getPosition())
+      print("---End---")
+
     # if foodLeft <= 2:
     #   bestDist = 9999
     #   for action in actions:
@@ -213,7 +219,7 @@ class OffensiveAgent(DummyAgent):
     #       bestAction = action
     #       bestDist = dist
     #   return bestAction
-    print('---END---')
+    #print('---END---')
     return random.choice(bestActions)
 
   def evaluate(self, gameState, action):
@@ -224,7 +230,7 @@ class OffensiveAgent(DummyAgent):
     # print(features)
     weights = self.getWeights(gameState, action)
     # print(weights)
-    print('evalutate: %d'% (features * weights))
+    #print('evalutate: %d'% (features * weights))
     return features * weights
 
   def getFeatures(self, gameState, action):
@@ -261,7 +267,7 @@ class OffensiveAgent(DummyAgent):
     # Computes distance to ghosts we can see in order to avoid
     enemies = [successor.getAgentState(i) for i in self.getOpponents(successor)]
     ghosts = [a for a in enemies if not a.isPacman and a.getPosition() != None]
-    print('numGhosts: %s' % ghosts)
+    #print('numGhosts: %s' % ghosts)
     features['numGhosts'] = len(ghosts)
     if len(ghosts) > 0:
       dists = [self.getMazeDistance(myPos, a.getPosition()) for a in ghosts]
@@ -409,6 +415,11 @@ class DefensiveDummyAgent(DummyAgent):
     #print(bestActions)
     self.locationFinder.getGrid(gameState)
     self.locationFinder.addDistance(self.index, gameState.getAgentDistances(), gameState.getAgentState(self.index).getPosition(), gameState) 
+    if self.index == 1:
+      print('Actual1: ', gameState.getAgentState(self.index).getPosition())
+    if self.index == 0 or self.index == 2:
+      print("---Begin---")
+      self.locationFinder.print()
     self.locationFinder.getFeatures(gameState, self)
     return random.choice(bestActions)
 

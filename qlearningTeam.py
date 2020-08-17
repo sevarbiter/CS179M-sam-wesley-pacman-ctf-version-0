@@ -7,6 +7,7 @@ from util import nearestPoint
 from util import raiseNotDefined
 from learningAgents import ReinforcementAgent
 from myTeam import DefensiveDummyAgent
+from myTeam import OffensiveAgent
 from finder import Finder
 
 #################
@@ -14,7 +15,7 @@ from finder import Finder
 #################
 
 def createTeam(firstIndex, secondIndex, isRed,
-               first = 'DefensiveDummyAgent', second = 'Agent1'):
+               first = 'DefensiveDummyAgent', second = 'OffensiveAgent'):
   """
   This function should return a list of two agents that will form the
   team, initialized using firstIndex and secondIndex as their agent

@@ -165,17 +165,19 @@ class Finder:
 
     self.enemy1 = (x1, y1)
     self.enemy2 = (x2, y2)
+    #print("agent1")
     #print(self.enemy1)
+    #print("agent2")
     #print(self.enemy2)
 
   def getEnemies(self):
     return (self.enemy1, self.enemy2)
 
   def print(self):
-    print(self.location1)
-    print(self.list1)
-    print(self.location2)
-    print(self.list2)
+    print('agent1: ', self.location1)
+    #print(self.list1)
+    print('agent2: ', self.location2)
+    #print(self.list2)
 
   def getFeatures(self, gameState, agent):
     """
