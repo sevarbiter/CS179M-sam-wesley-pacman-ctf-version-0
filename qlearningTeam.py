@@ -237,7 +237,7 @@ class Agent1(QLearningAgent):
         where * is the dotProduct operator
         """
         qValue = 0
-        features = self.locationFinder.getFeatures(state, self)
+        features = self.locationFinder.getFeatures(state.generateSuccessor(self.index, action), self)
         print('features: ',features)
         print('weights: ',self.getWeights())
 
@@ -298,4 +298,7 @@ class Agent1(QLearningAgent):
             # print(self.getWeights())
             pass
         # print(self.getWeights())
+
+    def printToFile(self):
+      pass
 
