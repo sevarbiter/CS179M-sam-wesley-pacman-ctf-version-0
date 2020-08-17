@@ -13,8 +13,7 @@ from finder import Finder
 # Team creation #
 #################
 
-def createTeam(firstIndex, secondIndex, isRed,
-               first = 'DefensiveDummyAgent', second = 'Agent1'):
+def createTeam(firstIndex, secondIndex, isRed, first = 'DefensiveDummyAgent', second = 'Agent1'):
   """
   This function should return a list of two agents that will form the
   team, initialized using firstIndex and secondIndex as their agent
@@ -34,7 +33,7 @@ def createTeam(firstIndex, secondIndex, isRed,
 
   return [eval(first)(firstIndex, locationFinder), eval(second)(secondIndex, locationFinder)]
 
-  ####################################
+####################################
 #     Reinforcement Learning       #
 ####################################
 
@@ -86,7 +85,7 @@ class QLearningAgent(ReinforcementAgent):
       return 0.0
     else:
       values = []
-    # print(legalActions)
+    print(legalActions)
     for action in legalActions:
       values.append(self.getQValue(state,action))
 
@@ -134,7 +133,6 @@ class QLearningAgent(ReinforcementAgent):
 
     self.locationFinder.getGrid(state)
     self.locationFinder.addDistance(self.index, state.getAgentDistances(), state.getAgentState(self.index).getPosition(), state) 
-    "*** YOUR CODE HERE ***"
     return action
 
   def update(self, state, action, nextState, reward):
@@ -175,41 +173,85 @@ class QLearningAgent(ReinforcementAgent):
       return successor.generateSuccessor(self.index, action)
     else:
       return successor
-  
-  # def final(self, state):
-  #   print('GAME FINISH!')
-
 
 class Agent1(QLearningAgent):
 
-  def __init__(self, index, locationFinder, numTraining=100, epsilon=0.8, alpha=0.5, gamma=1, **args):
-    """
-    index       - agent index
-    alpha       - learning rate
-    epsilon     - exploration rate
-    gamma       - discount factor
-    numTraining - number of training episodes, i.e. no learning after these many episodes
+    def __init__(self, index, locationFinder, numTraining=100, epsilon=0.8, alpha=0.5, gamma=1, **args):
+        """
+        index       - agent index
+        alpha       - learning rate
+        epsilon     - exploration rate
+        gamma       - discount factor
+        numTraining - number of training episodes, i.e. no learning after these many episodes
+        """
+        args['index'] = index
+        args['locationFinder'] = locationFinder
+        args['epsilon'] = epsilon
+        args['gamma'] = gamma
+        args['alpha'] = alpha
+        args['numTraining'] = numTraining
+        args['locationFinder'].print()
+        print(args['epsilon'])
+        print(args['gamma'])
+        print(args['alpha'])
+        print(args['numTraining'])
+        QLearningAgent.__init__(self, **args)
+        self.weights = util.Counter()
+    
+    def getAction(self, state):
+        """
+        Simply calls the getAction method of QLearningAgent and then
+        informs parent of action for Pacman.  Do not change or remove this
+        method.
+        """ 
+        action = QLearningAgent.getAction(self,state)
+        self.doAction(state,action)
+        return action
+    
+    def getWeights(self):
+        return self.weights
+    
+    def getQValue(self, state, action):
+        """
+        Should return Q(state,action) = w * featureVector
+        where * is the dotProduct operator
+        """
+        qValue = 0
+        counter = 0
+        features = self.locationFinder.getFeatures(state, self)
+        print('GET QVALUE Func')
+        for feature in features:
+            qValue += features[feature] * self.weights[feature]
+            counter += 1
+        return qValue
 
-    """
-    args['index'] = index
-    args['locationFinder'] = locationFinder
-    args['epsilon'] = epsilon
-    args['gamma'] = gamma
-    args['alpha'] = alpha
-    args['numTraining'] = numTraining
-    args['locationFinder'].print()
-    print(args['epsilon'])
-    print(args['gamma'])
-    print(args['alpha'])
-    print(args['numTraining'])
-    QLearningAgent.__init__(self, **args)
-  
-  def getAction(self, state):
-    """
-    Simply calls the getAction method of QLearningAgent and then
-    informs parent of action for Pacman.  Do not change or remove this
-    method.
-    """ 
-    action = QLearningAgent.getAction(self,state)
-    self.doAction(state,action)
-    return action
+    def update(self, state, action, nextState, reward):
+        """
+            Should update your weights based on transition
+        """
+        features = self.locationFinder.getFeatures(state, self)
+        # featuresList = features.sortedKeys()
+        counter = 0
+        for feature in features:
+            difference = 0
+            if len(self.getLegalActions(nextState)) == 0:
+                difference = reward - self.getQValue(state, action)
+            else:
+                difference = (reward + self.discount * max([self.getQValue(nextState, nextAction) for nextAction in self.getLegalActions(nextState)])) - self.getQValue(state, action)
+            self.weights[feature] = self.weights[feature] + self.alpha * difference * features[feature]
+            print(self.getWeights())
+            counter += 1
+
+    def final(self, state):
+        "Called at the end of each game."
+        # call the super-class final method
+        QLearningAgent.final(self, state)
+
+        # did we finish training?
+        if self.episodesSoFar == self.numTraining: 
+            # you might want to print your weights here for debugging
+            "*** YOUR CODE HERE ***"
+            print(self.getWeights())
+            pass
+        print(self.getWeights())
+
