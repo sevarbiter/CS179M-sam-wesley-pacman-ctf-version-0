@@ -318,6 +318,7 @@ class Agent1(QLearningAgent):
 
     def printToFile(self):
       f = open("qPolicy0.txt","w+")
-      f.write(str(self.getWeights()))
+      dumps = json.dumps(self.getWeights())
+      f.write(dumps)
       f.close()
 
