@@ -213,30 +213,27 @@ class Finder:
     return minDistance
     
   def nearby(self, gameState, option, agent):
-    enemies = [gameState.getAgentState(i) for i in agent.getOpponents(gameState)]
+    enemies = [i for i in agent.getOpponents(gameState)]
+    # print(enemies)   
     if option == 1:
-      invaders = [a for a in enemies if a.isPacman and a.getPosition() != None]
-      if len(invaders) > 0:
-        minDist = 100
-        for a in invaders:
-          dist = agent.getMazeDistance(gameState.getAgentState(agent.index).getPosition(), a.getPosition())
-          if dist < 6 and dist < minDist:
-            minDist = dist
-        return minDist
-      return 0
+      print(gameState.getAgentPosition(1))
+      print(gameState.getAgentPosition(3))
+      invaders = [a for a in enemies if gameState.getAgentState(a).isPacman and gameState.getAgentPosition(a) != None]
+      print(invaders)
+      return len(invaders)
     if option == 0:
-      ghosts = [a for a in enemies if (not a.isPacman) and a.getPosition() != None]
+      ghosts = [a for a in enemies if not gameState.getAgentState(a).isPacman and gameState.getAgentPosition(a) != None]
       if len(ghosts) > 0:
         minDist = 100
         for a in ghosts:
-          dist = agent.getMazeDistance(gameState.getAgentState(agent.index).getPosition(), a.getPosition())
+          dist = agent.getMazeDistance(gameState.getAgentState(agent.index).getPosition(), gameState.getAgentPosition(a))
           if dist < 6 and dist < minDist:
             minDist = dist
         return minDist
       return 0
-    if option == 2:
-      scaredy_cats = [a for a in enemies if a.scaredTimer > 0 and a.getPosition() != None]
-      return len(scaredy_cats)
+    # if option == 2:
+    #   scaredy_cats = [a for a in enemies if a.scaredTimer > 0 and a.getPosition() != None]
+    #   return len(scaredy_cats)
     if option == 3:
       myPos = gameState.getAgentPosition(agent.index)
       print('index: %d' % agent.index)

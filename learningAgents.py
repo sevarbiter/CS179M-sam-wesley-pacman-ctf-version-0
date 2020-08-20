@@ -207,50 +207,50 @@ class ReinforcementAgent(CaptureAgent):
         This is where we ended up after our last action.
         The simulation should somehow ensure this is called
         """
+        gameState = state.makeObservation(self.index)
+
         if not self.lastState is None:
             #print('UPDATING REWARD')
             #reward = state.getScore() - self.lastState.getScore()
             reward = 0
             #returned food
-            if self.getScore(state) > self.lastState.getScore():
-                reward += self.getScore(state) - self.lastState.getScore() + 200
-                # print('Reward Scored: %d' % reward)
-            foodList = self.getFood(state).asList()
+            if self.getScore(gameState) > self.lastState.getScore():
+                reward += self.getScore(gameState) - self.lastState.getScore() + 200
+                print('Reward Scored: %d' % reward)
+            foodList = self.getFood(gameState).asList()
             prevFood = self.getFood(self.lastState).asList()
             #ate food
             if len(foodList) > len(prevFood):
                 reward += len(foodList) - len(prevFood)
-                # print('Reward Ate Food: %d' % reward)
+                print('Reward Ate Food: %d' % reward)
             #move towards food
             # if self.locationFinder.closestFood(state, self) < self.locationFinder.closestFood(self.lastState, self):
             #     reward += 3
             #died
-            if state.getAgentPosition(self.index) == state.getInitialAgentPosition(self.index):
+            if gameState.getAgentPosition(self.index) == gameState.getInitialAgentPosition(self.index):
               lastX=self.lastState.getAgentPosition(self.index)[0]
               lastY=self.lastState.getAgentPosition(self.index)[1]
-              currentX=state.getAgentPosition(self.index)[0]
-              currentY=state.getAgentPosition(self.index)[1]
+              currentX=gameState.getAgentPosition(self.index)[0]
+              currentY=gameState.getAgentPosition(self.index)[1]
               if(not(lastX == currentX+1 or lastX == currentX-1)):
-                print('current x: %d' % currentX)
-                print('last x: %d' % lastX)
+                # print('current x: %d' % currentX)
+                # print('last x: %d' % lastX)
                 #reward += -1000
-                #print('Reward Eaten: %d' % reward)
+                # print('Reward Eaten: %d' % reward)
+                j=1
               elif(not(lastY == currentY+1 or lastY == currentY-1)):
-                print('current x: %d' % currentX)
-                print('last x: %d' % lastX)
+                # print('current x: %d' % currentX)
+                # print('last x: %d' % lastX)
                 #reward += -1000
-                #print('Reward Eaten: %d' % reward)
+                # print('Reward Eaten: %d' % reward)
+                j=1 
               else:
                 print('Reward Eaten: %d' & 1000)
                 reward += -1000
-<<<<<<< HEAD
-                # print('Reward Eaten: %d' % reward)
-=======
->>>>>>> 2ebe92e6c1a9b4ba28a076dbc1ce3e92b9011f9d
             # print('REWARD: %d' % reward)
             #ate pacman
             oldEnemies = [self.lastState.getAgentState(i) for i in self.getOpponents(self.lastState)]
-            newEnemies = [state.getAgentState(i) for i in self.getOpponents(state)]
+            newEnemies = [gameState.getAgentState(i) for i in self.getOpponents(gameState)]
             oldPacmen = [a for a in oldEnemies if a.isPacman and a.getPosition() != None]
             newPacmen = [a for a in newEnemies if a.isPacman and a.getPosition() != None]
             if len(oldPacmen) > 0:
@@ -258,17 +258,17 @@ class ReinforcementAgent(CaptureAgent):
               if min(dists) == 1:
                 if len(newPacmen) == 0:
                   reward+=100
-                #   print('Reward Ate Pacman: %d' % reward)
+                  print('Reward Ate Pacman: %d' % reward)
                 else:
                   if len(newPacmen) > 0:
-                    dists=[self.getMazeDistance(state.getAgentState(self.index).getPosition(), a.getPosition()) for a in oldPacmen]
+                    dists=[self.getMazeDistance(gameState.getAgentState(self.index).getPosition(), a.getPosition()) for a in oldPacmen]
                     if min(dists) > 2:
                       reward+=100
-                    #   print('Reward Ate Pacman: %d' % reward)
+                      print('Reward Ate Pacman: %d' % reward)
 
             # print('Reward: %d' % reward)
-            self.observeTransition(self.lastState, self.lastAction, state, reward)
-        return state.makeObservation(self.index)
+            self.observeTransition(self.lastState, self.lastAction, gameState, reward)
+        return gameState
 
     def registerInitialState(self, state):
         CaptureAgent.registerInitialState(self, state)

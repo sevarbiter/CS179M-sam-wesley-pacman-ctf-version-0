@@ -316,11 +316,11 @@ class Agent1(QLearningAgent):
           difference = (reward + self.discount * maxQValue) - currQValue
 
         for feature in features:
-          
           self.weights[feature] = self.weights[feature] + self.alpha * features[feature] * difference
           self.weights[feature] = self.weights[feature] % 10
           # self.weights.normalize()
-        # print(self.getWeights())
+        print(features)
+        print(self.getWeights())
 
     def final(self, state):
         "Called at the end of each game."
