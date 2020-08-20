@@ -15,7 +15,7 @@ import json
 # Team creation #
 #################
 
-def createTeam(firstIndex, secondIndex, isRed, first = 'Agent1', second = 'DefensiveDummyAgent'):
+def createTeam(firstIndex, secondIndex, isRed, first = 'Agent1', second = 'Agent1'):
   """
   This function should return a list of two agents that will form the
   team, initialized using firstIndex and secondIndex as their agent

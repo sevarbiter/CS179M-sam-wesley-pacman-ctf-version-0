@@ -214,20 +214,20 @@ class ReinforcementAgent(CaptureAgent):
             #returned food
             if self.getScore(state) > self.lastState.getScore():
                 reward += self.getScore(state) - self.lastState.getScore() + 200
-                print('Reward Scored: %d' % reward)
+                # print('Reward Scored: %d' % reward)
             foodList = self.getFood(state).asList()
             prevFood = self.getFood(self.lastState).asList()
             #ate food
             if len(foodList) > len(prevFood):
                 reward += len(foodList) - len(prevFood)
-                print('Reward Ate Food: %d' % reward)
+                # print('Reward Ate Food: %d' % reward)
             #move towards food
             # if self.locationFinder.closestFood(state, self) < self.locationFinder.closestFood(self.lastState, self):
             #     reward += 3
             #died
             if state.getAgentPosition(self.index) == state.getInitialAgentPosition(self.index):
                 reward += -1000
-                print('Reward Eaten: %d' % reward)
+                # print('Reward Eaten: %d' % reward)
             # print('REWARD: %d' % reward)
             #ate pacman
             oldEnemies = [self.lastState.getAgentState(i) for i in self.getOpponents(self.lastState)]
@@ -239,13 +239,13 @@ class ReinforcementAgent(CaptureAgent):
               if min(dists) == 1:
                 if len(newPacmen) == 0:
                   reward+=100
-                  print('Reward Ate Pacman: %d' % reward)
+                #   print('Reward Ate Pacman: %d' % reward)
                 else:
                   if len(newPacmen) > 0:
                     dists=[self.getMazeDistance(state.getAgentState(self.index).getPosition(), a.getPosition()) for a in oldPacmen]
                     if min(dists) > 2:
                       reward+=100
-                      print('Reward Ate Pacman: %d' % reward)
+                    #   print('Reward Ate Pacman: %d' % reward)
 
             # print('Reward: %d' % reward)
             self.observeTransition(self.lastState, self.lastAction, state, reward)
