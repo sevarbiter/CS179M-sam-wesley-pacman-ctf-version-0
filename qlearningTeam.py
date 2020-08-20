@@ -15,7 +15,7 @@ import json
 # Team creation #
 #################
 
-def createTeam(firstIndex, secondIndex, isRed, first = 'Agent1', second = 'Agent1'):
+def createTeam(firstIndex, secondIndex, isRed, first = 'Agent1', second = 'DefensiveDummyAgent'):
   """
   This function should return a list of two agents that will form the
   team, initialized using firstIndex and secondIndex as their agent
@@ -203,7 +203,7 @@ class QLearningAgent(ReinforcementAgent):
 
 class Agent1(QLearningAgent):
 
-    def __init__(self, index, locationFinder, numTraining=90, epsilon=0, alpha=0, gamma=1, **args):
+    def __init__(self, index, locationFinder, numTraining=20, epsilon=0.8, alpha=0.6, gamma=1, **args):
         """
         index       - agent index
         alpha       - learning rate 0.5
@@ -317,10 +317,10 @@ class Agent1(QLearningAgent):
 
         for feature in features:
           
-          self.weights[feature] += self.alpha + self.weights[feature] * features[feature] * difference
+          self.weights[feature] = self.weights[feature] + self.alpha * features[feature] * difference
           self.weights[feature] = self.weights[feature] % 10
           # self.weights.normalize()
-        print(self.getWeights())
+        # print(self.getWeights())
 
     def final(self, state):
         "Called at the end of each game."
