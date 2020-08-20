@@ -203,6 +203,7 @@ class Finder:
     return features
 
   def closestFood(self, gameState, agent):
+    minDistance = 0
     foodList = agent.getFood(gameState).asList()
     if len(foodList) > 0:
       #myPos current position of agent on board as tuple ex. (1,2)

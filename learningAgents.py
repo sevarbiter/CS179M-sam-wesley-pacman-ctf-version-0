@@ -213,7 +213,7 @@ class ReinforcementAgent(CaptureAgent):
             reward = 0
             #returned food
             if self.getScore(state) > self.lastState.getScore():
-                reward += self.getScore(state) - self.lastState.getScore() + 10
+                reward += self.getScore(state) - self.lastState.getScore() + 20
             foodList = self.getFood(state).asList()
             prevFood = self.getFood(self.lastState).asList()
             #ate food
@@ -224,8 +224,8 @@ class ReinforcementAgent(CaptureAgent):
             #     reward += 3
             #died
             if state.getAgentPosition(self.index) == state.getInitialAgentPosition(self.index):
-                reward += -5
-            print('REWARD: %d' % reward)
+                reward += -20
+            # print('REWARD: %d' % reward)
             #ate pacman
             self.observeTransition(self.lastState, self.lastAction, state, reward)
         return state.makeObservation(self.index)

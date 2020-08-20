@@ -95,20 +95,20 @@ class QLearningAgent(ReinforcementAgent):
 
     # return max(values)
     legalActions = state.getLegalActions(self.index)
-    print(legalActions)
+    # print(legalActions)
     if Directions.STOP in legalActions:
       legalActions.remove(Directions.STOP)
     
     values = []
     for action in legalActions:
-        newState = state.generateSuccessor(self.index,action)
-        print('Taking Action :', action, 'Position :', newState.getAgentPosition(self.index))
+        # newState = state.generateSuccessor(self.index,action)
+        # print('Taking Action :', action, 'Position :', newState.getAgentPosition(self.index))
         successor = self.getQValue(state, action)
         # print(successor)
         values.append(successor)
     
     # values = [self.getQValue(state, action) for action in state.getLegalActions(self.index)]
-    print('Values ', values)
+    # print('Values ', values)
     if len(values) > 0:
         return max(values)
     else:
@@ -152,10 +152,10 @@ class QLearningAgent(ReinforcementAgent):
       legalActions.remove(Directions.STOP)
     #explore before exploit
     if util.flipCoin(self.epsilon):
-      print('exploring')
+      # print('exploring')
       action = random.choice(legalActions)
     else:
-      print('exploiting')
+      # print('exploiting')
       action = self.computeActionFromQValues(state)
     # print(action)
     self.locationFinder.getGrid(state)
@@ -203,7 +203,7 @@ class QLearningAgent(ReinforcementAgent):
 
 class Agent1(QLearningAgent):
 
-    def __init__(self, index, locationFinder, numTraining=90, epsilon=0.5, alpha=0.8, gamma=1, **args):
+    def __init__(self, index, locationFinder, numTraining=15, epsilon=0.5, alpha=0.8, gamma=1, **args):
         """
         index       - agent index
         alpha       - learning rate 0.5
@@ -255,8 +255,8 @@ class Agent1(QLearningAgent):
         """
         qValue = 0
         features = self.locationFinder.getFeatures(state.generateSuccessor(self.index, action), self)
-        print('features: ',features)
-        print('weights: ',self.getWeights())
+        # print('features: ',features)
+        # print('weights: ',self.getWeights())
 
         for feature in features:
             qValue += features[feature] * self.weights[feature]
@@ -301,11 +301,11 @@ class Agent1(QLearningAgent):
         '''
         maxQValue = self.getValue(nextState)
 
-        print('Best Action :', action, 'Position :', state.getAgentPosition(self.index))
+        # print('Best Action :', action, 'Position :', state.getAgentPosition(self.index))
         currQValue = self.getQValue(state, action)
         # print('Discount: %d' % self.discount)
-        print('maxQValue: %d' % maxQValue)
-        print('currQValue: %d' % currQValue)
+        # print('maxQValue: %d' % maxQValue)
+        # print('currQValue: %d' % currQValue)
 
         if self.alpha == 0 and self.epsilon == 0:
           return
