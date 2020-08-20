@@ -216,7 +216,14 @@ class Finder:
     enemies = [gameState.getAgentState(i) for i in agent.getOpponents(gameState)]
     if option == 1:
       invaders = [a for a in enemies if a.isPacman and a.getPosition() != None]
-      return len(invaders)
+      if len(invaders) > 0:
+        minDist = 100
+        for a in invaders:
+          dist = agent.getMazeDistance(gameState.getAgentState(agent.index).getPosition(), a.getPosition())
+          if dist < 6 and dist < minDist:
+            minDist = dist
+        return minDist
+      return 0
     if option == 0:
       ghosts = [a for a in enemies if (not a.isPacman) and a.getPosition() != None]
       if len(ghosts) > 0:
@@ -278,6 +285,8 @@ class Finder:
     myPos = gameState.getAgentState(agent.index).getPosition()
 
     dist = agent.getMazeDistance(myPos, gameState.getInitialAgentPosition(agent.index))
+    if dist>20:
+      dist=20
     if dist == 0:
       dist = 1
     weight = 20/dist
