@@ -171,24 +171,24 @@ class OffensiveAgent(DummyAgent):
     """
     Picks among the actions with the highest Q(s,a).
     """
-    print('---START---')
+    # print('---START---') 
     actions = gameState.getLegalActions(self.index)
     
-    print(actions)
+    # print(actions)
 
     # You can profile your evaluation time by uncommenting these lines
     # start = time.time()
     values = [self.evaluate(gameState, a) for a in actions]
     # print('eval time for agent %d: %.4f' % (self.index, time.time() - start))
 
-    print(values)
+    # print(values)
 
     maxValue = max(values)
     bestActions = [a for a, v in zip(actions, values) if v == maxValue]
-    print('bestActions: %s'% bestActions)
+    # print('bestActions: %s'% bestActions)
 
     myState = gameState.getAgentState(self.index)
-    print(myState.isPacman) 
+    # print(myState.isPacman) 
     foodLeft = len(self.getFood(gameState).asList())
 
     #checks to see if a
@@ -213,7 +213,7 @@ class OffensiveAgent(DummyAgent):
     #       bestAction = action
     #       bestDist = dist
     #   return bestAction
-    print('---END---')
+    # print('---END---')
     return random.choice(bestActions)
 
   def evaluate(self, gameState, action):
@@ -224,7 +224,7 @@ class OffensiveAgent(DummyAgent):
     # print(features)
     weights = self.getWeights(gameState, action)
     # print(weights)
-    print('evalutate: %d'% (features * weights))
+    # print('evalutate: %d'% (features * weights))
     return features * weights
 
   def getFeatures(self, gameState, action):
@@ -261,7 +261,7 @@ class OffensiveAgent(DummyAgent):
     # Computes distance to ghosts we can see in order to avoid
     enemies = [successor.getAgentState(i) for i in self.getOpponents(successor)]
     ghosts = [a for a in enemies if not a.isPacman and a.getPosition() != None]
-    print('numGhosts: %s' % ghosts)
+    # print('numGhosts: %s' % ghosts)
     features['numGhosts'] = len(ghosts)
     if len(ghosts) > 0:
       dists = [self.getMazeDistance(myPos, a.getPosition()) for a in ghosts]
@@ -283,44 +283,44 @@ class MiniMaxAgent(OffensiveAgent):
 
   def chooseAction(self, gameState):
     action = self.minMax(gameState, self.index, self.myDepth)
-    print('action to proceed: %s'% action)
+    # print('action to proceed: %s'% action)
     return action
   
   def minMax(self,gameState, index, depth, maxi = True, action = Directions.STOP):
-    print('agent: %d'% index)
+    # print('agent: %d'% index)
 
     if gameState.isOver() or depth == 0:
-      print('depth reached')
+      # print('depth reached')
       return self.evaluate(gameState, action)
     
     if gameState.getAgentPosition(index) != None:
       actions = gameState.getLegalActions(index)
-      print('move to take: %s' %actions)
+      # print('move to take: %s' %actions)
     else:
       return
     
     if maxi:
-      print('values for pacman')
+      # print('values for pacman')
       values = [self.minMax(gameState.generateSuccessor(index, action), index, depth-1, False) for action in actions]
-      print('values: %s'%values)
+      # print('values: %s'%values)
       maxValue = max(values)
-      print('maxi value: %s' %maxValue)
+      # print('maxi value: %s' %maxValue)
       bestActions = [a for a, v in zip(actions,values) if v == maxValue]
-      print('maxi bestActions: %s '%bestActions)
+      # print('maxi bestActions: %s '%bestActions)
       # return (maxValue, actions[random.choice(bestActions)])
       # return random.choice(bestActions)
       return random.choice(bestActions)
     else:
       values = []
       if index in self.getOpponents(gameState):
-        print('values for opponent')
+        # print('values for opponent')
         values = [self.minMax(gameState.generateSuccessor(index, action), index+2, depth-1, False) for action in actions]
       else:
-        print('values for pacman')
+        # print('values for pacman')
         values = [self.minMax(gameState.generateSuccessor(index, action), self.index, depth-1, True) for action in actions]
-      print('printing mini values: %s'%values)
+      # # print('printing mini values: %s'%values)
       minValue = max(values)
-      print(minValue)
+      # print(minValue)
       # bestActions = [a for a, v in zip(actions,values) if v == minValue]
       # print(bestActions)
       return minValue
@@ -331,12 +331,12 @@ class MiniMaxAgent(OffensiveAgent):
 
 
   def miniMax(self, gameState, index, depth):
-    print('---miniMax---')
+    # print('---miniMax---')
     maxCost = float('-inf')
-    print(index)
+    # print(index)
     actions = gameState.getLegalActions(index)
-    print('index: %d'% index)
-    print(actions)
+    # print('index: %d'% index)
+    # print(actions)
     for move in actions:
       tempValue = maxCost
       successor = gameState.generateSuccessor(index, move)
@@ -346,17 +346,17 @@ class MiniMaxAgent(OffensiveAgent):
     return action
 
   def minValue(self, gameState, index, depth, action):
-    print('--minValue--')
+    # print('--minValue--')
     if gameState.isOver() or depth == 0:
       return self.evaluate(gameState, action)
     
     #very big value (inf)
     minCost = float('inf')
-    print('index: %d'% index)
+    # print('index: %d'% index)
     if gameState.getAgentPosition(index) != None:
       #if we can see opponent move then we calculate move
       actions = gameState.getLegalActions(index)
-      print(actions)
+      # print(actions)
       for move in actions:
         successor = gameState.generateSuccessor(index, move)
         minCost = min(minCost, self.minValue(successor, index+2, depth-1, move))
@@ -372,7 +372,7 @@ class MiniMaxAgent(OffensiveAgent):
       return self.evaluate(gameState, action)
   
   def maxValue(self, gameState, index, depth, action):
-    print('--maxValue--')
+    # print('--maxValue--')
     if gameState.isOver() or depth == depth:
       #need to create evaluate function
       return self.evaluate(gameState, action) 
