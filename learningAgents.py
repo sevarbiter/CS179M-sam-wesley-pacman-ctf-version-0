@@ -148,8 +148,8 @@ class ReinforcementAgent(CaptureAgent):
         if self.episodesSoFar >= self.numTraining:
             # Take off the training wheels
             print('----------------EXPLOIT MODE----------------')
-            self.epsilon = 0.0    # no exploration
-            self.alpha = 0.0      # no learning
+            self.epsilon = 0.0    #no exploration
+            self.alpha = 0.0      #no learning
 
     def isInTraining(self):
         return self.episodesSoFar < self.numTraining
@@ -213,18 +213,18 @@ class ReinforcementAgent(CaptureAgent):
             reward = 0
             #returned food
             if self.getScore(state) > self.lastState.getScore():
-                reward += self.getScore(state) - self.lastState.getScore() + 2
+                reward += self.getScore(state) - self.lastState.getScore() + 10
             foodList = self.getFood(state).asList()
             prevFood = self.getFood(self.lastState).asList()
             #ate food
             if len(foodList) > len(prevFood):
                 reward += len(foodList) - len(prevFood)
             #move towards food
-            if self.locationFinder.closestFood(state, self) < self.locationFinder.closestFood(self.lastState, self):
-                reward += 3
+            # if self.locationFinder.closestFood(state, self) < self.locationFinder.closestFood(self.lastState, self):
+            #     reward += 3
             #died
             if state.getAgentPosition(self.index) == state.getInitialAgentPosition(self.index):
-              reward += -5
+                reward += -5
             print('REWARD: %d' % reward)
             #ate pacman
             self.observeTransition(self.lastState, self.lastAction, state, reward)

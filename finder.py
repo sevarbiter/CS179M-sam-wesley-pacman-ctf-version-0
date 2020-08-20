@@ -181,7 +181,7 @@ class Finder:
     """
     Returns a counter of features for the state
     """
-    print('inside getFeatures ', gameState.getAgentPosition(agent.index))
+    # print('inside getFeatures ', gameState.getAgentPosition(agent.index))
     features = util.Counter()
     
     # features['ghostDistance'] = -(self.nearby(gameState, 3, agent))
@@ -192,13 +192,13 @@ class Finder:
 
     features['pacmanNear'] = -(self.nearby(gameState, 1, agent))
 
-    features['inTunnel'] = self.inTunnel(gameState, agent)
+    # # features['inTunnel'] = self.inTunnel(gameState, agent)
 
-    features['inDeadend'] = self.inDeadend(gameState, agent)
+    # features['inDeadend'] = self.inDeadend(gameState, agent)
 
-    features['scaredGhostNear'] = -(self.nearby(gameState, 2, agent))
+    # features['scaredGhostNear'] = -(self.nearby(gameState, 2, agent))
 
-    features['foodCarrying'] = self.foodCarrying(gameState, agent)
+    # features['foodCarrying'] = self.foodCarrying(gameState, agent)
 
     return features
 

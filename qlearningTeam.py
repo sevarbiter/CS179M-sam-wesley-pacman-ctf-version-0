@@ -75,7 +75,7 @@ class QLearningAgent(ReinforcementAgent):
     """
       Returns max_action Q(state,action)
       where the max is over legal actions.
-      If no legalActions available return 0.
+      If no legalActions returns 0.
     """
     #remove STOP as from possible actions to take
     # legalActions = state.getLegalActions(self.index)
@@ -120,6 +120,11 @@ class QLearningAgent(ReinforcementAgent):
       If no legal actions are availabe return NONE.
     """
     legalActions = state.getLegalActions(self.index)
+    
+    #remove STOP as from possible actions to take
+    if Directions.STOP in legalActions:
+      legalActions.remove(Directions.STOP)
+
     maxValue = 0
     maxAction = None
 
@@ -147,10 +152,10 @@ class QLearningAgent(ReinforcementAgent):
       legalActions.remove(Directions.STOP)
     #explore before exploit
     if util.flipCoin(self.epsilon):
-    #   print('exploring')
+      print('exploring')
       action = random.choice(legalActions)
     else:
-    #   print('exploiting')
+      print('exploiting')
       action = self.computeActionFromQValues(state)
     # print(action)
     self.locationFinder.getGrid(state)
@@ -198,11 +203,11 @@ class QLearningAgent(ReinforcementAgent):
 
 class Agent1(QLearningAgent):
 
-    def __init__(self, index, locationFinder, numTraining=15, epsilon=0.6, alpha=0.5, gamma=1, **args):
+    def __init__(self, index, locationFinder, numTraining=90, epsilon=0.5, alpha=0.8, gamma=1, **args):
         """
         index       - agent index
-        alpha       - learning rate
-        epsilon     - exploration rate
+        alpha       - learning rate 0.5
+        epsilon     - exploration rate 0.6
         gamma       - discount factor
         numTraining - number of training episodes, i.e. no learning after these many episodes
         """
@@ -246,8 +251,7 @@ class Agent1(QLearningAgent):
     
     def getQValue(self, state, action):
         """
-        Should return Q(state,action) = w * featureVector
-        where * is the dotProduct operator
+        Returns the qValue of state and action. By adding all features * weights.
         """
         qValue = 0
         features = self.locationFinder.getFeatures(state.generateSuccessor(self.index, action), self)
@@ -285,18 +289,35 @@ class Agent1(QLearningAgent):
         #     print(self.getWeights())
         #     counter += 1
         # print(self.getWeights())
+        legalActions = state.getLegalActions(self.index)
+    
+        #remove STOP as from possible actions to take
+        if Directions.STOP in legalActions:
+          legalActions.remove(Directions.STOP)
 
+        '''
+        getValue computes all possible actions from the given state and returns the
+        the highest value
+        '''
+        maxQValue = self.getValue(nextState)
 
-        getValue = self.getValue(nextState)
         print('Best Action :', action, 'Position :', state.getAgentPosition(self.index))
-        getQValue = self.getQValue(state, action)
-        print('Discount: %d' % self.discount)
-        print('GetValue: %d' % getValue)
-        print('GetQValue: %d' % getQValue)
-        difference = reward + (self.discount * getValue - getQValue)
+        currQValue = self.getQValue(state, action)
+        # print('Discount: %d' % self.discount)
+        print('maxQValue: %d' % maxQValue)
+        print('currQValue: %d' % currQValue)
+
+        if self.alpha == 0 and self.epsilon == 0:
+          return
+
+        if len(legalActions) == 0:
+          difference = reward - currQValue
+        else:
+          difference = (reward + self.discount * maxQValue) - currQValue
 
         for feature in features:
-          self.weights[feature] += (self.alpha * features[feature] * difference)
+          
+          self.weights[feature] += self.alpha + self.weights[feature] * features[feature] * difference
           self.weights[feature] = self.weights[feature] % 10
           # self.weights.normalize()
         # print(self.getWeights())
