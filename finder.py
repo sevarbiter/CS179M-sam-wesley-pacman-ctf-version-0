@@ -219,7 +219,14 @@ class Finder:
       return len(invaders)
     if option == 0:
       ghosts = [a for a in enemies if (not a.isPacman) and a.getPosition() != None]
-      return len(ghosts)
+      if len(ghosts) > 0:
+        minDist = 100
+        for a in ghosts:
+          dist = agent.getMazeDistance(gameState.getAgentState(agent.index).getPosition(), a.getPosition())
+          if dist < 6 and dist < minDist:
+            minDist = dist
+        return minDist
+      return 0
     if option == 2:
       scaredy_cats = [a for a in enemies if a.scaredTimer > 0 and a.getPosition() != None]
       return len(scaredy_cats)
