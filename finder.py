@@ -279,7 +279,7 @@ class Finder:
     dist = abs(x-middle)
     if dist == 0:
       dist = 1
-    weight = 5/dist
+    weight = 20/dist
     return carryWeight*weight
 
   
