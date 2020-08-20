@@ -227,6 +227,21 @@ class ReinforcementAgent(CaptureAgent):
                 reward += -200
             # print('REWARD: %d' % reward)
             #ate pacman
+            oldEnemies = [self.lastState.getAgentState(i) for i in self.getOpponents(self.lastState)]
+            newEnemies = [state.getAgentState(i) for i in self.getOpponents(state)]
+            oldPacmen = [a for a in oldEnemies if a.isPacman and a.getPosition() != None]
+            newPacmen = [a for a in newEnemies if a.isPacman and a.getPosition() != None]
+            if len(oldPacmen) > 0:
+              dists=[self.getMazeDistance(self.lastState.getAgentState(self.index).getPosition(), a.getPosition()) for a in oldPacmen]
+              if min(dists) == 1:
+                if len(newPacmen) == 0:
+                  reward+=100
+                else:
+                  if len(newPacmen) > 0:
+                    dists=[self.getMazeDistance(state.getAgentState(self.index).getPosition(), a.getPosition()) for a in oldPacmen]
+                    if min(dists) > 1:
+                      reward+=100
+            print('Reward: %d' % reward)
             self.observeTransition(self.lastState, self.lastAction, state, reward)
         return state.makeObservation(self.index)
 
