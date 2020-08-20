@@ -271,5 +271,12 @@ class Finder:
     return 0
 
   def foodCarrying(self, gameState, agent):
-    return gameState.getAgentState(agent.index).numCarrying
+    carrying = gameState.getAgentState(agent.index).numCarrying
+    carryWeight = carrying*.25
+    middle = self.x/2
+    x = int(gameState.getAgentState(agent.index).getPosition()[0])
+    dist = abs(x-middle)
+    weight = 5/dist
+    return carryWeight*weight
 
+  
