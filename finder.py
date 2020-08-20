@@ -184,7 +184,7 @@ class Finder:
     print('inside getFeatures ', gameState.getAgentPosition(agent.index))
     features = util.Counter()
     
-    features['ghostDistance'] = -(self.nearby(gameState, 3, agent))
+    # features['ghostDistance'] = -(self.nearby(gameState, 3, agent))
 
     features['closestFood'] = -(self.closestFood(gameState, agent))
 

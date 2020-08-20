@@ -198,7 +198,7 @@ class QLearningAgent(ReinforcementAgent):
 
 class Agent1(QLearningAgent):
 
-    def __init__(self, index, locationFinder, numTraining=95, epsilon=0.8, alpha=0.5, gamma=1, **args):
+    def __init__(self, index, locationFinder, numTraining=15, epsilon=0.6, alpha=0.5, gamma=1, **args):
         """
         index       - agent index
         alpha       - learning rate

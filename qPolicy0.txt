@@ -1,1 +1,1 @@
-{"ghostDistance": 3.932368850490416, "closestFood": 2.991982101205565, "ghostsNear": 8.106320480265637, "pacmanNear": 1.6466975410699227, "inTunnel": 7.111449116514713, "inDeadend": 0.7565074090671047, "scaredGhostNear": 0.0, "foodCarrying": 4.7619670873703654}
+{"closestFood": 4.04604679099802, "ghostsNear": 3.674751565588462, "pacmanNear": 4.760374157243415, "inDeadend": 8.264104154973822, "scaredGhostNear": 0.0, "foodCarrying": 3.0201948380020873, "inTunnel": 7.293813948976869}

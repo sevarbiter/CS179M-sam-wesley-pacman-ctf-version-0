@@ -147,6 +147,7 @@ class ReinforcementAgent(CaptureAgent):
         self.episodesSoFar += 1
         if self.episodesSoFar >= self.numTraining:
             # Take off the training wheels
+            print('----------------EXPLOIT MODE----------------')
             self.epsilon = 0.0    # no exploration
             self.alpha = 0.0      # no learning
 
@@ -220,10 +221,10 @@ class ReinforcementAgent(CaptureAgent):
                 reward += len(foodList) - len(prevFood)
             #move towards food
             if self.locationFinder.closestFood(state, self) < self.locationFinder.closestFood(self.lastState, self):
-                reward += 1
+                reward += 3
             #died
             if state.getAgentPosition(self.index) == state.getInitialAgentPosition(self.index):
-              reward += -2
+              reward += -5
             print('REWARD: %d' % reward)
             #ate pacman
             self.observeTransition(self.lastState, self.lastAction, state, reward)
@@ -251,7 +252,7 @@ class ReinforcementAgent(CaptureAgent):
             self.lastWindowAccumRewards = 0.0
         self.lastWindowAccumRewards += self.getScore(state)
 
-        NUM_EPS_UPDATE = 20
+        NUM_EPS_UPDATE = 5
         if self.episodesSoFar % NUM_EPS_UPDATE == 0:
             print('Reinforcement Learning Status:')
             windowAvg = self.lastWindowAccumRewards / float(NUM_EPS_UPDATE)
