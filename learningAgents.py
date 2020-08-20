@@ -239,9 +239,9 @@ class ReinforcementAgent(CaptureAgent):
                 else:
                   if len(newPacmen) > 0:
                     dists=[self.getMazeDistance(state.getAgentState(self.index).getPosition(), a.getPosition()) for a in oldPacmen]
-                    if min(dists) > 1:
+                    if min(dists) > 2:
                       reward+=100
-            print('Reward: %d' % reward)
+            # print('Reward: %d' % reward)
             self.observeTransition(self.lastState, self.lastAction, state, reward)
         return state.makeObservation(self.index)
 

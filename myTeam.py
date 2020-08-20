@@ -202,7 +202,7 @@ class OffensiveAgent(DummyAgent):
       if myState.isPacman == False:
         self.localCarry = 0
  
-    self.location_finder.addDistance(self.index, gameState.getAgentDistances(), gameState.getAgentState(self.index).getPosition(), gameState)
+    # self.location_finder.addDistance(self.index, gameState.getAgentDistances(), gameState.getAgentState(self.index).getPosition(), gameState)
     # if foodLeft <= 2:
     #   bestDist = 9999
     #   for action in actions:
@@ -407,8 +407,8 @@ class DefensiveDummyAgent(DummyAgent):
     bestActions = [a for a, v in zip(actions, values) if v == maxValue]
     #print("best actions")
     #print(bestActions)
-    self.locationFinder.getGrid(gameState)
-    self.locationFinder.addDistance(self.index, gameState.getAgentDistances(), gameState.getAgentState(self.index).getPosition(), gameState) 
+    # self.locationFinder.getGrid(gameState)
+    # self.locationFinder.addDistance(self.index, gameState.getAgentDistances(), gameState.getAgentState(self.index).getPosition(), gameState) 
     #self.locationFinder.getFeatures(gameState, self)
     return random.choice(bestActions)
 
