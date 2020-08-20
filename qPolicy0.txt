@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 {"closestFood": 1.6514646907235147, "ghostsNear": 3.757120738788217, "pacmanNear": 1.1740321910110652, "foodCarrying": 0.0}
+=======
+{"closestFood": 8.36744383929431, "ghostsNear": 0.42789174263816676, "pacmanNear": 2.453879029575546, "foodCarrying": 0.0}
+>>>>>>> 2ebe92e6c1a9b4ba28a076dbc1ce3e92b9011f9d

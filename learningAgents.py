@@ -226,8 +226,27 @@ class ReinforcementAgent(CaptureAgent):
             #     reward += 3
             #died
             if state.getAgentPosition(self.index) == state.getInitialAgentPosition(self.index):
+              lastX=self.lastState.getAgentPosition(self.index)[0]
+              lastY=self.lastState.getAgentPosition(self.index)[1]
+              currentX=state.getAgentPosition(self.index)[0]
+              currentY=state.getAgentPosition(self.index)[1]
+              if(not(lastX == currentX+1 or lastX == currentX-1)):
+                print('current x: %d' % currentX)
+                print('last x: %d' % lastX)
+                #reward += -1000
+                #print('Reward Eaten: %d' % reward)
+              elif(not(lastY == currentY+1 or lastY == currentY-1)):
+                print('current x: %d' % currentX)
+                print('last x: %d' % lastX)
+                #reward += -1000
+                #print('Reward Eaten: %d' % reward)
+              else:
+                print('Reward Eaten: %d' & 1000)
                 reward += -1000
+<<<<<<< HEAD
                 # print('Reward Eaten: %d' % reward)
+=======
+>>>>>>> 2ebe92e6c1a9b4ba28a076dbc1ce3e92b9011f9d
             # print('REWARD: %d' % reward)
             #ate pacman
             oldEnemies = [self.lastState.getAgentState(i) for i in self.getOpponents(self.lastState)]
