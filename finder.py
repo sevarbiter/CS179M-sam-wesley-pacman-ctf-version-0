@@ -278,6 +278,8 @@ class Finder:
     myPos = gameState.getAgentState(agent.index).getPosition()
 
     dist = agent.getMazeDistance(myPos, gameState.getInitialAgentPosition(agent.index))
+    if dist>20:
+      dist=20
     if dist == 0:
       dist = 1
     weight = 20/dist
