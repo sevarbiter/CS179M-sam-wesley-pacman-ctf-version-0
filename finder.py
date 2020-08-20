@@ -275,11 +275,12 @@ class Finder:
     carrying = gameState.getAgentState(agent.index).numCarrying
     carryWeight = carrying*.25
     middle = self.x/2
-    x = int(gameState.getAgentState(agent.index).getPosition()[0])
-    dist = abs(x-middle)
+    myPos = gameState.getAgentState(agent.index).getPosition()
+
+    dist = agent.getMazeDistance(myPos, gameState.getInitialAgentPosition(agent.index))
     if dist == 0:
       dist = 1
-    weight = 5/dist
+    weight = 20/dist
     return carryWeight*weight
 
   
