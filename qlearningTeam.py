@@ -15,7 +15,7 @@ import json
 # Team creation #
 #################
 
-def createTeam(firstIndex, secondIndex, isRed, first = 'DefensiveDummyAgent', second = 'Agent1'):
+def createTeam(firstIndex, secondIndex, isRed, first = 'Agent1', second = 'Agent1'):
   """
   This function should return a list of two agents that will form the
   team, initialized using firstIndex and secondIndex as their agent
@@ -203,7 +203,7 @@ class QLearningAgent(ReinforcementAgent):
 
 class Agent1(QLearningAgent):
 
-    def __init__(self, index, locationFinder, numTraining=15, epsilon=0.5, alpha=0.8, gamma=1, **args):
+    def __init__(self, index, locationFinder, numTraining=40, epsilon=0.5, alpha=0.8, gamma=1, **args):
         """
         index       - agent index
         alpha       - learning rate 0.5
@@ -307,8 +307,8 @@ class Agent1(QLearningAgent):
         # print('maxQValue: %d' % maxQValue)
         # print('currQValue: %d' % currQValue)
 
-        if self.alpha == 0 and self.epsilon == 0:
-          return
+        # if self.alpha == 0 and self.epsilon == 0:
+        #   return
 
         if len(legalActions) == 0:
           difference = reward - currQValue

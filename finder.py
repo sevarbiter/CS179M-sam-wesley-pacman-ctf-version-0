@@ -198,7 +198,7 @@ class Finder:
 
     # features['scaredGhostNear'] = -(self.nearby(gameState, 2, agent))
 
-    # features['foodCarrying'] = self.foodCarrying(gameState, agent)
+    features['foodCarrying'] = self.foodCarrying(gameState, agent)
 
     return features
 
@@ -277,6 +277,8 @@ class Finder:
     middle = self.x/2
     x = int(gameState.getAgentState(agent.index).getPosition()[0])
     dist = abs(x-middle)
+    if dist == 0:
+      dist = 1
     weight = 5/dist
     return carryWeight*weight
 
