@@ -210,63 +210,7 @@ class ReinforcementAgent(CaptureAgent):
         gameState = state.makeObservation(self.index)
 
         if not self.lastState is None:
-            #print('UPDATING REWARD')
-            #reward = state.getScore() - self.lastState.getScore()
-            reward = 0
-            #returned food
-            if self.getScore(gameState) > self.lastState.getScore():
-                reward += self.getScore(gameState) - self.lastState.getScore() + 15
-                print('Reward Scored: %d' % reward)
-            foodList = self.getFood(gameState).asList()
-            prevFood = self.getFood(self.lastState).asList()
-            #ate food
-            if len(foodList) > len(prevFood):
-                reward += len(foodList) - len(prevFood)
-                print('Reward Ate Food: %d' % reward)
-            #move towards food
-            # if self.locationFinder.closestFood(state, self) < self.locationFinder.closestFood(self.lastState, self):
-            #     reward += 3
-            #died
-            if gameState.getAgentPosition(self.index) == gameState.getInitialAgentPosition(self.index):
-              lastX=self.lastState.getAgentPosition(self.index)[0]
-              lastY=self.lastState.getAgentPosition(self.index)[1]
-              currentX=gameState.getAgentPosition(self.index)[0]
-              currentY=gameState.getAgentPosition(self.index)[1]
-              if(not(lastX == currentX+1 or lastX == currentX-1)):
-                # print('current x: %d' % currentX)
-                # print('last x: %d' % lastX)
-                #reward += -1000
-                # print('Reward Eaten: %d' % reward)
-                j=1
-              elif(not(lastY == currentY+1 or lastY == currentY-1)):
-                # print('current x: %d' % currentX)
-                # print('last x: %d' % lastX)
-                #reward += -1000
-                # print('Reward Eaten: %d' % reward)
-                j=1 
-              else:
-                reward += -10
-                print('REWARD: %d' % reward)
-            # print('REWARD: %d' % reward)
-            #ate pacman
-            oldEnemies = [self.lastState.getAgentState(i) for i in self.getOpponents(self.lastState)]
-            newEnemies = [gameState.getAgentState(i) for i in self.getOpponents(gameState)]
-            oldPacmen = [a for a in oldEnemies if a.isPacman and a.getPosition() != None]
-            newPacmen = [a for a in newEnemies if a.isPacman and a.getPosition() != None]
-            if len(oldPacmen) > 0:
-              dists=[self.getMazeDistance(self.lastState.getAgentState(self.index).getPosition(), a.getPosition()) for a in oldPacmen]
-              if min(dists) == 1:
-                if len(newPacmen) == 0:
-                  reward+=5
-                  print('Reward Ate Pacman: %d' % reward)
-                else:
-                  if len(newPacmen) > 0:
-                    dists=[self.getMazeDistance(gameState.getAgentState(self.index).getPosition(), a.getPosition()) for a in oldPacmen]
-                    if min(dists) > 2:
-                      reward+=5
-                      print('Reward Ate Pacman: %d' % reward)
-
-            # print('Reward: %d' % reward)
+            reward = self.getReward(gameState)    
             self.observeTransition(self.lastState, self.lastAction, gameState, reward)
         return gameState
 
@@ -316,4 +260,70 @@ class ReinforcementAgent(CaptureAgent):
             msg = 'Training Done (turning off epsilon and alpha)'
             print('%s\n%s' % (msg,'-' * len(msg)))
 
+    def getReward(self, gameState):
+
+        '''
+        Modifiers
+        '''
+        SCORES = 15
+        DIED = -10
+        ATE_FOOD = 7
+        ATE_PACMAN = 5
+        reward = 0
+
+        #SCORES
+        if self.getScore(gameState) > self.lastState.getScore():
+            reward += self.getScore(gameState) - self.lastState.getScore() + SCORES
+            print('Reward Scored: %d' % reward)
+        
+        #ATE_FOOD
+        foodList = self.getFood(gameState).asList()
+        prevFood = self.getFood(self.lastState).asList()
+        if len(foodList) > len(prevFood):
+            reward += len(foodList) - len(prevFood) + ATE_FOOD
+            print('Reward Ate Food: %d' % reward)
+        
+        #DIED
+        if gameState.getAgentPosition(self.index) == gameState.getInitialAgentPosition(self.index):
+            lastX=self.lastState.getAgentPosition(self.index)[0]
+            lastY=self.lastState.getAgentPosition(self.index)[1]
+            currentX=gameState.getAgentPosition(self.index)[0]
+            currentY=gameState.getAgentPosition(self.index)[1]
+            if (lastX == currentX+1 or lastX == currentX-1) and (lastY == currentY+1 or lastY == currentY-1):
+                reward += DIED
+            # if(not(lastX == currentX+1 or lastX == currentX-1)):
+            # # print('current x: %d' % currentX)
+            # # print('last x: %d' % lastX)
+            # #reward += -1000
+            # # print('Reward Eaten: %d' % reward)
+            # j=1
+            # elif(not(lastY == currentY+1 or lastY == currentY-1)):
+            # # print('current x: %d' % currentX)
+            # # print('last x: %d' % lastX)
+            # #reward += -1000
+            # # print('Reward Eaten: %d' % reward)
+            # j=1 
+            # else:
+            # reward += DIED
+                print('REWARD DIED: %d' % reward)
+        # print('REWARD: %d' % reward)
+
+        #ATE_PACMAN
+        oldEnemies = [self.lastState.getAgentState(i) for i in self.getOpponents(self.lastState)]
+        newEnemies = [gameState.getAgentState(i) for i in self.getOpponents(gameState)]
+        oldPacmen = [a for a in oldEnemies if a.isPacman and a.getPosition() != None]
+        newPacmen = [a for a in newEnemies if a.isPacman and a.getPosition() != None]
+        if len(oldPacmen) > 0:
+            dists=[self.getMazeDistance(self.lastState.getAgentState(self.index).getPosition(), a.getPosition()) for a in oldPacmen]
+            if min(dists) == 1:
+                if len(newPacmen) == 0:
+                    reward += ATE_PACMAN
+                    print('Reward Ate Pacman: %d' % reward)
+            else:
+                if len(newPacmen) > 0:
+                    dists=[self.getMazeDistance(gameState.getAgentState(self.index).getPosition(), a.getPosition()) for a in oldPacmen]
+                if min(dists) > 2:
+                    reward += ATE_PACMAN
+                    print('Reward Ate Pacman: %d' % reward)
+        return reward
   

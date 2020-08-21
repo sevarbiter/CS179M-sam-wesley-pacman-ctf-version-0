@@ -302,7 +302,7 @@ class Agent1(QLearningAgent):
         maxQValue = self.getValue(nextState)
 
         # print('Best Action :', action, 'Position :', state.getAgentPosition(self.index))
-        currQValue = self.getQValue(state, action)
+        prevQValue = self.getQValue(state, action)
         # print('Discount: %d' % self.discount)
         # print('maxQValue: %d' % maxQValue)
         # print('currQValue: %d' % currQValue)
@@ -310,10 +310,8 @@ class Agent1(QLearningAgent):
         # if self.alpha == 0 and self.epsilon == 0:
         #   return
 
-        if len(legalActions) == 0:
-          difference = reward - currQValue
-        else:
-          difference = (reward + self.discount * maxQValue) - currQValue
+        
+        difference = (reward + self.discount * maxQValue) - prevQValue
 
         for feature in features:
           self.weights[feature] = self.weights[feature] + self.alpha * features[feature] * difference

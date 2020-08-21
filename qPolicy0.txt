@@ -1,1 +1,0 @@
-{"closestFood": -1.6562017400375106, "ghostsNear": 0.0, "pacmanNear": -2.176072843307262, "foodCarrying": 0.0}
