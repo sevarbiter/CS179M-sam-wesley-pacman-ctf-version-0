@@ -203,7 +203,7 @@ class QLearningAgent(ReinforcementAgent):
 
 class Agent1(QLearningAgent):
 
-    def __init__(self, index, locationFinder, numTraining=20, epsilon=0.8, alpha=0.6, gamma=1, **args):
+    def __init__(self, index, locationFinder, numTraining=20, epsilon=0.8, alpha=0.5, gamma=1, **args):
         """
         index       - agent index
         alpha       - learning rate 0.5
@@ -317,7 +317,7 @@ class Agent1(QLearningAgent):
 
         for feature in features:
           self.weights[feature] = self.weights[feature] + self.alpha * features[feature] * difference
-          self.weights[feature] = self.weights[feature] % 10
+          # self.weights[feature] = self.weights[feature] % 10
           # self.weights.normalize()
         print(features)
         print(self.getWeights())

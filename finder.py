@@ -210,7 +210,7 @@ class Finder:
       myPos = gameState.getAgentState(agent.index).getPosition()
       #finds all food positions and returns the closest one to the agent
       minDistance = min([agent.getMazeDistance(myPos, food) for food in foodList])
-    return minDistance
+    return minDistance/100
     
   def nearby(self, gameState, option, agent):
     enemies = [i for i in agent.getOpponents(gameState)]
@@ -224,7 +224,7 @@ class Finder:
     if option == 0:
       ghosts = [a for a in enemies if not gameState.getAgentState(a).isPacman and gameState.getAgentPosition(a) != None]
       if len(ghosts) > 0:
-        minDist = 100
+        minDist = 0
         for a in ghosts:
           dist = agent.getMazeDistance(gameState.getAgentState(agent.index).getPosition(), gameState.getAgentPosition(a))
           if dist < 6 and dist < minDist:
