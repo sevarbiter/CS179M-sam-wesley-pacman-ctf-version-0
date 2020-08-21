@@ -215,13 +215,12 @@ class Finder:
     return 1/minDistance
     
   def nearby(self, gameState, option, agent):
-    
 
-    # enemies = [i for i in agent.getOpponents(gameState)]
+    enemies = [i for i in agent.getOpponents(gameState)]
     # print(enemies)   
     if option == 1: #pacman near
       myPos = gameState.getAgentState(agent.index).getPosition()
-      enemies = [gameState.getAgentState(i) for i in agent.index.getOpponents(gameState)]
+      '''working distance code below'''
       # invaders = [a for a in enemies if gameState.getAgentState(a).isPacman and gameState.getAgentPosition(a) != None]
       # if len(invaders) > 0:
       #   # print(gameState.getAgentState(agent.index).getPosition())
@@ -233,11 +232,15 @@ class Finder:
       #   return 1/minDist
       # else:
       #   return 0
-      pacmen = [a for a in enemies if a.isPacman and a.getPosition() != None]
+      enemies1 = [gameState.getAgentState(i) for i in agent.getOpponents(gameState)]
+      pacmen = [a for a in enemies1 if a.isPacman and a.getPosition() != None]
       if len(pacmen) > 0:
-        dists = [agent.index.getMazeDistance(myPos, a.getPosition()) for a in pacmen]
-        print('Pacman Dist: %d' % dists)
-        return 1/dists
+        dists = [agent.getMazeDistance(myPos, a.getPosition()) for a in pacmen]
+        minDist = min(dists)
+        if minDist < 1:
+          minDist = .5
+        # print('Pacman Dist: %d'% minDist)
+        return 1/minDist
       else:
         return 0
 
@@ -247,6 +250,7 @@ class Finder:
       if len(ghosts) > 0:
         dists = [agent.getMazeDistance(gameState.getAgentState(agent.index).getPosition(), gameState.getAgentPosition(a)) for a in ghosts]
         minDist = min(dists)
+        # print('Ghost Dist: %d'% minDist)
         return 1/minDist
       else:
         return 0

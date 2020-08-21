@@ -266,6 +266,7 @@ class OffensiveAgent(DummyAgent):
     if len(ghosts) > 0:
       dists = [self.getMazeDistance(myPos, a.getPosition()) for a in ghosts]
       features['ghostDistance'] = min(dists)
+      print('Ghost Near: %d' % min(dists))
 
     if action == Directions.STOP: features['stop'] = 1
     return features
@@ -467,6 +468,7 @@ class DefensiveDummyAgent(DummyAgent):
     if len(invaders) > 0:
       dists = [self.getMazeDistance(myPos, a.getPosition()) for a in invaders]
       features['invaderDistance'] = min(dists)
+      print('Pacman Near: %d' % min(dists))
 
     if action == Directions.STOP: 
       features['stop'] = 1

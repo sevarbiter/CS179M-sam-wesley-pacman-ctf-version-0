@@ -130,6 +130,8 @@ class QLearningAgent(ReinforcementAgent):
 
     for action in legalActions:
       value = self.getQValue(state, action)
+      print('Value: %d' % value)
+      print('Action:', action)
       if value > maxValue or maxAction is None:
         maxValue = value
         maxAction = action
@@ -158,6 +160,8 @@ class QLearningAgent(ReinforcementAgent):
       # print('exploiting')
       action = self.computeActionFromQValues(state)
     # print(action)
+    print(self.locationFinder.getFeatures(state, self))
+    # print(Agent1.getWeights())
     self.locationFinder.getGrid(state)
     self.locationFinder.addDistance(self.index, state.getAgentDistances(), state.getAgentState(self.index).getPosition(), state)
     return action
@@ -203,7 +207,7 @@ class QLearningAgent(ReinforcementAgent):
 
 class Agent1(QLearningAgent):
 
-    def __init__(self, index, locationFinder, numTraining=0, epsilon=0, alpha=0, gamma=1, **args):
+    def __init__(self, index, locationFinder, numTraining=100, epsilon=0, alpha=0, gamma=1, **args):
         """
         index       - agent index
         alpha       - learning rate 0.5
@@ -237,15 +241,16 @@ class Agent1(QLearningAgent):
         # self.weights = util.Counter()
 
     
-    def getAction(self, state):
-        """
-        Simply calls the getAction method of QLearningAgent and then
-        informs parent of action for Pacman.  Do not change or remove this
-        method.
-        """ 
-        action = QLearningAgent.getAction(self,state)
-        self.doAction(state,action)
-        return action
+    # def getAction(self, state):
+    #     """
+    #     Simply calls the getAction method of QLearningAgent and then
+    #     informs parent of action for Pacman.  Do not change or remove this
+    #     method.
+    #     """
+    #     print('GETACTION')
+    #     action = QLearningAgent.getAction(self,state)
+    #     self.doAction(state,action)
+    #     return action
     
     def getWeights(self):
         return self.weights
@@ -320,8 +325,8 @@ class Agent1(QLearningAgent):
           self.weights[feature] = self.weights[feature] + self.alpha * features[feature] * difference
           # self.weights[feature] = self.weights[feature] % 10
           self.weights.normalize()
-        print(features)
-        print(self.getWeights())
+        # print(features)
+        # print(self.getWeights())
 
     def final(self, state):
         "Called at the end of each game."
@@ -336,8 +341,8 @@ class Agent1(QLearningAgent):
             # print(self.getWeights())
             self.printToFile()
             pass
-        print(self.getWeights())
-        self.printToFile()
+        # print(self.getWeights())
+        # self.printToFile()
 
     def printToFile(self):
       f = open("qPolicy0.txt","w+")
@@ -347,7 +352,7 @@ class Agent1(QLearningAgent):
 
 class Agent2(Agent1):
 
-  def __init__(self, index, locationFinder, numTraining=0, epsilon=0, alpha=0, gamma=1, **args):
+  def __init__(self, index, locationFinder, numTraining=100, epsilon=0, alpha=0, gamma=1, **args):
         """
         index       - agent index
         alpha       - learning rate 0.5
