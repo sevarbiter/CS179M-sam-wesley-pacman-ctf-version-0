@@ -210,31 +210,35 @@ class Finder:
       myPos = gameState.getAgentState(agent.index).getPosition()
       #finds all food positions and returns the closest one to the agent
       minDistance = min([agent.getMazeDistance(myPos, food) for food in foodList])
-    return minDistance/100
+    return 1/minDistance
     
   def nearby(self, gameState, option, agent):
     enemies = [i for i in agent.getOpponents(gameState)]
     # print(enemies)   
-    if option == 1:
-      print(gameState.getAgentPosition(1))
-      print(gameState.getAgentPosition(3))
+    if option == 1: #pacman near
       invaders = [a for a in enemies if gameState.getAgentState(a).isPacman and gameState.getAgentPosition(a) != None]
-      print(invaders)
-      return len(invaders)
-    if option == 0:
+      if len(invaders) > 0:
+        print(gameState.getAgentState(agent.index).getPosition())
+        print(gameState.getAgentPosition(1))
+        print(gameState.getAgentPosition(3))
+        dists = [agent.getMazeDistance(gameState.getAgentState(agent.index).getPosition(), gameState.getAgentPosition(a)) for a in invaders]
+        minDist = min(dists)
+        print(minDist)
+        return 1/minDist
+      else:
+        return 0
+    if option == 0: #ghost near
       ghosts = [a for a in enemies if not gameState.getAgentState(a).isPacman and gameState.getAgentPosition(a) != None]
       if len(ghosts) > 0:
-        minDist = 0
-        for a in ghosts:
-          dist = agent.getMazeDistance(gameState.getAgentState(agent.index).getPosition(), gameState.getAgentPosition(a))
-          if dist < 6 and dist < minDist:
-            minDist = dist
-        return minDist
-      return 0
-    # if option == 2:
-    #   scaredy_cats = [a for a in enemies if a.scaredTimer > 0 and a.getPosition() != None]
-    #   return len(scaredy_cats)
-    if option == 3:
+        dists = [agent.getMazeDistance(gameState.getAgentState(agent.index).getPosition(), gameState.getAgentPosition(a)) for a in ghosts]
+        minDist = min(dists)
+        return 1/minDist
+      else:
+        return 0
+    if option == 2: #scared ghost near
+      scaredy_cats = [a for a in enemies if gameState.getAgentState(a).scaredTimer > 0 and gameState.getAgentPosition(a) != None]
+      return len(scaredy_cats)
+    if option == 3: #estimated position
       myPos = gameState.getAgentPosition(agent.index)
       print('index: %d' % agent.index)
       print('inside nearby ',myPos)
