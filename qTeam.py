@@ -5,7 +5,6 @@ from game import Directions
 import game
 from util import nearestPoint
 from util import raiseNotDefined
-from learningAgents import ReinforcementAgent
 from myTeam import DefensiveDummyAgent
 from finder import Finder
 import os
@@ -214,8 +213,8 @@ class ApproximateQLearning(CaptureAgent):
         self.locationFinder.getGrid(gameState)
         self.locationFinder.addDistance(self.index, gameState.getAgentDistances(), \
             gameState.getAgentState(self.index).getPosition(), gameState)
-        # print()
-        # print(self.getWeights())
+
+        #update lastState and lastAction
         self.lastState = gameState
         self.lastAction = action
 
@@ -293,22 +292,7 @@ class Agent1(ApproximateQLearning):
             currentY=gameState.getAgentPosition(self.index)[1]
             if (lastX == currentX+1 or lastX == currentX-1) and (lastY == currentY+1 or lastY == currentY-1):
                 reward += self.DIED
-            # if(not(lastX == currentX+1 or lastX == currentX-1)):
-            # # print('current x: %d' % currentX)
-            # # print('last x: %d' % lastX)
-            # #reward += -1000
-            # # print('Reward Eaten: %d' % reward)
-            # j=1
-            # elif(not(lastY == currentY+1 or lastY == currentY-1)):
-            # # print('current x: %d' % currentX)
-            # # print('last x: %d' % lastX)
-            # #reward += -1000
-            # # print('Reward Eaten: %d' % reward)
-            # j=1 
-            # else:
-            # reward += DIED
                 print('REWARD DIED: %d' % reward)
-        # print('REWARD: %d' % reward)
 
         #ATE_PACMAN
         oldEnemies = [self.lastState.getAgentState(i) for i in self.getOpponents(self.lastState)]
@@ -362,22 +346,7 @@ class Agent2(ApproximateQLearning):
             currentY=gameState.getAgentPosition(self.index)[1]
             if (lastX == currentX+1 or lastX == currentX-1) and (lastY == currentY+1 or lastY == currentY-1):
                 reward += self.DIED
-            # if(not(lastX == currentX+1 or lastX == currentX-1)):
-            # # print('current x: %d' % currentX)
-            # # print('last x: %d' % lastX)
-            # #reward += -1000
-            # # print('Reward Eaten: %d' % reward)
-            # j=1
-            # elif(not(lastY == currentY+1 or lastY == currentY-1)):
-            # # print('current x: %d' % currentX)
-            # # print('last x: %d' % lastX)
-            # #reward += -1000
-            # # print('Reward Eaten: %d' % reward)
-            # j=1 
-            # else:
-            # reward += DIED
                 print('REWARD DIED: %d' % reward)
-        # print('REWARD: %d' % reward)
 
         #ATE_PACMAN
         oldEnemies = [self.lastState.getAgentState(i) for i in self.getOpponents(self.lastState)]
