@@ -59,7 +59,6 @@ class ApproximateQLearning(CaptureAgent):
         self.LEARNING = float(alpha)
         self.DISCOUNT = float(gamma)
         
-        self.getPolicy()
         self.weights = util.Counter()
 
         """
@@ -70,16 +69,16 @@ class ApproximateQLearning(CaptureAgent):
         self.ATE_FOOD = 7
         self.ATE_PACMAN = 5
 
-    def getPolicy(self):
+    def getPolicy(self, policyName):
         """
         Checks to see if there is a policy already written
         if there is then load policy else create new policy
         """
-        if os.stat("qPolicy0.txt").st_size == 0:
+        if os.stat(policyName).st_size == 0:
           self.weights = util.Counter()
         else:
           self.weights = util.Counter()
-          test = open("qPolicy0.txt", 'r').read()
+          test = open(policyName, 'r').read()
           print("FILE READ: ",test)
           parsedDict = json.loads(test)
           for features in parsedDict:
@@ -269,6 +268,11 @@ class ApproximateQLearning(CaptureAgent):
         print(self.getWeights())
 
 class Agent1(ApproximateQLearning):
+    def __init__(self, index, locationFinder):
+        ApproximateQLearning.__init__(self, index, locationFinder)
+        self.ATE_PACMAN = 20
+        self.ATE_FOOD =  4
+        self.getPolicy("qPolicy0.txt")
     
     def getRewards(self, gameState):
         reward = 0
@@ -323,6 +327,7 @@ class Agent2(ApproximateQLearning):
         ApproximateQLearning.__init__(self, index, locationFinder)
         self.ATE_PACMAN = 20
         self.ATE_FOOD =  4
+        self.getPolicy("qPolicy1.txt")
     
     def getRewards(self, gameState):
         reward = 0
