@@ -15,7 +15,7 @@ import json
 # Team creation #
 #################
 
-def createTeam(firstIndex, secondIndex, isRed, first = 'Agent1', second = 'Agent1'):
+def createTeam(firstIndex, secondIndex, isRed, first = 'Agent1', second = 'DefensiveDummyAgent'):
   """
   This function should return a list of two agents that will form the
   team, initialized using firstIndex and secondIndex as their agent
@@ -157,9 +157,9 @@ class QLearningAgent(ReinforcementAgent):
     else:
       # print('exploiting')
       action = self.computeActionFromQValues(state)
-    # print(action)
+    print(action)
     self.locationFinder.getGrid(state)
-    self.locationFinder.addDistance(self.index, state.getAgentDistances(), state.getAgentState(self.index).getPosition(), state) 
+    self.locationFinder.addDistance(self.index, state.getAgentDistances(), state.getAgentState(self.index).getPosition(), state)
     return action
 
   def update(self, state, action, nextState, reward):
@@ -254,6 +254,7 @@ class Agent1(QLearningAgent):
         Returns the qValue of state and action. By adding all features * weights.
         """
         qValue = 0
+        print("inside getQValue")
         features = self.locationFinder.getFeatures(state.generateSuccessor(self.index, action), self)
         # print('features: ',features)
         # print('weights: ',self.getWeights())
@@ -267,6 +268,7 @@ class Agent1(QLearningAgent):
         """
             Should update your weights based on transition
         """
+        print("inside update")
         features = self.locationFinder.getFeatures(state, self)
         # featuresList = features.sortedKeys()
         # print(features)
@@ -301,7 +303,7 @@ class Agent1(QLearningAgent):
         '''
         maxQValue = self.getValue(nextState)
 
-        # print('Best Action :', action, 'Position :', state.getAgentPosition(self.index))
+        print('Position :', state.getAgentPosition(self.index))
         currQValue = self.getQValue(state, action)
         # print('Discount: %d' % self.discount)
         # print('maxQValue: %d' % maxQValue)

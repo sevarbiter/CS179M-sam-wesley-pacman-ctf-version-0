@@ -1,1 +1,1 @@
-{"closestFood": -1.6562017400375106, "ghostsNear": 0.0, "pacmanNear": -2.176072843307262, "foodCarrying": 0.0}
+{"closestFood": -3.2227789054785934, "ghostsNear": -0.720107217864259, "pacmanNear": -0.048163119835287954, "foodCarrying": 0.0}
