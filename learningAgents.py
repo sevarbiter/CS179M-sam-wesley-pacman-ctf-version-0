@@ -16,71 +16,6 @@ from game import Directions, Agent, Actions
 from finder import Finder
 import random,util,time
 
-class ValueEstimationAgent(CaptureAgent):
-    """
-    Abstract agent which assigns values to (state,action)
-    Q-Values for an environment. As well as a value to a
-    state and a policy given respectively by,
-
-    V(s) = max_{a in actions} Q(s,a)
-    policy(s) = arg_max_{a in actions} Q(s,a)
-
-    Both ValueIterationAgent and QLearningAgent inherit
-    from this agent. The QLearningAgent estimates
-    Q-Values while acting in the environment.
-    """
-
-    def __init__(self, alpha=1.0, epsilon=0.05, gamma=0.8, numTraining = 10):
-        """
-        Sets options, which can be passed in via the Pacman command line using -a alpha=0.5,...
-        alpha    - learning rate
-        epsilon  - exploration rate
-        gamma    - discount factor
-        numTraining - number of training episodes, i.e. no learning after these many episodes
-        """
-        self.alpha = float(alpha)
-        self.epsilon = float(epsilon)
-        self.discount = float(gamma)
-        self.numTraining = int(numTraining)
-
-    ####################################
-    #    Override These Functions      #
-    ####################################
-    def getQValue(self, state, action):
-        """
-        Should return Q(state,action)
-        """
-        util.raiseNotDefined()
-
-    def getValue(self, state):
-        """
-        What is the value of this state under the best action?
-        Concretely, this is given by
-
-        V(s) = max_{a in actions} Q(s,a)
-        """
-        util.raiseNotDefined()
-
-    def getPolicy(self, state):
-        """
-        What is the best action to take in the state. Note that because
-        we might want to explore, this might not coincide with getAction
-        Concretely, this is given by
-
-        policy(s) = arg_max_{a in actions} Q(s,a)
-
-        If many actions achieve the maximal Q-value,
-        it doesn't matter which is selected.
-        """
-        util.raiseNotDefined()
-
-    # def getAction(self, state):
-    #     """
-    #     state: can call state.getLegalActions()
-    #     Choose an action and return it.
-    #     """
-    #     util.raiseNotDefined()
-
 class ReinforcementAgent(CaptureAgent):
     """
       Abstract Reinforcemnt Agent: A ValueEstimationAgent
@@ -116,7 +51,7 @@ class ReinforcementAgent(CaptureAgent):
         """
         return self.actionFn(state)
 
-    def observeTransition(self, state,action,nextState,deltaReward):
+    def observeTransition(self, state,action,nextState, deltaReward):
         """
         Called by environment to inform agent that a transition has
         been observed. This will result in a call to self.update
@@ -225,9 +160,9 @@ class ReinforcementAgent(CaptureAgent):
         Called by Pacman game at the terminal state
         """
         # print('FINAL CALL')
-        deltaReward = self.getScore(state) - self.lastState.getScore()
-        self.observeTransition(self.lastState, self.lastAction, state, deltaReward)
-        self.stopEpisode()
+        # deltaReward = self.getScore(state) - self.lastState.getScore()
+        # self.observeTransition(self.lastState, self.lastAction, state, deltaReward)
+        # self.stopEpisode()
 
         # Make sure we have this var
         if not 'episodeStartTime' in self.__dict__:
@@ -237,7 +172,7 @@ class ReinforcementAgent(CaptureAgent):
         self.lastWindowAccumRewards += self.getScore(state)
 
         NUM_EPS_UPDATE = 5
-        if self.episodesSoFar % NUM_EPS_UPDATE == 0:
+        if self.episodesSoFar % NUM_EPS_UPDATE == 10:
             print('Reinforcement Learning Status:')
             windowAvg = self.lastWindowAccumRewards / float(NUM_EPS_UPDATE)
             if self.episodesSoFar <= self.numTraining:
@@ -266,7 +201,7 @@ class ReinforcementAgent(CaptureAgent):
         Modifiers
         '''
         SCORES = 15
-        DIED = -10
+        DIED = -20
         ATE_FOOD = 7
         ATE_PACMAN = 5
         reward = 0
@@ -274,14 +209,14 @@ class ReinforcementAgent(CaptureAgent):
         #SCORES
         if self.getScore(gameState) > self.lastState.getScore():
             reward += self.getScore(gameState) - self.lastState.getScore() + SCORES
-            print('Reward Scored: %d' % reward)
+            print('REWARD Scored: %d' % reward)
         
         #ATE_FOOD
         foodList = self.getFood(gameState).asList()
         prevFood = self.getFood(self.lastState).asList()
         if len(foodList) > len(prevFood):
             reward += len(foodList) - len(prevFood) + ATE_FOOD
-            print('Reward Ate Food: %d' % reward)
+            print('REWARD Ate Food: %d' % reward)
         
         #DIED
         if gameState.getAgentPosition(self.index) == gameState.getInitialAgentPosition(self.index):
@@ -318,12 +253,12 @@ class ReinforcementAgent(CaptureAgent):
             if min(dists) == 1:
                 if len(newPacmen) == 0:
                     reward += ATE_PACMAN
-                    print('Reward Ate Pacman: %d' % reward)
-            else:
-                if len(newPacmen) > 0:
-                    dists=[self.getMazeDistance(gameState.getAgentState(self.index).getPosition(), a.getPosition()) for a in oldPacmen]
-                if min(dists) > 2:
-                    reward += ATE_PACMAN
-                    print('Reward Ate Pacman: %d' % reward)
+                    print('REWARD Ate Pacman: %d' % reward)
+                else:
+                    if len(newPacmen) > 0:
+                        dists=[self.getMazeDistance(gameState.getAgentState(self.index).getPosition(), a.getPosition()) for a in oldPacmen]
+                    if min(dists) > 2:
+                        reward += ATE_PACMAN
+                        print('REWARD Ate Pacman: %d' % reward)
         return reward
   
