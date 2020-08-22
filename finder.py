@@ -215,7 +215,7 @@ class Finder:
 
   def closestFood(self, gameState, agent):
     minDistance = 0
-    self.foodList = agent.getFood(gameState).asList()
+    #foodList = agent.getFood(gameState).asList()
     if len(self.foodList) > 0:
       #myPos current position of agent on board as tuple ex. (1,2)
       myPos = gameState.getAgentState(agent.index).getPosition()
@@ -224,7 +224,9 @@ class Finder:
     else:
       return 0
     if minDistance == 0:
-      minDistance = 1
+      print("close")
+      minDistance = .5
+    print(minDistance)
     return 1/minDistance
     
   def nearby(self, gameState, option, agent):
