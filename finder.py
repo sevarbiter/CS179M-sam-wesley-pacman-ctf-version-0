@@ -237,8 +237,6 @@ class Finder:
       if len(pacmen) > 0:
         dists = [agent.getMazeDistance(myPos, a.getPosition()) for a in pacmen]
         minDist = min(dists)
-        if minDist < 1:
-          minDist = .5
         # print('Pacman Dist: %d'% minDist)
         return 1/minDist
       else:

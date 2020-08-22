@@ -40,7 +40,7 @@ def createTeam(firstIndex, secondIndex, isRed, first = 'Agent1', second = 'Agent
 
 class ApproximateQLearning(CaptureAgent):
 
-    def __init__(self, index, locationFinder, timeForComputing=0.1, actionFn = None, numTraining=100, epsilon=0.8, alpha=0.6, gamma=1):
+    def __init__(self, index, locationFinder, timeForComputing=0.1, actionFn = None, numTraining=100, epsilon=0, alpha=0, gamma=1):
         """
         alpha    - learning rate
         epsilon  - exploration rate
@@ -175,7 +175,7 @@ class ApproximateQLearning(CaptureAgent):
          Returns the qValue of state and action. By adding all features * weights.
         """
         qValue = 0
-        succesor = gameState.generateSuccessor(self.index, action)
+        succesor = self.lastState.generateSuccessor(self.index, action)
 
         features = self.locationFinder.getFeatures(succesor,self)
         for feature in features:
@@ -190,7 +190,7 @@ class ApproximateQLearning(CaptureAgent):
         If no legal actions are availabe return NONE.
         """
         # self.episodeRewards += deltaReward
-        print(self.lastState)
+        # print(self.lastState)
         if self.lastState != None:
             self.update(gameState, self.getRewards(gameState))
 
@@ -253,6 +253,7 @@ class ApproximateQLearning(CaptureAgent):
         features = self.locationFinder.getFeatures(gameState,self)
         
         prevQValue = self.getQValue(self.lastState, self.lastAction)
+        print('Reward : ',reward)
         
         if len(gameState.getLegalActions(self.index)) == 0:
             difference =  reward - prevQValue
@@ -264,14 +265,15 @@ class ApproximateQLearning(CaptureAgent):
         for feature in features:
             self.weights[feature] += self.LEARNING * features[feature] * difference
 
-        print(features)
-        print(self.getWeights())
+        print('Features :',features)
+        print('Weights :', self.getWeights())
 
 class Agent1(ApproximateQLearning):
+
     def __init__(self, index, locationFinder):
         ApproximateQLearning.__init__(self, index, locationFinder)
-        self.ATE_PACMAN = 20
-        self.ATE_FOOD =  4
+        self.ATE_PACMAN = 5
+        self.ATE_FOOD =  7
         self.getPolicy("qPolicy0.txt")
     
     def getRewards(self, gameState):
@@ -323,6 +325,7 @@ class Agent1(ApproximateQLearning):
         self.writePolicy("qPolicy0.txt")
 
 class Agent2(ApproximateQLearning):
+    
     def __init__(self, index, locationFinder):
         ApproximateQLearning.__init__(self, index, locationFinder)
         self.ATE_PACMAN = 20
