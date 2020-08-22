@@ -296,16 +296,17 @@ class Finder:
 
   def foodCarrying(self, gameState, agent):
     carrying = gameState.getAgentState(agent.index).numCarrying
-    carryWeight = carrying*.25
-    middle = self.x/2
+    carryWeight = carrying
+
     myPos = gameState.getAgentState(agent.index).getPosition()
 
     dist = agent.getMazeDistance(myPos, gameState.getInitialAgentPosition(agent.index))
-    if dist>20:
-      dist=20
-    if dist == 0:
-      dist = 1
-    weight = 20/dist
-    return carryWeight*weight
+    print('distance: %d' % dist)
+    if carryWeight == 0:
+      return 0
+    else:
+      value = (1/dist)*carryWeight
+      print('value: ', value)
+      return (1/dist)*carryWeight
 
   
