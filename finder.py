@@ -21,6 +21,9 @@ class Finder:
     self.location2 = (1,1)
     self.x = 0
     self.y = 0
+    pacmanPos = []
+    ghostPos = []
+    foodList = []
 
   def increment(self):
     self.test = self.test+1
@@ -177,6 +180,14 @@ class Finder:
     print(self.location2)
     print(self.list2)
 
+  def addLocations(self, gameState, agent):
+    enemies = [i for i in agent.getOpponents(gameState)]
+    invaders = [gameState.getAgentPosition(a) for a in enemies if gameState.getAgentState(a).isPacman and gameState.getAgentPosition(a) != None]
+    ghosts = [gameState.getAgentPosition(a) for a in enemies if not gameState.getAgentState(a).isPacman and gameState.getAgentPosition(a) != None]
+    self.ghostPos = ghosts
+    self.pacmanPos = invaders
+    self.foodList = agent.getFood(gameState).asList()
+
   def getFeatures(self, gameState, agent):
     """
     Returns a counter of features for the state
@@ -205,50 +216,35 @@ class Finder:
   def closestFood(self, gameState, agent):
     minDistance = 0
     foodList = agent.getFood(gameState).asList()
-    if len(foodList) > 0:
+    if len(self.foodList) > 0:
       #myPos current position of agent on board as tuple ex. (1,2)
       myPos = gameState.getAgentState(agent.index).getPosition()
       #finds all food positions and returns the closest one to the agent
-      minDistance = min([agent.getMazeDistance(myPos, food) for food in foodList])
+      minDistance = min([agent.getMazeDistance(myPos, food) for food in self.foodList])
     else:
       return 0
+    if minDistance == 0:
+      minDistance = 1
     return 1/minDistance
     
   def nearby(self, gameState, option, agent):
-
     enemies = [i for i in agent.getOpponents(gameState)]
     # print(enemies)   
     if option == 1: #pacman near
-      myPos = gameState.getAgentState(agent.index).getPosition()
-      '''working distance code below'''
-      # invaders = [a for a in enemies if gameState.getAgentState(a).isPacman and gameState.getAgentPosition(a) != None]
-      # if len(invaders) > 0:
-      #   # print(gameState.getAgentState(agent.index).getPosition())
-      #   # print(gameState.getAgentPosition(1))
-      #   # print(gameState.getAgentPosition(3))
-      #   dists = [agent.getMazeDistance(gameState.getAgentState(agent.index).getPosition(), gameState.getAgentPosition(a)) for a in invaders]
-      #   minDist = min(dists)
-      #   # print(minDist)
-      #   return 1/minDist
-      # else:
-      #   return 0
-      enemies1 = [gameState.getAgentState(i) for i in agent.getOpponents(gameState)]
-      pacmen = [a for a in enemies1 if a.isPacman and a.getPosition() != None]
-      if len(pacmen) > 0:
-        dists = [agent.getMazeDistance(myPos, a.getPosition()) for a in pacmen]
+      if len(self.pacmanPos) > 0:
+        dists = [agent.getMazeDistance(gameState.getAgentState(agent.index).getPosition(), a) for a in self.pacmanPos]
         minDist = min(dists)
-        # print('Pacman Dist: %d'% minDist)
+        if minDist == 0:
+          minDist = .5
         return 1/minDist
       else:
         return 0
-
-
     if option == 0: #ghost near
-      ghosts = [a for a in enemies if not gameState.getAgentState(a).isPacman and gameState.getAgentPosition(a) != None]
-      if len(ghosts) > 0:
-        dists = [agent.getMazeDistance(gameState.getAgentState(agent.index).getPosition(), gameState.getAgentPosition(a)) for a in ghosts]
+      if len(self.ghostPos) > 0:
+        dists = [agent.getMazeDistance(gameState.getAgentState(agent.index).getPosition(), a) for a in self.ghostPos]
         minDist = min(dists)
-        # print('Ghost Dist: %d'% minDist)
+        if minDist == 0:
+          minDist = .5
         return 1/minDist
       else:
         return 0
