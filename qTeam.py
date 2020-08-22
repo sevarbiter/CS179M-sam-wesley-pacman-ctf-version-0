@@ -14,7 +14,7 @@ import json
 # Team creation #
 #################
 
-def createTeam(firstIndex, secondIndex, isRed, first = 'Agent1', second = 'Agent2'):
+def createTeam(firstIndex, secondIndex, isRed, first = 'DefensiveDummyAgent', second = 'Agent2'):
   """
   This function should return a list of two agents that will form the
   team, initialized using firstIndex and secondIndex as their agent
@@ -40,7 +40,7 @@ def createTeam(firstIndex, secondIndex, isRed, first = 'Agent1', second = 'Agent
 
 class ApproximateQLearning(CaptureAgent):
 
-    def __init__(self, index, locationFinder, timeForComputing=0.1, actionFn = None, numTraining=100, epsilon=0.8, alpha=0.6, gamma=1):
+    def __init__(self, index, locationFinder, timeForComputing=0.1, actionFn = None, numTraining=100, epsilon=0, alpha=0, gamma=1):
         """
         alpha    - learning rate
         epsilon  - exploration rate
@@ -179,6 +179,8 @@ class ApproximateQLearning(CaptureAgent):
 
         features = self.locationFinder.getFeatures(succesor,self)
         for feature in features:
+             #print(features)
+             #print(self.getWeights())
              qValue += features[feature] * self.weights[feature]
         return qValue
     
@@ -190,7 +192,7 @@ class ApproximateQLearning(CaptureAgent):
         If no legal actions are availabe return NONE.
         """
         # self.episodeRewards += deltaReward
-        print(self.lastState)
+        #print(self.lastState)
         if self.lastState != None:
             self.update(gameState, self.getRewards(gameState))
 
@@ -206,6 +208,7 @@ class ApproximateQLearning(CaptureAgent):
         if util.flipCoin(self.EXPLORE):
             action = random.choice(legalActions)
         else:
+            self.locationFinder.addLocations(gameState, self)
             action = self.computeActionFromQValues(gameState)
         
         #what are we using this for???
@@ -238,11 +241,12 @@ class ApproximateQLearning(CaptureAgent):
 
         maxValue = 0
         maxAction = None
-
+        print("Agent%d" % self.index)
+        print("------------")
         for action in legalActions:
             value = self.getQValue(gameState, action)
-            # print('Value: %d' % value)
-            # print('Action:', action)
+            #print('Value: %d' % value)
+            print('Action:', action)
             if value > maxValue or maxAction is None:
                 maxValue = value
                 maxAction = action
@@ -258,14 +262,14 @@ class ApproximateQLearning(CaptureAgent):
             difference =  reward - prevQValue
         else:
             maxQ = self.getMaxQValue(gameState)
-            print('maxQ :',  maxQ)
+            #print('maxQ :',  maxQ)
             difference = (reward + self.DISCOUNT * maxQ) - prevQValue
-        print('difference : %d' % difference)
+        #print('difference : %d' % difference)
         for feature in features:
             self.weights[feature] += self.LEARNING * features[feature] * difference
 
-        print(features)
-        print(self.getWeights())
+        #print(features)
+        #print(self.getWeights())
 
 class Agent1(ApproximateQLearning):
     def __init__(self, index, locationFinder):
