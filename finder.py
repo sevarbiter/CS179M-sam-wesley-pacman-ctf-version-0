@@ -21,9 +21,9 @@ class Finder:
     self.location2 = (1,1)
     self.x = 0
     self.y = 0
-    pacmanPos = []
-    ghostPos = []
-    foodList = []
+    self.pacmanPos = []
+    self.ghostPos = []
+    self.foodList = []
 
   def increment(self):
     self.test = self.test+1
@@ -215,7 +215,7 @@ class Finder:
 
   def closestFood(self, gameState, agent):
     minDistance = 0
-    foodList = agent.getFood(gameState).asList()
+    self.foodList = agent.getFood(gameState).asList()
     if len(self.foodList) > 0:
       #myPos current position of agent on board as tuple ex. (1,2)
       myPos = gameState.getAgentState(agent.index).getPosition()

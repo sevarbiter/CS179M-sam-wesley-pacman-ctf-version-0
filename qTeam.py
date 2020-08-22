@@ -9,12 +9,13 @@ from myTeam import DefensiveDummyAgent
 from finder import Finder
 import os
 import json
+from random import sample
 
 #################
 # Team creation #
 #################
 
-def createTeam(firstIndex, secondIndex, isRed, first = 'DefensiveDummyAgent', second = 'Agent2'):
+def createTeam(firstIndex, secondIndex, isRed, first = 'Agent1', second = 'Agent2'):
   """
   This function should return a list of two agents that will form the
   team, initialized using firstIndex and secondIndex as their agent
@@ -40,7 +41,7 @@ def createTeam(firstIndex, secondIndex, isRed, first = 'DefensiveDummyAgent', se
 
 class ApproximateQLearning(CaptureAgent):
 
-    def __init__(self, index, locationFinder, timeForComputing=0.1, actionFn = None, numTraining=100, epsilon=0, alpha=0, gamma=1):
+    def __init__(self, index, locationFinder, timeForComputing=0.1, actionFn = None, numTraining=95, epsilon=0, alpha=0, gamma=1):
         """
         alpha    - learning rate
         epsilon  - exploration rate
@@ -60,14 +61,16 @@ class ApproximateQLearning(CaptureAgent):
         self.DISCOUNT = float(gamma)
         
         self.weights = util.Counter()
+        self.buffer = []
+        self.dict = util.Counter()
 
         """
         MODIFIERS
         """
-        self.SCORES = 15
-        self.DIED = -20
-        self.ATE_FOOD = 7
-        self.ATE_PACMAN = 5
+        self.SCORES = 150
+        self.DIED = -400
+        self.ATE_FOOD = 70
+        self.ATE_PACMAN = 50
 
     def getPolicy(self, policyName):
         """
@@ -84,12 +87,30 @@ class ApproximateQLearning(CaptureAgent):
           for features in parsedDict:
             self.weights[features] = parsedDict[features]
           print('STARTING FEATURES: ',self.getWeights())
+        
+        if os.stat("buffer"+policyName).st_size == 0:
+          self.buffer = []
+        else:
+          self.buffer = util.Counter()
+          b = open("buffer"+policyName, 'r').read()
+          print("FILE READ: ",b)
+          parsedBuffer = json.loads(b)
+          self.buffer = parsedBuffer
+        #   print('PARSED :',parsedDict)
+        #   for features in range(len(parsedDict)):
+            # self.buffer[features] = parsedDict[features]
+          print('STARTING BUFFER: ',self.getBuffer())
     
     def writePolicy(self, policyName):
         f = open(policyName,"w+")
         dumps = json.dumps(self.getWeights())
         f.write(dumps)
         f.close()
+
+        b = open("buffer"+policyName,"w+")
+        dumpsB = json.dumps(self.getBuffer())
+        b.write(dumpsB)
+        b.close()
     
     def registerInitialState(self, gameState):
         """
@@ -106,6 +127,9 @@ class ApproximateQLearning(CaptureAgent):
     
     def getWeights(self):
         return self.weights
+    
+    def getBuffer(self):
+        return self.buffer
 
     def startEpisode(self):
         """
@@ -175,7 +199,7 @@ class ApproximateQLearning(CaptureAgent):
          Returns the qValue of state and action. By adding all features * weights.
         """
         qValue = 0
-        succesor = self.lastState.generateSuccessor(self.index, action)
+        succesor = gameState.generateSuccessor(self.index, action)
 
         features = self.locationFinder.getFeatures(succesor,self)
         for feature in features:
@@ -195,6 +219,8 @@ class ApproximateQLearning(CaptureAgent):
         #print(self.lastState)
         if self.lastState != None:
             self.update(gameState, self.getRewards(gameState))
+        
+        # print(self.getWeights())
 
         legalActions = gameState.getLegalActions(self.index)
 
@@ -219,6 +245,14 @@ class ApproximateQLearning(CaptureAgent):
         #update lastState and lastAction
         self.lastState = gameState
         self.lastAction = action
+        
+        #buffer check if full if True then pop first item, store current state,
+        #action, and weights.
+        if len(self.buffer) ==  1000:
+            self.buffer.pop(0)
+
+        # print('BUFFER :',list(self.buffer.queue))
+        print('BUFFER Size After :', len(self.buffer))
 
         return action
     
@@ -254,6 +288,7 @@ class ApproximateQLearning(CaptureAgent):
 
 
     def update(self, gameState, reward):
+
         features = self.locationFinder.getFeatures(gameState,self)
         
         prevQValue = self.getQValue(self.lastState, self.lastAction)
@@ -263,8 +298,15 @@ class ApproximateQLearning(CaptureAgent):
             difference =  reward - prevQValue
         else:
             maxQ = self.getMaxQValue(gameState)
+            self.buffer.append((maxQ, reward))
+            # print(self.buffer)
+            avgList = sample(self.buffer, int(len(self.buffer)/10))
             #print('maxQ :',  maxQ)
-            difference = (reward + self.DISCOUNT * maxQ) - prevQValue
+            total = reward + self.DISCOUNT*maxQ
+            for i in avgList:
+                total += i[1] + self.DISCOUNT*i[0]
+            total = total/(len(avgList) + 1)
+            difference = total - prevQValue
         #print('difference : %d' % difference)
         for feature in features:
             self.weights[feature] += self.LEARNING * features[feature] * difference
@@ -276,8 +318,8 @@ class Agent1(ApproximateQLearning):
 
     def __init__(self, index, locationFinder):
         ApproximateQLearning.__init__(self, index, locationFinder)
-        self.ATE_PACMAN = 5
-        self.ATE_FOOD =  7
+        self.ATE_PACMAN = 80
+        self.ATE_FOOD =  100
         self.getPolicy("qPolicy0.txt")
     
     def getRewards(self, gameState):
@@ -332,8 +374,8 @@ class Agent2(ApproximateQLearning):
     
     def __init__(self, index, locationFinder):
         ApproximateQLearning.__init__(self, index, locationFinder)
-        self.ATE_PACMAN = 20
-        self.ATE_FOOD =  4
+        self.ATE_PACMAN = 200
+        self.ATE_FOOD =  40
         self.getPolicy("qPolicy1.txt")
     
     def getRewards(self, gameState):
@@ -383,6 +425,7 @@ class Agent2(ApproximateQLearning):
         print('AGENT2')
         ApproximateQLearning.final(self, gameState)
         self.writePolicy("qPolicy1.txt")
+
         
 
 
