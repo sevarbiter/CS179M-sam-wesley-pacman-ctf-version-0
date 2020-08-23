@@ -207,7 +207,7 @@ class Finder:
 
     features['closestFood'] = self.closestFood(gameState, agent)
 
-    features['secondClosestFood'] = self.secondClosestFood(gameState, agent)
+    features['randomClosestFood'] = self.randomClosestFood(gameState, agent)
 
     features['ghostsNear'] = self.nearby(gameState, 0, agent)
 
@@ -215,7 +215,7 @@ class Finder:
 
     # # features['inTunnel'] = self.inTunnel(gameState, agent)
 
-    features['inDeadend'] = self.inDeadend(gameState, agent)
+    # features['inDeadend'] = self.inDeadend(gameState, agent)
 
     # features['scaredGhostNear'] = self.nearby(gameState, 2, agent)
 
@@ -241,24 +241,25 @@ class Finder:
     # print(minDistance)
     return 1/minDistance
   
-  def secondClosestFood(self, gameState, agent):
-    minDistance = 0
+  def randomClosestFood(self, gameState, agent):
+    randomDistance = 0
     #foodList = agent.getFood(gameState).asList()
     if len(self.foodList) > 2:
       #myPos current position of agent on board as tuple ex. (1,2)
       myPos = gameState.getAgentState(agent.index).getPosition()
       #finds all food positions and returns the closest one to the agent
       foodList = [agent.getMazeDistance(myPos, food) for food in self.foodList]
-      minDistance = min(foodList)
-      foodList.remove(minDistance)
-      minDistance = min(foodList)
+      randomDistance = min(foodList)
+      foodList.remove(randomDistance)
+      # minDistance = min(foodList)
+      randomDistance = random.choice(foodList)
     else:
       return 0
-    if minDistance == 0:
+    if randomDistance == 0:
       # print("close")
-      minDistance = .5
-    # print(minDistance)
-    return 1/minDistance
+      randomDistance = .5
+    # print(randomDistance)
+    return 1/randomDistance*0.10
     
   def nearby(self, gameState, option, agent):
     enemies = [i for i in agent.getOpponents(gameState)]
@@ -335,9 +336,9 @@ class Finder:
   def foodCarrying(self, gameState, agent):
     carrying = gameState.getAgentState(agent.index).numCarrying
     if agent.index == 0 or agent.index == 2:
-      carryWeight = self.carrying1*0.25
+      carryWeight = self.carrying1*0.5 
     else:
-      carryWeight = self.carrying2*0.25
+      carryWeight = self.carrying2*0.5
 
     myPos = gameState.getAgentState(agent.index).getPosition()
 
