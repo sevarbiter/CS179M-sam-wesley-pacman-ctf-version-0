@@ -1,14 +1,14 @@
 from captureAgents import CaptureAgent
 import distanceCalculator
 import random, time, util, sys
-from game import Directions
 import game
+import os
+import json
+from game import Directions
 from util import nearestPoint
 from util import raiseNotDefined
 from myTeam import DefensiveDummyAgent
 from finder import Finder
-import os
-import json
 from random import sample
 
 #################
@@ -67,9 +67,9 @@ class ApproximateQLearning(CaptureAgent):
         """
         MODIFIERS
         """
-        self.SCORES = 150
-        self.DIED = -400
-        self.ATE_FOOD = 70
+        self.SCORES = 500
+        self.DIED = -1000
+        self.ATE_FOOD = 50
         self.ATE_PACMAN = 50
 
     def getPolicy(self, policyName):
@@ -318,8 +318,7 @@ class Agent1(ApproximateQLearning):
 
     def __init__(self, index, locationFinder):
         ApproximateQLearning.__init__(self, index, locationFinder)
-        self.ATE_PACMAN = 80
-        self.ATE_FOOD =  100
+        self.ATE_FOOD =  75
         self.getPolicy("qPolicy0.txt")
     
     def getRewards(self, gameState):
@@ -333,7 +332,8 @@ class Agent1(ApproximateQLearning):
         foodList = self.getFood(gameState).asList()
         prevFood = self.getFood(self.lastState).asList()
         if len(foodList) > len(prevFood):
-            reward += len(foodList) - len(prevFood) + self.ATE_FOOD
+            # reward += len(foodList) - len(prevFood) + self.ATE_FOOD
+            reward += len(foodList) - len(prevFood)
             print('REWARD Ate Food: %d' % reward)
         
         #DIED
@@ -374,8 +374,7 @@ class Agent2(ApproximateQLearning):
     
     def __init__(self, index, locationFinder):
         ApproximateQLearning.__init__(self, index, locationFinder)
-        self.ATE_PACMAN = 200
-        self.ATE_FOOD =  40
+        self.ATE_PACMAN = 500
         self.getPolicy("qPolicy1.txt")
     
     def getRewards(self, gameState):
@@ -425,13 +424,3 @@ class Agent2(ApproximateQLearning):
         print('AGENT2')
         ApproximateQLearning.final(self, gameState)
         self.writePolicy("qPolicy1.txt")
-
-        
-
-
-        
-        
-        
-
-    
-
