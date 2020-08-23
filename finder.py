@@ -207,15 +207,17 @@ class Finder:
 
     features['closestFood'] = self.closestFood(gameState, agent)
 
+    features['secondClosestFood'] = self.secondClosestFood(gameState, agent)
+
     features['ghostsNear'] = self.nearby(gameState, 0, agent)
 
     features['pacmanNear'] = self.nearby(gameState, 1, agent)
 
     # # features['inTunnel'] = self.inTunnel(gameState, agent)
 
-    # features['inDeadend'] = self.inDeadend(gameState, agent)
+    features['inDeadend'] = self.inDeadend(gameState, agent)
 
-    features['scaredGhostNear'] = self.nearby(gameState, 2, agent)
+    # features['scaredGhostNear'] = self.nearby(gameState, 2, agent)
 
     features['foodCarrying'] = self.foodCarrying(gameState, agent)
 
@@ -231,6 +233,25 @@ class Finder:
       myPos = gameState.getAgentState(agent.index).getPosition()
       #finds all food positions and returns the closest one to the agent
       minDistance = min([agent.getMazeDistance(myPos, food) for food in self.foodList])
+    else:
+      return 0
+    if minDistance == 0:
+      # print("close")
+      minDistance = .5
+    # print(minDistance)
+    return 1/minDistance
+  
+  def secondClosestFood(self, gameState, agent):
+    minDistance = 0
+    #foodList = agent.getFood(gameState).asList()
+    if len(self.foodList) > 2:
+      #myPos current position of agent on board as tuple ex. (1,2)
+      myPos = gameState.getAgentState(agent.index).getPosition()
+      #finds all food positions and returns the closest one to the agent
+      foodList = [agent.getMazeDistance(myPos, food) for food in self.foodList]
+      minDistance = min(foodList)
+      foodList.remove(minDistance)
+      minDistance = min(foodList)
     else:
       return 0
     if minDistance == 0:
