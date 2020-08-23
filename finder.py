@@ -207,7 +207,7 @@ class Finder:
 
     features['closestFood'] = self.closestFood(gameState, agent)
 
-    features['randomClosestFood'] = self.randomClosestFood(gameState, agent)
+    # features['randomClosestFood'] = self.randomClosestFood(gameState, agent)
 
     features['ghostsNear'] = self.nearby(gameState, 0, agent)
 
@@ -223,7 +223,7 @@ class Finder:
 
     features['isScared'] = self.isScared(gameState, agent)
 
-    features['deadend'] = self.deadend(gameState, agent, 3)
+    # features['deadend'] = self.deadend(gameState, agent, 3)
 
     return features
 
