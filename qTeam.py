@@ -41,7 +41,7 @@ def createTeam(firstIndex, secondIndex, isRed, first = 'Agent1', second = 'Agent
 
 class ApproximateQLearning(CaptureAgent):
 
-    def __init__(self, index, locationFinder, timeForComputing=0.1, actionFn = None, numTraining=1000, epsilon=0, alpha=0, gamma=1):
+    def __init__(self, index, locationFinder, timeForComputing=0.1, actionFn = None, numTraining=100, epsilon=0.8, alpha=0.6, gamma=1):
         """
         alpha    - learning rate
         epsilon  - exploration rate
@@ -320,7 +320,7 @@ class Agent1(ApproximateQLearning):
 
     def __init__(self, index, locationFinder):
         ApproximateQLearning.__init__(self, index, locationFinder)
-        self.ATE_FOOD =  75
+        self.ATE_FOOD =  5
         self.getPolicy("qPolicy0.txt")
     
     def getRewards(self, gameState):
@@ -334,8 +334,8 @@ class Agent1(ApproximateQLearning):
         foodList = self.getFood(gameState).asList()
         prevFood = self.getFood(self.lastState).asList()
         if len(foodList) > len(prevFood):
-            # reward += len(foodList) - len(prevFood) + self.ATE_FOOD
-            reward += len(foodList) - len(prevFood)
+            reward += len(foodList) - len(prevFood) + self.ATE_FOOD
+            # reward += len(foodList) - len(prevFood)
             print('REWARD Ate Food: %d' % reward)
         
         #DIED
@@ -344,7 +344,7 @@ class Agent1(ApproximateQLearning):
             lastY=self.lastState.getAgentPosition(self.index)[1]
             currentX=gameState.getAgentPosition(self.index)[0]
             currentY=gameState.getAgentPosition(self.index)[1]
-            if (lastX == currentX+1 or lastX == currentX-1) and (lastY == currentY+1 or lastY == currentY-1):
+            if not (lastX == currentX+1 or lastX == currentX-1) or not (lastY == currentY+1 or lastY == currentY-1):
                 reward += self.DIED
                 print('REWARD DIED: %d' % reward)
 
@@ -390,8 +390,8 @@ class Agent2(ApproximateQLearning):
         foodList = self.getFood(gameState).asList()
         prevFood = self.getFood(self.lastState).asList()
         if len(foodList) > len(prevFood):
-            # reward += len(foodList) - len(prevFood) + self.ATE_FOOD
-            reward += len(foodList) - len(prevFood)
+            reward += len(foodList) - len(prevFood) + self.ATE_FOOD
+            # reward += len(foodList) - len(prevFood)
             print('REWARD Ate Food: %d' % reward)
         
         #DIED
@@ -400,7 +400,7 @@ class Agent2(ApproximateQLearning):
             lastY=self.lastState.getAgentPosition(self.index)[1]
             currentX=gameState.getAgentPosition(self.index)[0]
             currentY=gameState.getAgentPosition(self.index)[1]
-            if (lastX == currentX+1 or lastX == currentX-1) and (lastY == currentY+1 or lastY == currentY-1):
+            if not (lastX == currentX+1 or lastX == currentX-1) or not (lastY == currentY+1 or lastY == currentY-1):
                 reward += self.DIED
                 print('REWARD DIED: %d' % reward)
 
