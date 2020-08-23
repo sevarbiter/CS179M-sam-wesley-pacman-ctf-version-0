@@ -217,6 +217,8 @@ class Finder:
 
     features['foodCarrying'] = self.foodCarrying(gameState, agent)
 
+    features['isScared'] = self.isScared(gameState, agent)
+
     return features
 
   def closestFood(self, gameState, agent):
@@ -319,5 +321,11 @@ class Finder:
       value = (1/dist)*carryWeight
       # print('value: ', value)
       return (1/dist)*carryWeight
+
+  def isScared(self, gameState, agent):
+    if gameState.getAgentState(agent.index).scaredTimer > 0:
+      return 1
+    else:
+      return 0
 
   
