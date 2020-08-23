@@ -41,7 +41,7 @@ def createTeam(firstIndex, secondIndex, isRed, first = 'Agent1', second = 'Agent
 
 class ApproximateQLearning(CaptureAgent):
 
-    def __init__(self, index, locationFinder, timeForComputing=0.1, actionFn = None, numTraining=100, epsilon=0.8, alpha=0.6, gamma=1):
+    def __init__(self, index, locationFinder, timeForComputing=0.1, actionFn = None, numTraining=1000, epsilon=0.8, alpha=0.6, gamma=1):
         """
         alpha    - learning rate
         epsilon  - exploration rate
@@ -248,7 +248,7 @@ class ApproximateQLearning(CaptureAgent):
         
         #buffer check if full if True then pop first item, store current state,
         #action, and weights.
-        if len(self.buffer) ==  2000:
+        if len(self.buffer) ==  1000:
             self.buffer.pop(0)
 
         # print('BUFFER :',list(self.buffer.queue))
@@ -320,7 +320,7 @@ class Agent1(ApproximateQLearning):
 
     def __init__(self, index, locationFinder):
         ApproximateQLearning.__init__(self, index, locationFinder)
-        self.ATE_FOOD =  5
+        self.ATE_FOOD =  7
         self.getPolicy("qPolicy0.txt")
     
     def getRewards(self, gameState):
@@ -344,7 +344,7 @@ class Agent1(ApproximateQLearning):
             lastY=self.lastState.getAgentPosition(self.index)[1]
             currentX=gameState.getAgentPosition(self.index)[0]
             currentY=gameState.getAgentPosition(self.index)[1]
-            if not (lastX == currentX+1 or lastX == currentX-1) or not (lastY == currentY+1 or lastY == currentY-1):
+            if not (lastX == currentX+1 or lastX == currentX-1) and not (lastY == currentY+1 or lastY == currentY-1):
                 reward += self.DIED
                 print('REWARD DIED: %d' % reward)
 
@@ -400,7 +400,7 @@ class Agent2(ApproximateQLearning):
             lastY=self.lastState.getAgentPosition(self.index)[1]
             currentX=gameState.getAgentPosition(self.index)[0]
             currentY=gameState.getAgentPosition(self.index)[1]
-            if not (lastX == currentX+1 or lastX == currentX-1) or not (lastY == currentY+1 or lastY == currentY-1):
+            if not (lastX == currentX+1 or lastX == currentX-1) and not (lastY == currentY+1 or lastY == currentY-1):
                 reward += self.DIED
                 print('REWARD DIED: %d' % reward)
 

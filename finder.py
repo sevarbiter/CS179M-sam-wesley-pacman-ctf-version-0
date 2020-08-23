@@ -305,9 +305,9 @@ class Finder:
   def foodCarrying(self, gameState, agent):
     carrying = gameState.getAgentState(agent.index).numCarrying
     if agent.index == 0 or agent.index == 2:
-      carryWeight = self.carrying1
+      carryWeight = self.carrying1*0.25
     else:
-      carryWeight = self.carrying2
+      carryWeight = self.carrying2*0.25
 
     myPos = gameState.getAgentState(agent.index).getPosition()
 
