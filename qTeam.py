@@ -41,7 +41,7 @@ def createTeam(firstIndex, secondIndex, isRed, first = 'Agent1', second = 'Agent
 
 class ApproximateQLearning(CaptureAgent):
 
-    def __init__(self, index, locationFinder, timeForComputing=0.1, actionFn = None, numTraining=95, epsilon=0, alpha=0, gamma=1):
+    def __init__(self, index, locationFinder, timeForComputing=0.1, actionFn = None, numTraining=1000, epsilon=0, alpha=0, gamma=1):
         """
         alpha    - learning rate
         epsilon  - exploration rate
@@ -67,10 +67,10 @@ class ApproximateQLearning(CaptureAgent):
         """
         MODIFIERS
         """
-        self.SCORES = 500
-        self.DIED = -1000
-        self.ATE_FOOD = 50
-        self.ATE_PACMAN = 50
+        self.SCORES = 15
+        self.DIED = -10
+        self.ATE_FOOD = 5
+        self.ATE_PACMAN = 5
 
     def getPolicy(self, policyName):
         """
@@ -248,11 +248,11 @@ class ApproximateQLearning(CaptureAgent):
         
         #buffer check if full if True then pop first item, store current state,
         #action, and weights.
-        if len(self.buffer) ==  1000:
+        if len(self.buffer) ==  2000:
             self.buffer.pop(0)
 
         # print('BUFFER :',list(self.buffer.queue))
-        print('BUFFER Size After :', len(self.buffer))
+        # print('BUFFER Size After :', len(self.buffer))
 
         return action
     
@@ -275,12 +275,12 @@ class ApproximateQLearning(CaptureAgent):
 
         maxValue = 0
         maxAction = None
-        print("Agent%d" % self.index)
         print("------------")
+        print("Agent%d" % self.index)
         for action in legalActions:
             value = self.getQValue(gameState, action)
             #print('Value: %d' % value)
-            print('Action:', action)
+            # print('Action:', action)
             if value > maxValue or maxAction is None:
                 maxValue = value
                 maxAction = action
@@ -302,12 +302,14 @@ class ApproximateQLearning(CaptureAgent):
             # print(self.buffer)
             avgList = sample(self.buffer, int(len(self.buffer)/10))
             #print('maxQ :',  maxQ)
+            # print('avgList :', len(avgList))
             total = reward + self.DISCOUNT*maxQ
             for i in avgList:
                 total += i[1] + self.DISCOUNT*i[0]
+            # print('total of avgList :', total)
             total = total/(len(avgList) + 1)
             difference = total - prevQValue
-        #print('difference : %d' % difference)
+        # print('difference : %d' % difference)
         for feature in features:
             self.weights[feature] += self.LEARNING * features[feature] * difference
 
@@ -374,7 +376,7 @@ class Agent2(ApproximateQLearning):
     
     def __init__(self, index, locationFinder):
         ApproximateQLearning.__init__(self, index, locationFinder)
-        self.ATE_PACMAN = 500
+        self.ATE_PACMAN = 7
         self.getPolicy("qPolicy1.txt")
     
     def getRewards(self, gameState):
@@ -388,7 +390,8 @@ class Agent2(ApproximateQLearning):
         foodList = self.getFood(gameState).asList()
         prevFood = self.getFood(self.lastState).asList()
         if len(foodList) > len(prevFood):
-            reward += len(foodList) - len(prevFood) + self.ATE_FOOD
+            # reward += len(foodList) - len(prevFood) + self.ATE_FOOD
+            reward += len(foodList) - len(prevFood)
             print('REWARD Ate Food: %d' % reward)
         
         #DIED

@@ -29,7 +29,7 @@ class Finder:
 
   def increment(self):
     self.test = self.test+1
-    print(self.test)
+    # print(self.test)
 
   def getGrid(self, gameState):
     self.y = gameState.data.food.height
@@ -230,9 +230,9 @@ class Finder:
     else:
       return 0
     if minDistance == 0:
-      print("close")
+      # print("close")
       minDistance = .5
-    print(minDistance)
+    # print(minDistance)
     return 1/minDistance
     
   def nearby(self, gameState, option, agent):
@@ -310,14 +310,14 @@ class Finder:
     myPos = gameState.getAgentState(agent.index).getPosition()
 
     dist = agent.getMazeDistance(myPos, gameState.getInitialAgentPosition(agent.index))
-    print('distance: %d' % dist)
+    # print('distance: %d' % dist)
     if dist == 0:
       dist = 1
     if carryWeight == 0:
       return 0
     else:
       value = (1/dist)*carryWeight
-      print('value: ', value)
+      # print('value: ', value)
       return (1/dist)*carryWeight
 
   
