@@ -324,7 +324,14 @@ class Finder:
 
   def isScared(self, gameState, agent):
     if gameState.getAgentState(agent.index).scaredTimer > 0:
-      return 1
+      if len(self.pacmanPos) > 0:
+        dists = [agent.getMazeDistance(gameState.getAgentState(agent.index).getPosition(), a) for a in self.pacmanPos]
+        minDist = min(dists)
+        if minDist == 0:
+          minDist = .5
+        return 1/minDist
+      else:
+        return 0
     else:
       return 0
 
