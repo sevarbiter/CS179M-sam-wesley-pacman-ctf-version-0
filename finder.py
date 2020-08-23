@@ -24,6 +24,8 @@ class Finder:
     self.pacmanPos = []
     self.ghostPos = []
     self.foodList = []
+    self.carrying1 = 0
+    self.carrying2 = 0
 
   def increment(self):
     self.test = self.test+1
@@ -187,6 +189,10 @@ class Finder:
     self.ghostPos = ghosts
     self.pacmanPos = invaders
     self.foodList = agent.getFood(gameState).asList()
+    if agent.index == 0 or agent.index == 2:
+      self.carrying1 = gameState.getAgentState(agent.index).numCarrying
+    else:
+      self.carrying2 = gameState.getAgentState(agent.index).numCarrying
 
   def getFeatures(self, gameState, agent):
     """
@@ -296,12 +302,17 @@ class Finder:
 
   def foodCarrying(self, gameState, agent):
     carrying = gameState.getAgentState(agent.index).numCarrying
-    carryWeight = carrying
+    if agent.index == 0 or agent.index == 2:
+      carryWeight = self.carrying1
+    else:
+      carryWeight = self.carrying2
 
     myPos = gameState.getAgentState(agent.index).getPosition()
 
     dist = agent.getMazeDistance(myPos, gameState.getInitialAgentPosition(agent.index))
     print('distance: %d' % dist)
+    if dist == 0:
+      dist = 1
     if carryWeight == 0:
       return 0
     else:
