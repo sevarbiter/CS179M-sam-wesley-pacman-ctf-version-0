@@ -23,6 +23,7 @@ class Finder:
     self.y = 0
     self.pacmanPos = []
     self.ghostPos = []
+    self.ghostStates = []
     self.foodList = []
     self.carrying1 = 0
     self.carrying2 = 0
@@ -186,6 +187,7 @@ class Finder:
     enemies = [i for i in agent.getOpponents(gameState)]
     invaders = [gameState.getAgentPosition(a) for a in enemies if gameState.getAgentState(a).isPacman and gameState.getAgentPosition(a) != None]
     ghosts = [gameState.getAgentPosition(a) for a in enemies if not gameState.getAgentState(a).isPacman and gameState.getAgentPosition(a) != None]
+    self.ghostStates = [gameState.getAgentState(a) for a in enemies if not gameState.getAgentState(a).isPacman and gameState.getAgentPosition(a) != None]
     self.ghostPos = ghosts
     self.pacmanPos = invaders
     self.foodList = agent.getFood(gameState).asList()
@@ -224,7 +226,7 @@ class Finder:
   def closestFood(self, gameState, agent):
     minDistance = 0
     #foodList = agent.getFood(gameState).asList()
-    if len(self.foodList) > 0:
+    if len(self.foodList) > 2:
       #myPos current position of agent on board as tuple ex. (1,2)
       myPos = gameState.getAgentState(agent.index).getPosition()
       #finds all food positions and returns the closest one to the agent
@@ -250,17 +252,24 @@ class Finder:
       else:
         return 0
     if option == 0: #ghost near
+      flag = 0
+      for ghosts in self.ghostStates:
+        if ghosts.scaredTimer > 10:
+          for pos in self.ghostPos:
+            if pos == ghosts.getPosition():
+              self.ghostPos.remove(pos)
+        elif ghosts.scaredTimer > 3:
+          flag = 1
       if len(self.ghostPos) > 0:
         dists = [agent.getMazeDistance(gameState.getAgentState(agent.index).getPosition(), a) for a in self.ghostPos]
         minDist = min(dists)
         if minDist == 0:
           minDist = .5
+        if flag == 1:
+          minDist = -minDist
         return 1/minDist
       else:
         return 0
-    if option == 2: #scared ghost near
-      scaredy_cats = [a for a in enemies if gameState.getAgentState(a).scaredTimer > 0 and gameState.getAgentPosition(a) != None]
-      return len(scaredy_cats)
     if option == 3: #estimated position
       myPos = gameState.getAgentPosition(agent.index)
       # print('index: %d' % agent.index)
