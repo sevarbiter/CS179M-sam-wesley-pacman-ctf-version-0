@@ -215,13 +215,15 @@ class Finder:
 
     # # features['inTunnel'] = self.inTunnel(gameState, agent)
 
-    # features['inDeadend'] = self.inDeadend(gameState, agent)
+    #features['inDeadend'] = self.inDeadend(gameState, agent)
 
     # features['scaredGhostNear'] = self.nearby(gameState, 2, agent)
 
     features['foodCarrying'] = self.foodCarrying(gameState, agent)
 
     features['isScared'] = self.isScared(gameState, agent)
+
+    features['deadend'] = self.deadend(gameState, agent, 3)
 
     return features
 
@@ -315,23 +317,43 @@ class Finder:
       return 1
     return 0
 
-  def inDeadend(self, gameState, agent):
+  def inDeadend(self, gameState, agent, lastPos, count):
     myState = gameState.getAgentState(agent.index)
     myPos = myState.getPosition()
     x = int(myPos[0])
     y = int(myPos[1])
-    count = 0
+    walls = 0
     if gameState.hasWall(x+1,y):
-      count=count+1
+      walls=walls+1
     if gameState.hasWall(x-1,y):
-      count=count+1
+      walls=walls+1
     if gameState.hasWall(x,y+1):
-      count=count+1
+      walls=walls+1
     if gameState.hasWall(x,y-1):
-      count=count+1
-    if count == 3:
+      walls=walls+1
+    if walls == 3:
       return 1
     return 0
+
+  def deadend(self, gameState, agent, count):
+    legalActions = gameState.getLegalActions(agent.index)
+    if Directions.STOP in legalActions:
+      legalActions.remove(Directions.STOP)
+    if len(legalActions) == 1: #its in deadend
+      return 1
+    if count == 0: #end of search
+      return 100
+    routes = []
+    for action in legalActions:
+      successor = gameState.generateSuccessor(agent.index, action)
+      newCount = count-1
+      routes.append(self.deadend(successor, agent, newCount)+1)
+    minDistToDeadend = min(routes)
+    if count == 3:
+      print('min distance to deadend: ', minDistToDeadend)
+      return 1/minDistToDeadend
+    return minDistToDeadend
+
 
   def foodCarrying(self, gameState, agent):
     carrying = gameState.getAgentState(agent.index).numCarrying
