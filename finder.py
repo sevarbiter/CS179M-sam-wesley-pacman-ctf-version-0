@@ -213,7 +213,7 @@ class Finder:
 
     # features['inDeadend'] = self.inDeadend(gameState, agent)
 
-    # features['scaredGhostNear'] = -(self.nearby(gameState, 2, agent))
+    features['scaredGhostNear'] = self.nearby(gameState, 2, agent)
 
     features['foodCarrying'] = self.foodCarrying(gameState, agent)
 
