@@ -223,7 +223,7 @@ class Finder:
 
     features['isScared'] = self.isScared(gameState, agent)
 
-    # features['deadend'] = self.deadend(gameState, agent, 3)
+    features['deadend'] = self.deadendHeader(gameState, agent, 3)
 
     return features
 
@@ -334,6 +334,17 @@ class Finder:
     if walls == 3:
       return 1
     return 0
+
+  def deadendHeader(self, gameState, agent, count):
+    myX = gameState.getAgentState(agent.index).getPosition()[0]
+    if gameState.isOnRedTeam(agent.index):
+      if myX < self.x/2:
+        return 0
+    else:
+      if myX >= self.x/2:
+        return 0
+    return self.deadend(gameState, agent, count)
+
 
   def deadend(self, gameState, agent, count):
     legalActions = gameState.getLegalActions(agent.index)

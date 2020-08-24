@@ -41,7 +41,7 @@ def createTeam(firstIndex, secondIndex, isRed, first = 'Agent1', second = 'Agent
 
 class ApproximateQLearning(CaptureAgent):
 
-    def __init__(self, index, locationFinder, timeForComputing=0.1, actionFn = None, numTraining=1005, epsilon=0.8, alpha=0.5, gamma=1):
+    def __init__(self, index, locationFinder, timeForComputing=0.1, actionFn = None, numTraining=95, epsilon=0, alpha=0, gamma=1):
         """
         alpha    - learning rate
         epsilon  - exploration rate
@@ -335,7 +335,7 @@ class Agent1(ApproximateQLearning):
         prevFood = self.getFood(self.lastState).asList()
         if len(foodList) > len(prevFood):
             reward += len(foodList) - len(prevFood) + self.ATE_FOOD
-            # reward += len(foodList) - len(prevFood)
+            #reward += len(foodList) - len(prevFood)
             print('REWARD Ate Food: %d' % reward)
         
         #DIED
@@ -391,7 +391,7 @@ class Agent2(ApproximateQLearning):
         prevFood = self.getFood(self.lastState).asList()
         if len(foodList) > len(prevFood):
             reward += len(foodList) - len(prevFood) + self.ATE_FOOD
-            # reward += len(foodList) - len(prevFood)
+            #reward += len(foodList) - len(prevFood)
             print('REWARD Ate Food: %d' % reward)
         
         #DIED
