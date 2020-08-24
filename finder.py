@@ -350,8 +350,23 @@ class Finder:
     legalActions = gameState.getLegalActions(agent.index)
     if Directions.STOP in legalActions:
       legalActions.remove(Directions.STOP)
+<<<<<<< HEAD
     if len(legalActions) == 1: #its in deadend
       print(legalActions)
+=======
+
+    #if len(legalActions) == 1: #its in deadend
+    walls = 0
+    if gameState.hasWall(x+1,y):
+      walls=walls+1
+    if gameState.hasWall(x-1,y):
+      walls=walls+1
+    if gameState.hasWall(x,y+1):
+      walls=walls+1
+    if gameState.hasWall(x,y-1):
+      walls=walls+1
+    if walls == 3:
+>>>>>>> 19515a2093b953454641e715e102a1233e26ede9
       return 1
     if count == 0: #end of search
       return 100
