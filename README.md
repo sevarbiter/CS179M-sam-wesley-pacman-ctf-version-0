@@ -1,12 +1,18 @@
-# team red-and-blue (wesley and sam)
-# pacman-ctf
 ## Python3 version of UC Berkeley's CS 188 Pacman Capture the Flag project
 
+### Pacman CTF
+The challenge is to design agents to play Capture-the-Flag in a Pacman-like arena.
+![Pacman Game Layout](/images/cft.png)
+
 ### Short Version:
+To run our working agent.
 
 run `python3 capture.py -r qTeam -b baselineTeam -l defaultCapture`
 
-### Team - Reinforcement Learning
+# Team Red-and-Blue
+![Reinforcement Learning](/images/reLearning.png)
+
+### Reinforcement Learning
 
 `qTeam.py` has the code for generating a team of two agents using approximate q learning. Eeach agent works independently with the help of its teamate, both agents have and use their own policy to learn and make decisions based on the current game state. Using linear approximation we extract features from the game state to approximate a general state overall. This allows the agents to learn through generalizing the game state and adjusting their weights accordingly. Both agents have different reward systems in order to train the agents differently, this will allow for a more robust training simulation.
 
@@ -28,7 +34,8 @@ run `python3 capture.py -r qTeam -b baselineTeam -l defaultCapture`
 
 ### Agent2
 
-#### Rules of the game
+---
+### Rules of the game
 
 **Layout:** The Pacman map is divided into two halves: blue (right) and red (left).  Red agents (which all have even indices) must defend the red food while trying to eat the blue food.  When on the red side, a red agent is a ghost.  When crossing into enemy territory, the agent becomes a Pacman.
 
@@ -44,7 +51,7 @@ run `python3 capture.py -r qTeam -b baselineTeam -l defaultCapture`
 
 **Computation Time:** Each agent has 1 second to return each action. Each move which does not return within one second will incur a warning.  After three warnings, or any single move taking more than 3 seconds, the game is forfeit.  There will be an initial start-up allowance of 15 seconds (use the `registerInitialState` method). If you agent times out or otherwise throws an exception, an error message will be present in the log files, which you can download from the results page (see below).
 
-##### Original Licensing Agreement (which also extends to this version)
+### Original Licensing Agreement (which also extends to this version)
 Licensing Information:  You are free to use or extend these projects for
 educational purposes provided that (1) you do not distribute or publish
 solutions, (2) you retain this notice, and (3) you provide clear
@@ -56,6 +63,6 @@ The core projects and autograders were primarily created by John DeNero
 Student side autograding was added by Brad Miller, Nick Hay, and
 Pieter Abbeel (pabbeel@cs.berkeley.edu).
 
-##### This version attribution
+### This version attribution
 This version (cshelton/pacman-ctf github repo) was modified by Christian
 Shelton (cshelton@cs.ucr.edu) on June 23, 2020 to run under Python 3.
