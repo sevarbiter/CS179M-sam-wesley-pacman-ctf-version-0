@@ -219,11 +219,11 @@ class Finder:
 
     # features['scaredGhostNear'] = self.nearby(gameState, 2, agent)
 
-    features['foodCarrying'] = self.foodCarrying(gameState, agent)
+    features['foodCarrying'] = self.foodCarryingHeader(gameState, agent)
 
     features['isScared'] = self.isScared(gameState, agent)
 
-    # features['deadend'] = self.deadendHeader(gameState, agent, 3)
+    #features['deadend'] = self.deadendHeader(gameState, agent, 3)
 
     return features
 
@@ -240,8 +240,8 @@ class Finder:
     if minDistance == 0:
       # print("close")
       # minDistance = .5
-      return 1
-    # print(minDistance)
+      return 2
+    #print(minDistance)
     return 1/minDistance
   
   def randomClosestFood(self, gameState, agent):
@@ -410,6 +410,53 @@ class Finder:
       value = (1/dist)*carryWeight
       # print('value: ', value)
       return (1/dist)*carryWeight
+
+  def foodCarryingHeader(self, gameState, agent):
+    if agent.index == 0 or agent.index == 1:
+      carryWeight = self.carrying1
+    else:
+      carryWeight = self.carrying2
+
+    if carryWeight == 0:
+      return 0
+    else:
+      return (1/self.recursiveFoodCarrying(gameState, agent, 0))*carryWeight
+
+  def recursiveFoodCarrying(self, gameState, agent, count): 
+    legalActions = gameState.getLegalActions(agent.index)
+    if Directions.STOP in legalActions:
+      legalActions.remove(Directions.STOP)
+    count = count+1
+    if count >= 100:
+      return 0
+    myPos = gameState.getAgentState(agent.index).getPosition()
+    if not gameState.getAgentState(agent.index).isPacman and myPos != gameState.getInitialAgentPosition(agent.index):
+      #print('back on our side')
+      return 0.5
+    if myPos == gameState.getInitialAgentPosition(agent.index):
+      return 1000
+    dists = []
+    actionToTake = legalActions[0]
+    minDist = 1000
+    for action in legalActions:
+      temp = gameState.generateSuccessor(agent.index, action)
+      newPos = temp.getAgentState(agent.index).getPosition()
+      dist = agent.getMazeDistance(newPos, gameState.getInitialAgentPosition(agent.index))
+      #print(dist)
+      if dist < minDist:
+        actionToTake = action
+        minDist = dist
+    successor = gameState.generateSuccessor(agent.index, actionToTake)
+    #print(actionToTake)
+    #print(successor)
+    distanceToMiddle = self.recursiveFoodCarrying(successor, agent, count)+1
+    
+    if agent.index == 0 or agent.index == 1:
+      carryWeight = self.carrying1
+    else:
+      carryWeight = self.carrying2
+    #print('dist: ', distanceToMiddle)
+    return distanceToMiddle
 
   def isScared(self, gameState, agent):
     if gameState.getAgentState(agent.index).scaredTimer > 0:
