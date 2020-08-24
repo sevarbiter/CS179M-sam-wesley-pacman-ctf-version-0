@@ -348,12 +348,12 @@ class Finder:
 
   def deadend(self, gameState, agent, count):
     legalActions = gameState.getLegalActions(agent.index)
+    # print(count)
     if Directions.STOP in legalActions:
       legalActions.remove(Directions.STOP)
-<<<<<<< HEAD
-    if len(legalActions) == 1: #its in deadend
-      print(legalActions)
-=======
+    
+    x = int(gameState.getAgentState(agent.index).getPosition()[0])
+    y = int(gameState.getAgentState(agent.index).getPosition()[1])
 
     #if len(legalActions) == 1: #its in deadend
     walls = 0
@@ -366,15 +366,16 @@ class Finder:
     if gameState.hasWall(x,y-1):
       walls=walls+1
     if walls == 3:
->>>>>>> 19515a2093b953454641e715e102a1233e26ede9
+      print(x,y)
       return 1
     if count == 0: #end of search
       return 100
     routes = []
     for action in legalActions:
       successor = gameState.generateSuccessor(agent.index, action)
+      # print(successor)
       newCount = count-1
-      routes.append(self.deadend(successor, agent, newCount)+1)
+      routes.append(self.deadendHeader(successor, agent, newCount)+1)
     minDistToDeadend = min(routes)
     if count == 3:
       print('min distance to deadend: ', minDistToDeadend)
