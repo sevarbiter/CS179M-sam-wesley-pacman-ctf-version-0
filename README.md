@@ -1,20 +1,22 @@
-## Python3 version of UC Berkeley's CS 188 Pacman Capture the Flag project
+# Python3 version of UC Berkeley's CS 188 Pacman Capture the Flag project
 
 ### Pacman CTF
 The challenge is to design agents to play Capture-the-Flag in a Pacman-like arena.
+
 ![Pacman Game Layout](/images/cft.png)
 
-### Short Version:
+### Running the Agent:
 To run our working agent.
 
 run `python3 capture.py -r qTeam -b baselineTeam -l defaultCapture`
 
 # Team Red-and-Blue
-![Reinforcement Learning](/images/reLearning.png)
+
 
 ### Reinforcement Learning
+![Reinforcement Learning](/images/reLearning.png)
 
-`qTeam.py` has the code for generating a team of two agents using approximate q learning. Eeach agent works independently with the help of its teamate, both agents have and use their own policy to learn and make decisions based on the current game state. Using linear approximation we extract features from the game state to approximate a general state overall. This allows the agents to learn through generalizing the game state and adjusting their weights accordingly. Both agents have different reward systems in order to train the agents differently, this will allow for a more robust training simulation.
+`qTeam.py` has the code for generating a team of two agents using approximate q learning. Each agent works independently with the help of its teamate, both agents have and use their own policy to learn and make decisions based on the current game state. Using linear approximation we extract features from the game state to approximate a general state overall. This allows the agents to learn through generalizing the game state and adjusting their weights accordingly. Both agents have different reward systems in order to train the agents differently, this will allow for a more robust training simulation.
 
 ### Approximate Q Learning Structure
 
