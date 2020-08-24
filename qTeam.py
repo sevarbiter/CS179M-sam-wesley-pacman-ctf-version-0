@@ -69,7 +69,7 @@ class ApproximateQLearning(CaptureAgent):
         """
         self.SCORES = 7
         self.DIED = -7
-        self.ATE_FOOD = 2
+        self.ATE_FOOD = 5
         self.ATE_PACMAN = 5
 
     def getPolicy(self, policyName):
@@ -313,12 +313,12 @@ class ApproximateQLearning(CaptureAgent):
             total = total/(len(avgList) + 1)
             difference = total - prevQValue
         print('difference :', difference)
-        features = self.locationFinder.getFeatures(self.lastState, self) #update last weights
+        #features = self.locationFinder.getFeatures(self.lastState, self) #update last weights
         for feature in features:
             self.weights[feature] += self.LEARNING * features[feature] * difference
 
         print(features)
-        #print(self.getWeights())
+        print(self.getWeights())
 
 class Agent1(ApproximateQLearning):
 
