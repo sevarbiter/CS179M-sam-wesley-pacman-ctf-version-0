@@ -12,7 +12,7 @@ run `python3 capture.py -r qTeam -b baselineTeam -l defaultCapture`
 
 ### Approximate Q Learning Structure
 
-![Approximate Q Learning](/images/approximateQLearning.png)
+![Approximate Q Learning](/images/approxQLearning.png)
 
 ![Difference](/images/difference.png)
 
