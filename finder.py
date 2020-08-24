@@ -351,6 +351,7 @@ class Finder:
     if Directions.STOP in legalActions:
       legalActions.remove(Directions.STOP)
     if len(legalActions) == 1: #its in deadend
+      print(legalActions)
       return 1
     if count == 0: #end of search
       return 100
