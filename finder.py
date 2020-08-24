@@ -354,6 +354,12 @@ class Finder:
     
     x = int(gameState.getAgentState(agent.index).getPosition()[0])
     y = int(gameState.getAgentState(agent.index).getPosition()[1])
+    if gameState.isOnRedTeam(agent.index):
+      if x < self.x/2:
+        return 100
+    else:
+      if x >= self.x/2:
+        return 100
 
     #if len(legalActions) == 1: #its in deadend
     walls = 0
@@ -375,7 +381,7 @@ class Finder:
       successor = gameState.generateSuccessor(agent.index, action)
       # print(successor)
       newCount = count-1
-      routes.append(self.deadendHeader(successor, agent, newCount)+1)
+      routes.append(self.deadend(successor, agent, newCount)+1)
     minDistToDeadend = min(routes)
     if count == 3:
       print('min distance to deadend: ', minDistToDeadend)
