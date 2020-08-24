@@ -12,6 +12,15 @@ run `python3 capture.py -r qTeam -b baselineTeam -l defaultCapture`
 
 ### Approximate Q Learning Structure
 
+![Approximate Q Learning](/images/approximateQLearning.png)
+
+![Difference](/images/difference.png)
+
+![Exact Q Value](/images/exactQ.png)
+
+![Weight Update](/images/weightUpdate.png)
+
+
 ### Finder Class
 `finder.py`
 
