@@ -2,45 +2,24 @@
 # pacman-ctf
 ## Python3 version of UC Berkeley's CS 188 Pacman Capture the Flag project
 
-### Original Licensing Agreement (which also extends to this version)
-Licensing Information:  You are free to use or extend these projects for
-educational purposes provided that (1) you do not distribute or publish
-solutions, (2) you retain this notice, and (3) you provide clear
-attribution to UC Berkeley, including a link to http://ai.berkeley.edu.
-
-Attribution Information: The Pacman AI projects were developed at UC Berkeley.
-The core projects and autograders were primarily created by John DeNero
-(denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
-Student side autograding was added by Brad Miller, Nick Hay, and
-Pieter Abbeel (pabbeel@cs.berkeley.edu).
-
-### This version attribution
-This version (cshelton/pacman-ctf github repo) was modified by Christian
-Shelton (cshelton@cs.ucr.edu) on June 23, 2020 to run under Python 3.
-
-
-## Getting Started
-(much of this is from the original HTML documentation, in origdoc/)
-
 ### Short Version:
 
-run `python capture.py`
+run `python3 capture.py -r qTeam -b baselineTeam -l defaultCapture`
 
-make your agents by modifying `myTeam.py`
+### Team - Reinforcement Learning
 
-run `python capture.py --red=myTeam` to test your team as Red
+`qTeam.py` has the code for generating a team of two agents using approximate q learning. Eeach agent works independently with the help of its teamate, both agents have and use their own policy to learn and make decisions based on the current game state. Using linear approximation we extract features from the game state to approximate a general state overall. This allows the agents to learn through generalizing the game state and adjusting their weights accordingly. Both agents have different reward systems in order to train the agents differently, this will allow for a more robust training simulation.
 
-run `python capture.py --help` to see other options
+### Approximate Q Learning Structure
 
+### Finder Class
+`finder.py`
 
-### Longer Version:
+### Agent1
 
-The challenge is to design agents to play Capture-the-Flag in a Pacman-like
-arena.   
+### Agent2
 
-![Example Game](/origdoc/capture_the_flag.png)
-
-#### Rules
+#### Rules of the game
 
 **Layout:** The Pacman map is divided into two halves: blue (right) and red (left).  Red agents (which all have even indices) must defend the red food while trying to eat the blue food.  When on the red side, a red agent is a ghost.  When crossing into enemy territory, the agent becomes a Pacman.
 
@@ -56,15 +35,18 @@ arena.
 
 **Computation Time:** Each agent has 1 second to return each action. Each move which does not return within one second will incur a warning.  After three warnings, or any single move taking more than 3 seconds, the game is forfeit.  There will be an initial start-up allowance of 15 seconds (use the `registerInitialState` method). If you agent times out or otherwise throws an exception, an error message will be present in the log files, which you can download from the results page (see below).
 
-#### Key data structures
+##### Original Licensing Agreement (which also extends to this version)
+Licensing Information:  You are free to use or extend these projects for
+educational purposes provided that (1) you do not distribute or publish
+solutions, (2) you retain this notice, and (3) you provide clear
+attribution to UC Berkeley, including a link to http://ai.berkeley.edu.
 
-`CaptureAgent` (in `captureAgent.py`) is a useful base class for your agents.
-It has a variety of methods that can return useful information.  This includes a `distancer` field that contains a `distanceCalculator` object that can automatically calculate (and cache) the distances between every two points in the maze.
+Attribution Information: The Pacman AI projects were developed at UC Berkeley.
+The core projects and autograders were primarily created by John DeNero
+(denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
+Student side autograding was added by Brad Miller, Nick Hay, and
+Pieter Abbeel (pabbeel@cs.berkeley.edu).
 
-`GameState` (in `capture.py`) has still more information that can be queried.  A current `GameState` object is passed into your agents' `chooseAction` methods.  Note that `GameState` objects can return the set of legal actions for an agent and can generate new `GameState` s that would result from any action.
-
-`game.py` has code that defines `Directions`, `Configurations`, `AgentState`, and a `Grid`, all of which might be handy and save extra work on your part.
-
-`util.py` has code that might prove helpful.  Of particular note is the `Counter` class which implements a dictionary, but where unused keys default to mapping to 0 (instead of undefined).  A `Counter` mapping positions (integer pairs) to a real value can be used with `CaptureAgent.displayDistributionsOverPositions` to color the cells on the map with debugging information.
-
-`myTeam.py` has skeleton code for generating a team of agents.  Its format should not be changed and needs to have the function `createTeam` as specified.  You should copy this file, change its name, and use it to build your own team.
+##### This version attribution
+This version (cshelton/pacman-ctf github repo) was modified by Christian
+Shelton (cshelton@cs.ucr.edu) on June 23, 2020 to run under Python 3.
