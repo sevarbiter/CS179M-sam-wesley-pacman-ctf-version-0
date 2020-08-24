@@ -191,7 +191,7 @@ class Finder:
     self.ghostPos = ghosts
     self.pacmanPos = invaders
     self.foodList = agent.getFood(gameState).asList()
-    if agent.index == 0 or agent.index == 2:
+    if agent.index == 0 or agent.index == 1:
       self.carrying1 = gameState.getAgentState(agent.index).numCarrying
     else:
       self.carrying2 = gameState.getAgentState(agent.index).numCarrying
@@ -223,7 +223,7 @@ class Finder:
 
     features['isScared'] = self.isScared(gameState, agent)
 
-    features['deadend'] = self.deadendHeader(gameState, agent, 3)
+    # features['deadend'] = self.deadendHeader(gameState, agent, 3)
 
     return features
 
@@ -239,7 +239,8 @@ class Finder:
       return 0
     if minDistance == 0:
       # print("close")
-      minDistance = .5
+      # minDistance = .5
+      return 1
     # print(minDistance)
     return 1/minDistance
   
@@ -271,7 +272,8 @@ class Finder:
         dists = [agent.getMazeDistance(gameState.getAgentState(agent.index).getPosition(), a) for a in self.pacmanPos]
         minDist = min(dists)
         if minDist == 0:
-          minDist = .5
+          # minDist = .5
+          return 1
         return 1/minDist
       else:
         return 0
@@ -391,10 +393,10 @@ class Finder:
 
   def foodCarrying(self, gameState, agent):
     carrying = gameState.getAgentState(agent.index).numCarrying
-    if agent.index == 0 or agent.index == 2:
-      carryWeight = self.carrying1*0.5 
+    if agent.index == 0 or agent.index == 1:
+      carryWeight = self.carrying1
     else:
-      carryWeight = self.carrying2*0.5
+      carryWeight = self.carrying2
 
     myPos = gameState.getAgentState(agent.index).getPosition()
 

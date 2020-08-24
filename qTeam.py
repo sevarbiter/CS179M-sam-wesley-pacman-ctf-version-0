@@ -41,7 +41,7 @@ def createTeam(firstIndex, secondIndex, isRed, first = 'Agent1', second = 'Agent
 
 class ApproximateQLearning(CaptureAgent):
 
-    def __init__(self, index, locationFinder, timeForComputing=0.1, actionFn = None, numTraining=95, epsilon=0, alpha=0, gamma=1):
+    def __init__(self, index, locationFinder, timeForComputing=0.1, actionFn = None, numTraining=1000, epsilon=0.8, alpha=0.6, gamma=1):
         """
         alpha    - learning rate
         epsilon  - exploration rate
@@ -68,9 +68,9 @@ class ApproximateQLearning(CaptureAgent):
         MODIFIERS
         """
         self.SCORES = 15
-        self.DIED = -10
+        self.DIED = -20
         self.ATE_FOOD = 5
-        self.ATE_PACMAN = 5
+        self.ATE_PACMAN = 10
 
     def getPolicy(self, policyName):
         """
