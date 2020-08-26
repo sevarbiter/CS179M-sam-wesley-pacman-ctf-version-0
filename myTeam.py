@@ -1,3 +1,34 @@
+Skip to content
+Search or jump to…
+
+Pull requests
+Issues
+Marketplace
+Explore
+ 
+@neztEx 
+sevarbiter
+/
+CS179M-sam-wesley-pacman-ctf-version-0
+forked from neztEx/CS179M-sam-wesley-pacman-ctf
+0
+09
+Code
+Pull requests
+Actions
+Projects
+Wiki
+Security
+Insights
+CS179M-sam-wesley-pacman-ctf-version-0/qTeam.py /
+@neztEx
+neztEx myTeam merge conflict fix
+Latest commit acab42c 16 hours ago
+ History
+ 2 contributors
+@neztEx@sevarbiter
+480 lines (409 sloc)  16.9 KB
+  
 # myTeam.py
 # ---------
 # Licensing Information:  You are free to use or extend these projects for
@@ -19,208 +50,20 @@ from game import Directions
 import game
 from util import nearestPoint
 from util import raiseNotDefined
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-import math
->>>>>>> distancing
-#from learningAgents import ReinforcementAgent
-=======
 from learningAgents import ReinforcementAgent
 from finder import Finder
->>>>>>> agent1FinalTesting
 
 #################
 # Team creation #
 #################
 
-class finder:
-
-  def __init__(self):
-    self.startup = 0
-    self.list1 = []
-    self.list2 = []
-    self.index1 = 0
-    self.index2 = 0
-    self.test = 0
-    self.enemy1 = (1,1)
-    self.enemy2 = (1,1)
-    self.location1 = (1,1)
-    self.location2 = (1,1)
-    self.x = 0
-    self.y = 0
-
-  def increment(self):
-    self.test = self.test+1
-    print(self.test)
-
-  def getGrid(self, gameState):
-    self.y = gameState.data.food.height
-    self.x = gameState.data.food.width
-    print(self.y)
-    print(self.x)
-
-  def addDistance(self, index, distances, position, gameState):
-    if self.startup < 10:
-      self.startup=self.startup+1
-    if index == 0 or index == 1:
-      self.index1 = index
-    else:
-      self.index2 = index
-    temp = distances
-    if index == self.index1:
-      self.list1.append(distances)
-      self.location1 = position
-    else:
-      self.list2.append(distances)
-      self.location2 = position
-    if len(self.list1) > 5:
-      del self.list1[0]
-    if len(self.list2) > 5:
-      del self.list2[0]
-    if self.startup > 4:
-      self.updateLocations(gameState)
-
-  def updateLocations(self, gameState):
-    a1=0
-    a2=0
-    b1=0
-    b2=0
-    count = 0
-    for x in self.list1:
-      count=count+1
-      if self.index1 == 0:
-        a1=a1+x[1]
-        a2=a2+x[3]
-      else:
-        a1=a1+x[0]
-        a2=a2+x[2]
-    if count>0:
-      a1=a1/count
-      a2=a2/count
-    count = 0
-    for y in self.list2:
-      count=count+1
-      if self.index2 == 2:
-        b1=b1+y[1]
-        b2=b2+y[3]
-      else:
-        b1=b1+y[0]
-        b2=b2+y[2]
-    if count>0:
-      b1=b1/count
-      b2=b2/count
-    #print(a1)
-    #print(a2)
-    #print(b1)
-    #print(b2)
-    a1=a1-4
-    a2=a2-4
-    b1=b1-4
-    b2=b2-4
-    c = math.sqrt(pow((self.location2[0]-self.location1[0]),2) + pow((self.location2[1]-self.location2[1]),2))
-    #print(c)
-    if c == 0:
-      c=1
-    #enemy1
-    x1 = int(abs((pow(a1, 2) - pow(b1, 2) + pow(c,2))/(2*c)))
-    y1 = int(abs(math.sqrt(abs(pow(a1,2) - pow(x1,2)))))
-    if x1 >= self.x-1:
-      x1 = self.x-2
-    if y1 >= self.y-1:
-      y1 = self.y-2
-    if x1 <= 0:
-      x1 = 2
-    if y1 <= 0:
-      y1 = 2
-    if gameState.hasWall(x1, y1):
-      tuplelist = []
-      #cross  
-      if (not gameState.hasWall(x1+1, y1)):
-        tuplelist.append((x1+1,y1))
-      if (not gameState.hasWall(x1-1, y1)):
-        tuplelist.append((x1-1,y1))
-      if (not gameState.hasWall(x1, y1+1)):
-        tuplelist.append((x1,y1+1))
-      if (not gameState.hasWall(x1, y1-1)):
-        tuplelist.append((x1,y1-1))
-      #x
-      if (not gameState.hasWall(x1+1, y1+1)):
-        tuplelist.append((x1+1,y1+1))
-      if (not gameState.hasWall(x1-1, y1+1)):
-        tuplelist.append((x1-1,y1+1))
-      if (not gameState.hasWall(x1+1, y1-1)):
-        tuplelist.append((x1+1,y1-1))
-      if (not gameState.hasWall(x1-1, y1-1)):
-        tuplelist.append((x1-1,y1-1))
-      temptuple = random.choice(tuplelist)
-      x1 = temptuple[0]
-      y1 = temptuple[1]
-    #enemy2
-    x2 = int(abs((pow(a2, 2) - pow(b2, 2) + pow(c,2))/(2*c)))
-    y2 = int(abs(math.sqrt(abs(pow(a1,2) - pow(x2,2)))))
-    if x2 >= self.x-1:
-      x2 = self.x-2
-    if y2 >= self.y-1:
-      y2 = self.y-2
-    if x2 <= 0:
-      x2 = 2
-    if y2 <= 0:
-      y2 = 2
-    if gameState.hasWall(x2, y2):
-      tuplelist = []
-      #cross
-      if (not gameState.hasWall(x2+1, y2)):
-        tuplelist.append((x2+1,y2))
-      if (not gameState.hasWall(x2-1, y2)):
-        tuplelist.append((x2-1,y2))
-      if (not gameState.hasWall(x2, y2+1)):
-        tuplelist.append((x2,y2+1))
-      if (not gameState.hasWall(x2, y2-1)):
-        tuplelist.append((x2,y2-1))
-      #x
-      if (not gameState.hasWall(x2+1, y2+1)):
-        tuplelist.append((x2+1,y2+1))
-      if (not gameState.hasWall(x2-1, y2+1)):
-        tuplelist.append((x2-1,y2+1))
-      if (not gameState.hasWall(x2+1, y2-1)):
-        tuplelist.append((x2+1,y2-1))
-      if (not gameState.hasWall(x2-1, y2-1)):
-        tuplelist.append((x2-1,y2-1))
-      temptuple = random.choice(tuplelist)
-      x2 = temptuple[0]
-      y2 = temptuple[1]
-
-    self.enemy1 = (x1, y1)
-    self.enemy2 = (x2, y2)
-    #print(self.enemy1)
-    #print(self.enemy2)
-
-  def getEnemies(self):
-    return (self.enemy1, self.enemy2)
-
-  def print(self):
-    print(self.location1)
-    print(self.list1)
-    print(self.location2)
-    print(self.list2)
-
 def createTeam(firstIndex, secondIndex, isRed,
-<<<<<<< HEAD
-<<<<<<< HEAD
-               first = 'DummyAgent', second = 'DummyAgent'):
-=======
-               first = 'Agent1', second = 'DummyAgent'):
->>>>>>> agent1Sam
-=======
                first = 'OffensiveAgent', second = 'DefensiveDummyAgent'):
->>>>>>> agent1FinalTesting
   """
   This function should return a list of two agents that will form the
   team, initialized using firstIndex and secondIndex as their agent
   index numbers.  isRed is True if the red team is being created, and
   will be False if the blue team is being created.
-
   As a potentially helpful development aid, this function can take
   additional string-valued keyword arguments ("first" and "second" are
   such arguments in the case of this function), which will come from
@@ -229,21 +72,10 @@ def createTeam(firstIndex, secondIndex, isRed,
   any extra arguments, so you should make sure that the default
   behavior is what you want for the nightly contest.
   """
-<<<<<<< HEAD
-  # (firstindex, sharedobj)
-  # The following line is an example only; feel free to change it.
-  locationFinder = finder()
-  locationFinder.__init__()
-  #locationFinder.increment()
-  #return [eval(first)(firstIndex), eval(second)(secondIndex)]
-  return [OffensiveAgent(firstIndex, locationFinder), DummyAgent(secondIndex, locationFinder)]
-  #return [eval(first)(firstIndex, locationFinder), eval(second)(secondIndex, locationFinder)]
-=======
   locationFinder=Finder()
   locationFinder.__init__()
   # The following line is an example only; feel free to change it.
   return [eval(first)(firstIndex, locationFinder), eval(second)(secondIndex, locationFinder)]
->>>>>>> agent1FinalTesting
 
 ##########
 # Agents #
@@ -256,25 +88,19 @@ class DummyAgent(CaptureAgent):
   create an agent as this is the bare minimum.
   """
 
-<<<<<<< HEAD
-  def registerInitialState(self, gameState, locationFinder=finder()):
-=======
   def __init__(self, index, locationFinder):
     CaptureAgent.__init__(self, index)
     self.index = index
     self.locationFinder = locationFinder
 
   def registerInitialState(self, gameState):
->>>>>>> agent1FinalTesting
     """
     This method handles the initial setup of the
     agent to populate useful fields (such as what team
     we're on).
-
     A distanceCalculator instance caches the maze distances
     between each pair of positions, so your agents can use:
     self.distancer.getDistance(p1, p2)
-
     IMPORTANT: This method may run for at most 15 seconds.
     """
 
@@ -290,8 +116,6 @@ class DummyAgent(CaptureAgent):
     #at the start of the game we will have an index of 1 and 2 meaning
     #we have 2 ghost on the board
     self.start = gameState.getAgentPosition(self.index)
-    self.location_finder = locationFinder
-    self.location_finder.getGrid(gameState)
     #prints none at the start of game
     CaptureAgent.registerInitialState(self, gameState)
 
@@ -314,7 +138,6 @@ class DummyAgent(CaptureAgent):
     bestActions = [a for a, v in zip(actions, values) if v == maxValue]
     
     foodLeft = len(self.getFood(gameState).asList())
-    self.location_finder.addDistance(self.index, gameState.getAgentDistances(), gameState.getAgentState(self.index).getPosition(), gameState)
 
     if foodLeft <= 2:
       bestDist = 9999
@@ -355,77 +178,7 @@ class DummyAgent(CaptureAgent):
     features = util.Counter()
     successor = self.getSuccessor(gameState, action)
     features['successorScore'] = self.getScore(successor)
-    features['ghostDistance'] = self.nearby(gameState, 3)
-    features['closestFood'] = self.closestFood(gameState)
-    features['ghostsNear'] = self.nearby(gameState, 0)
-    features['pacmanNear'] = self.nearby(gameState, 1)
-    features['inTunnel'] = self.inTunnel(gameState)
-    features['inDeadend'] = self.inDeadend(gameState)
-    features['scaredGhostNear'] = self.nearby(gameState, 2)
-    features['foodCarrying'] = self.foodCarrying(gameState)
     return features
-
-  def closestFood(self, gameState):
-    foodList = self.getFood(gameState).asList()
-    if len(foodList) > 0:
-      #myPos current position of agent on board as tuple ex. (1,2)
-      myPos = gameState.getAgentState(self.index).getPosition()
-      #finds all food positions and returns the closest one to the agent
-      minDistance = min([self.getMazeDistance(myPos, food) for food in foodList])
-    return minDistance
-    
-  def nearby(self, gameState, option):
-    enemies = [gameState.getAgentState(i) for i in self.getOpponents(gameState)]
-    if option == 1:
-      invaders = [a for a in enemies if a.isPacman and a.getPosition() != None]
-      return len(invaders)
-    if option == 0:
-      ghosts = [a for a in enemies if (not a.isPacman) and a.getPosition() != None]
-      return len(ghosts)
-    if option == 2:
-      scaredy_cats = [a for a in enemies if a.scaredTimer > 0 and a.getPosition() != None]
-      return len(scaredy_cats)
-    if option == 3:
-      myPos = gameState.getAgentState(self.index).getPosition()
-      x = int(myPos[0])
-      y = int(myPos[1])
-      myPosInt = (x, y)
-      places = self.location_finder.getEnemies()
-      dists = [self.getMazeDistance(myPosInt, a) for a in places]
-      return min(dists)
-    return 0
-
-  def inTunnel(self, gameState):
-    myState = gameState.getAgentState(self.index)
-    myPos = myState.getPosition()
-    x = int(myPos[0])
-    y = int(myPos[1])
-    if gameState.hasWall(x,y+1) and gameState.hasWall(x,y-1):
-      return 1
-    if gameState.hasWall(x+1,y) and gameState.hasWall(x-1,y):
-      return 1
-    return 0
-
-  def inDeadend(self, gameState):
-    myState = gameState.getAgentState(self.index)
-    myPos = myState.getPosition()
-    x = int(myPos[0])
-    y = int(myPos[1])
-    count = 0
-    if gameState.hasWall(x+1,y):
-      count=count+1
-    if gameState.hasWall(x-1,y):
-      count=count+1
-    if gameState.hasWall(x,y+1):
-      count=count+1
-    if gameState.hasWall(x,y-1):
-      count=count+1
-    if count == 3:
-      return 1
-    return 0
-
-  def foodCarrying(self, gameState):
-    return gameState.getAgentState(self.index).numCarrying
 
   def getWeights(self, gameState, action):
     """
@@ -476,13 +229,8 @@ class OffensiveAgent(DummyAgent):
         # self.localCarry = 0
       if myState.isPacman == False:
         self.localCarry = 0
-<<<<<<< HEAD
-    
-    self.location_finder.addDistance(self.index, gameState.getAgentDistances(), gameState.getAgentState(self.index).getPosition(), gameState)
-=======
  
     # self.location_finder.addDistance(self.index, gameState.getAgentDistances(), gameState.getAgentState(self.index).getPosition(), gameState)
->>>>>>> agent1FinalTesting
     # if foodLeft <= 2:
     #   bestDist = 9999
     #   for action in actions:
@@ -688,14 +436,9 @@ class DefensiveDummyAgent(DummyAgent):
     bestActions = [a for a, v in zip(actions, values) if v == maxValue]
     #print("best actions")
     #print(bestActions)
-<<<<<<< HEAD
-    self.location_finder.addDistance(self.index ,gameState.getAgentDistances(), gameState.getAgentState(self.index).getPosition(), gameState)
-    self.location_finder.print()
-=======
     # self.locationFinder.getGrid(gameState)
     # self.locationFinder.addDistance(self.index, gameState.getAgentDistances(), gameState.getAgentState(self.index).getPosition(), gameState) 
     #self.locationFinder.getFeatures(gameState, self)
->>>>>>> agent1FinalTesting
     return random.choice(bestActions)
 
   def getSuccessor(self, gameState, action):
@@ -745,11 +488,7 @@ class DefensiveDummyAgent(DummyAgent):
       else:
         features['hazzyDist'] = distances[2] 
 
-<<<<<<< HEAD
-    print(gameState.getAgentState(0))
-=======
     # print(features['hazzyDist'])
->>>>>>> agent1FinalTesting
 
     enemies = [successor.getAgentState(i) for i in self.getOpponents(successor)]
     invaders = [a for a in enemies if a.isPacman and a.getPosition() != None]
@@ -770,3 +509,15 @@ class DefensiveDummyAgent(DummyAgent):
 
   def getWeights(self, gameState, action):
     return {'numInvaders':-1000, 'defending':100, 'invaderDistance':-10, 'stop':-100, 'reverse': -2, 'pelletDistance':-6, 'hazzyDist':-1}
+© 2020 GitHub, Inc.
+Terms
+Privacy
+Security
+Status
+Help
+Contact GitHub
+Pricing
+API
+Training
+Blog
+About

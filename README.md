@@ -12,8 +12,15 @@ run `python3 capture.py -r qTeam -b baselineTeam -l defaultCapture`
 
 # Team Red-and-Blue
 
+Welcome to our agent, our agent is designed to learn through reinforcement learning. We the use of features and weights we are able to use a linear function to approximate game states and based on the agents actions it will recieve rewards. For example if our pacman sees a ghost, at first the agent will not consider the ghost to be a threat, but will soon learn through negative rewards that being eaten by a ghost this not offer great rewards and will over time learn to avoid a ghost if it comes acrosss one.
+
+A team is made up of two agents. Our agents work indepentdly from one another, we are able to achieve this by using two seperate policies. We made the design choice to actively have an offensive and defensive agent, although both can participate in offense and defense, each agent will get rewarded respecfully with regards to their role. This will populate to different policies that can work independently from one another. Although our agent's are independent they do work together, by providing information to one another. This allows for more role based team creation.
+
+The agents are implemented using approximate q learning. This method allows the agent to adjust it's weights as it explores game states in the beginning of its learning phases. The agent explores more often in the beginning stages and as games progress it will more often exploit states it is already aware of when it knows the rewards. Our learning sessions are about 1000 games, after that our agents will have a working policy to exploit from.
 
 ### Reinforcement Learning
+We use the register intial
+
 ![Reinforcement Learning](/images/reLearning.png)
 
 `qTeam.py` has the code for generating a team of two agents using approximate q learning. Each agent works independently with the help of its teamate, both agents have and use their own policy to learn and make decisions based on the current game state. Using linear approximation we extract features from the game state to approximate a general state overall. This allows the agents to learn through generalizing the game state and adjusting their weights accordingly. Both agents have different reward systems in order to train the agents differently, this will allow for a more robust training simulation.
