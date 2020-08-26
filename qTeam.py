@@ -7,7 +7,7 @@ import json
 from game import Directions
 from util import nearestPoint
 from util import raiseNotDefined
-from myTeam import DefensiveDummyAgent
+#from myTeam import DefensiveDummyAgent
 from finder import Finder
 from random import sample
 
@@ -41,7 +41,7 @@ def createTeam(firstIndex, secondIndex, isRed, first = 'Agent1', second = 'Agent
 
 class ApproximateQLearning(CaptureAgent):
 
-    def __init__(self, index, locationFinder, timeForComputing=0.1, actionFn = None, numTraining=95, epsilon=0.8, alpha=0.2, gamma=1):
+    def __init__(self, index, locationFinder, timeForComputing=0.1, actionFn = None, numTraining=95, epsilon=0, alpha=0, gamma=1):
         """
         alpha    - learning rate
         epsilon  - exploration rate
@@ -67,9 +67,9 @@ class ApproximateQLearning(CaptureAgent):
         """
         MODIFIERS
         """
-        self.SCORES = 15
-        self.DIED = -3
-        self.ATE_FOOD = 4
+        self.SCORES = 10
+        self.DIED = -20
+        self.ATE_FOOD = 2
         self.ATE_PACMAN = 6
 
     def getPolicy(self, policyName):
@@ -297,7 +297,7 @@ class ApproximateQLearning(CaptureAgent):
         
         prevQValue = self.getQValue(self.lastState, self.lastAction)
         print('Reward : ',reward)
-        
+        difference = 0
         if len(gameState.getLegalActions(self.index)) == 0:
             difference =  reward - prevQValue
         else:
@@ -307,12 +307,14 @@ class ApproximateQLearning(CaptureAgent):
             avgList = sample(self.buffer, int(len(self.buffer)/10))
             #print('maxQ :',  maxQ)
             # print('avgList :', len(avgList))
-            total = reward + self.DISCOUNT*maxQ
+            total = self.DISCOUNT*maxQ
             for i in avgList:
                 total += i[1] + self.DISCOUNT*i[0]
             # print('total of avgList :', total)
             total = total/(len(avgList) + 1)
+            total = reward + total
             difference = total - prevQValue
+            #difference = (reward + self.DISCOUNT*maxQ) - prevQValue
         print('difference :', difference)
         #features = self.locationFinder.getFeatures(self.lastState, self) #update last weights
         for feature in features:
@@ -322,10 +324,17 @@ class ApproximateQLearning(CaptureAgent):
             #if newWeight > 10 or newWeight < -10:
               #continue
             self.weights[feature] = newWeight
-            if self.weights[feature] < 0:
-              self.weights[feature] = newWeight - 0.01*self.LEARNING
+            band = 0.1*self.LEARNING
             if self.weights[feature] > 0:
-              self.weights[feature] = newWeight + 0.01*self.LEARNING
+              if self.weights[feature] < band:
+                self.weights[feature] = 0
+              else:
+                self.weights[feature] = newWeight - band
+            if self.weights[feature] < 0:
+              if self.weights[feature] > band:
+                self.weights[feature] = 0
+              else:
+                self.weights[feature] = newWeight + band
         print(features)
         print(self.getWeights())
 
@@ -333,7 +342,7 @@ class Agent1(ApproximateQLearning):
 
     def __init__(self, index, locationFinder):
         ApproximateQLearning.__init__(self, index, locationFinder)
-        self.ATE_FOOD =  10
+        self.ATE_FOOD =  5
         self.getPolicy("qPolicy0.txt")
     
     def getRewards(self, gameState):
