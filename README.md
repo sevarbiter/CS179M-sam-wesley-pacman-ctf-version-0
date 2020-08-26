@@ -28,25 +28,67 @@ Each of our agents will update based on their current position in the environmen
 
 ![Reinforcement Learning](/images/reLearning.png)
 
-`qTeam.py` has the code for generating a team of two agents using approximate q learning. Each agent works independently with the help of its teamate, both agents have and use their own policy to learn and make decisions based on the current game state. Using linear approximation we extract features from the game state to approximate a general state overall. This allows the agents to learn through generalizing the game state and adjusting their weights accordingly. Both agents have different reward systems in order to train the agents differently, this will allow for a more robust training simulation.
-
-### Approximate Q Learning Structure
+Using the algorithm below for approximate q learning, obtain the Q value based on the weights and features the agent finds in the current state space.
 
 ![Approximate Q Learning](/images/approxQLearning.png)
 
+In order for the agent to learn, it must be able to update its weights based on its experience. To properly mitagate this we calculate the difference of the current state from the previous state as seen the algorithm below.
+
 ![Difference](/images/difference.png)
+
+We can then now update the current Q value by adding both differnce and current Q(s,a)*learning rate.
 
 ![Exact Q Value](/images/exactQ.png)
 
+Once have complete the calculations for the q values we are able to update the agents weights to associate the values earn in the game state with its learning rate using the calculated difference and the current active features.
+
 ![Weight Update](/images/weightUpdate.png)
 
+Although we are able to approximate and adjust weights accordingly, the agents policy will never converge and also causes a balloning effect to occur. This is one of the issues that comes with approximate q learning. We have implemented certain tools to diminish those effects.
 
-### Finder Class
-`finder.py`
+### Approximate Q Learning Structure
+
+`qTeam.py` has the code for generating a team of two agents using approximate q learning. Each agent works independently with the help of its teamate, both agents have and use their own policy to learn and make decisions based on the current game state. Using linear approximation we extract features from the game state to approximate a general state overall. This allows the agents to learn through generalizing the game state and adjusting their weights accordingly. Both agents have different reward systems in order to train the agents differently, this will allow for a more robust training simulation.
+
+-`def chooseAction` This function calls `def update` to update the current q values for the game state the agent is in. Once it has computed does values and weights, it will determine and action to take. The action is select based on the `EXPLORING` rate and using a coin toss to determine its action. If the exploring rate is set high, it will take random actions in the beginning eposiodes of its training.
+
+-`def update` This is called from `chooseAction`, this is where the core of approximate q learning takes place. In this action the agent will update the q values is discussed above and its weights. With the use of a buffer to average out values, discussed below, each agent will update the learning weights based on the active features of the game state.
+
+-`def get/write Policy` Two things must be accomplished this function, keep a record of the buffer to be used for later episodes and accessing the policy after the agent has trained for x number of episodes.
+
+-`def getReward` This generates the reward for the given state and passes the value into the `update` function.
+
+`def createTeam` allows us to create a team of two agents by passing in their class as the parameters, this also allows so create shared objects between both agents. We instantiate the `locationFinder` object pass it in as a parameter for both agents to use and update. This allows us to gather features for both agents and additionally commnicate further information if need be. 
+
+`finder.py` is class use to define our feature space within the game state environment. The agents use the finder class to populate certain features that have been design for specific role base goals. Thus allowing the agents to gather to approximate the state based on the active features and allowing them to update their weights/policy accordingly 
+
+#### Feature Space
+These are the features we have implemented for the agent to have access to, but not all are active as some can be detremental in learning process.
+
+- closestFood
+- neaarestEatenFood
+- isScared
+- nearestPowerPellet
+- randomClosestFood
+- ghostsNear
+- pacmanNear
+- inTunnel
+- inDeadend
+- scaredGhostNear
+- foodCarrying
+- isScared
+- deadend
+
+#### Buffer
+Do the issues of approximate q learning, there is balloning effect as each agent learns through the number of episodes. Values will go towards infinity in either positive or negative fashion. In order to counter this effect we implemented a buffer to store last 1,000 values and rewards. As each agent updates the Q value difference, as discussed above, it will instead sample a 100 instances from the buffer and average out the current q value to be used instead of the actual current q value.
+
+This prevents the values from hitting astronamical values and also given the agent a more approximated experience over time based on its past action and rewards.
 
 ### Agent1
+This is our offensive agent, this agent is design to learng by eaten pellets, scoring, and avoiding being eaten. The ideal expectancy for this agent is to avoid ghost at all costs. Gather if the situation is allowed and if there is a possible threat to retreat and score.
 
 ### Agent2
+This is our defensive agent, this agent is design to learn by being rewarded for eating the opposing teams pacman. The ideal expectancy for this agent is to hover around the teams pellets and seek out enemy pacman to eat.
 
 ---
 ### Rules of the game
