@@ -26,23 +26,28 @@ The agents are implemented using approximate q learning. This method allows the 
 
 Each of our agents will update based on their current position in the environment. Using the state, action, and reward to update its polociy.
 
-![Reinforcement Learning](/images/reLearning.png)
+<!--![Reinforcement Learning](/images/reLearning.png)-->
+<img src="/images/reLearning.png" width=400 align=middle>
 
 Using the algorithm below for approximate q learning, obtain the Q value based on the weights and features the agent finds in the current state space.
 
-![Approximate Q Learning](/images/approxQLearning.png)
+<!--![Approximate Q Learning](/images/approxQLearning.png)-->
+<img src="/images/approxQLearning.png" width=400 align=middle>
 
 In order for the agent to learn, it must be able to update its weights based on its experience. To properly mitagate this we calculate the difference of the current state from the previous state as seen the algorithm below.
 
-![Difference](/images/difference.png)
+<!-- ![Difference](/images/difference.png) -->
+<img src="/images/difference.png" width=400 align=middle>
 
 We can then now update the current Q value by adding both differnce and current Q(s,a)*learning rate.
 
-![Exact Q Value](/images/exactQ.png)
+<!--![Exact Q Value](/images/exactQ.png)-->
+<img src="/images/exactQ.png" width=400 align=middle>
 
 Once have complete the calculations for the q values we are able to update the agents weights to associate the values earn in the game state with its learning rate using the calculated difference and the current active features.
 
-![Weight Update](/images/weightUpdate.png)
+<!--![Weight Update](/images/weightUpdate.png)-->
+<img src="/images/weightUpdate.png" width=400 align=middle>
 
 Although we are able to approximate and adjust weights accordingly, the agents policy will never converge and also causes a balloning effect to occur. This is one of the issues that comes with approximate q learning. We have implemented certain tools to diminish those effects.
 
