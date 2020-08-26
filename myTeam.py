@@ -1,34 +1,4 @@
-Skip to content
-Search or jump to…
 
-Pull requests
-Issues
-Marketplace
-Explore
- 
-@neztEx 
-sevarbiter
-/
-CS179M-sam-wesley-pacman-ctf-version-0
-forked from neztEx/CS179M-sam-wesley-pacman-ctf
-0
-09
-Code
-Pull requests
-Actions
-Projects
-Wiki
-Security
-Insights
-CS179M-sam-wesley-pacman-ctf-version-0/qTeam.py /
-@neztEx
-neztEx myTeam merge conflict fix
-Latest commit acab42c 16 hours ago
- History
- 2 contributors
-@neztEx@sevarbiter
-480 lines (409 sloc)  16.9 KB
-  
 # myTeam.py
 # ---------
 # Licensing Information:  You are free to use or extend these projects for
@@ -509,15 +479,3 @@ class DefensiveDummyAgent(DummyAgent):
 
   def getWeights(self, gameState, action):
     return {'numInvaders':-1000, 'defending':100, 'invaderDistance':-10, 'stop':-100, 'reverse': -2, 'pelletDistance':-6, 'hazzyDist':-1}
-© 2020 GitHub, Inc.
-Terms
-Privacy
-Security
-Status
-Help
-Contact GitHub
-Pricing
-API
-Training
-Blog
-About
