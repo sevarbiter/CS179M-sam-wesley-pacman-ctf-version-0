@@ -20,10 +20,15 @@ import game
 from util import nearestPoint
 from util import raiseNotDefined
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 import math
 >>>>>>> distancing
 #from learningAgents import ReinforcementAgent
+=======
+from learningAgents import ReinforcementAgent
+from finder import Finder
+>>>>>>> agent1FinalTesting
 
 #################
 # Team creation #
@@ -202,10 +207,14 @@ class finder:
 
 def createTeam(firstIndex, secondIndex, isRed,
 <<<<<<< HEAD
+<<<<<<< HEAD
                first = 'DummyAgent', second = 'DummyAgent'):
 =======
                first = 'Agent1', second = 'DummyAgent'):
 >>>>>>> agent1Sam
+=======
+               first = 'OffensiveAgent', second = 'DefensiveDummyAgent'):
+>>>>>>> agent1FinalTesting
   """
   This function should return a list of two agents that will form the
   team, initialized using firstIndex and secondIndex as their agent
@@ -220,6 +229,7 @@ def createTeam(firstIndex, secondIndex, isRed,
   any extra arguments, so you should make sure that the default
   behavior is what you want for the nightly contest.
   """
+<<<<<<< HEAD
   # (firstindex, sharedobj)
   # The following line is an example only; feel free to change it.
   locationFinder = finder()
@@ -228,6 +238,12 @@ def createTeam(firstIndex, secondIndex, isRed,
   #return [eval(first)(firstIndex), eval(second)(secondIndex)]
   return [OffensiveAgent(firstIndex, locationFinder), DummyAgent(secondIndex, locationFinder)]
   #return [eval(first)(firstIndex, locationFinder), eval(second)(secondIndex, locationFinder)]
+=======
+  locationFinder=Finder()
+  locationFinder.__init__()
+  # The following line is an example only; feel free to change it.
+  return [eval(first)(firstIndex, locationFinder), eval(second)(secondIndex, locationFinder)]
+>>>>>>> agent1FinalTesting
 
 ##########
 # Agents #
@@ -240,7 +256,16 @@ class DummyAgent(CaptureAgent):
   create an agent as this is the bare minimum.
   """
 
+<<<<<<< HEAD
   def registerInitialState(self, gameState, locationFinder=finder()):
+=======
+  def __init__(self, index, locationFinder):
+    CaptureAgent.__init__(self, index)
+    self.index = index
+    self.locationFinder = locationFinder
+
+  def registerInitialState(self, gameState):
+>>>>>>> agent1FinalTesting
     """
     This method handles the initial setup of the
     agent to populate useful fields (such as what team
@@ -421,24 +446,24 @@ class OffensiveAgent(DummyAgent):
     """
     Picks among the actions with the highest Q(s,a).
     """
-    print('---START---')
+    # print('---START---') 
     actions = gameState.getLegalActions(self.index)
     
-    print(actions)
+    # print(actions)
 
     # You can profile your evaluation time by uncommenting these lines
     # start = time.time()
     values = [self.evaluate(gameState, a) for a in actions]
     # print('eval time for agent %d: %.4f' % (self.index, time.time() - start))
 
-    print(values)
+    # print(values)
 
     maxValue = max(values)
     bestActions = [a for a, v in zip(actions, values) if v == maxValue]
-    print('bestActions: %s'% bestActions)
+    # print('bestActions: %s'% bestActions)
 
     myState = gameState.getAgentState(self.index)
-    print(myState.isPacman) 
+    # print(myState.isPacman) 
     foodLeft = len(self.getFood(gameState).asList())
 
     #checks to see if a
@@ -451,8 +476,13 @@ class OffensiveAgent(DummyAgent):
         # self.localCarry = 0
       if myState.isPacman == False:
         self.localCarry = 0
+<<<<<<< HEAD
     
     self.location_finder.addDistance(self.index, gameState.getAgentDistances(), gameState.getAgentState(self.index).getPosition(), gameState)
+=======
+ 
+    # self.location_finder.addDistance(self.index, gameState.getAgentDistances(), gameState.getAgentState(self.index).getPosition(), gameState)
+>>>>>>> agent1FinalTesting
     # if foodLeft <= 2:
     #   bestDist = 9999
     #   for action in actions:
@@ -463,7 +493,7 @@ class OffensiveAgent(DummyAgent):
     #       bestAction = action
     #       bestDist = dist
     #   return bestAction
-    print('---END---')
+    # print('---END---')
     return random.choice(bestActions)
 
   def evaluate(self, gameState, action):
@@ -474,7 +504,7 @@ class OffensiveAgent(DummyAgent):
     # print(features)
     weights = self.getWeights(gameState, action)
     # print(weights)
-    print('evalutate: %d'% (features * weights))
+    # print('evalutate: %d'% (features * weights))
     return features * weights
 
   def getFeatures(self, gameState, action):
@@ -511,11 +541,12 @@ class OffensiveAgent(DummyAgent):
     # Computes distance to ghosts we can see in order to avoid
     enemies = [successor.getAgentState(i) for i in self.getOpponents(successor)]
     ghosts = [a for a in enemies if not a.isPacman and a.getPosition() != None]
-    print('numGhosts: %s' % ghosts)
+    # print('numGhosts: %s' % ghosts)
     features['numGhosts'] = len(ghosts)
     if len(ghosts) > 0:
       dists = [self.getMazeDistance(myPos, a.getPosition()) for a in ghosts]
       features['ghostDistance'] = min(dists)
+      print('Ghost Near: %d' % min(dists))
 
     if action == Directions.STOP: features['stop'] = 1
     return features
@@ -533,44 +564,44 @@ class MiniMaxAgent(OffensiveAgent):
 
   def chooseAction(self, gameState):
     action = self.minMax(gameState, self.index, self.myDepth)
-    print('action to proceed: %s'% action)
+    # print('action to proceed: %s'% action)
     return action
   
   def minMax(self,gameState, index, depth, maxi = True, action = Directions.STOP):
-    print('agent: %d'% index)
+    # print('agent: %d'% index)
 
     if gameState.isOver() or depth == 0:
-      print('depth reached')
+      # print('depth reached')
       return self.evaluate(gameState, action)
     
     if gameState.getAgentPosition(index) != None:
       actions = gameState.getLegalActions(index)
-      print('move to take: %s' %actions)
+      # print('move to take: %s' %actions)
     else:
       return
     
     if maxi:
-      print('values for pacman')
+      # print('values for pacman')
       values = [self.minMax(gameState.generateSuccessor(index, action), index, depth-1, False) for action in actions]
-      print('values: %s'%values)
+      # print('values: %s'%values)
       maxValue = max(values)
-      print('maxi value: %s' %maxValue)
+      # print('maxi value: %s' %maxValue)
       bestActions = [a for a, v in zip(actions,values) if v == maxValue]
-      print('maxi bestActions: %s '%bestActions)
+      # print('maxi bestActions: %s '%bestActions)
       # return (maxValue, actions[random.choice(bestActions)])
       # return random.choice(bestActions)
       return random.choice(bestActions)
     else:
       values = []
       if index in self.getOpponents(gameState):
-        print('values for opponent')
+        # print('values for opponent')
         values = [self.minMax(gameState.generateSuccessor(index, action), index+2, depth-1, False) for action in actions]
       else:
-        print('values for pacman')
+        # print('values for pacman')
         values = [self.minMax(gameState.generateSuccessor(index, action), self.index, depth-1, True) for action in actions]
-      print('printing mini values: %s'%values)
+      # # print('printing mini values: %s'%values)
       minValue = max(values)
-      print(minValue)
+      # print(minValue)
       # bestActions = [a for a, v in zip(actions,values) if v == minValue]
       # print(bestActions)
       return minValue
@@ -581,12 +612,12 @@ class MiniMaxAgent(OffensiveAgent):
 
 
   def miniMax(self, gameState, index, depth):
-    print('---miniMax---')
+    # print('---miniMax---')
     maxCost = float('-inf')
-    print(index)
+    # print(index)
     actions = gameState.getLegalActions(index)
-    print('index: %d'% index)
-    print(actions)
+    # print('index: %d'% index)
+    # print(actions)
     for move in actions:
       tempValue = maxCost
       successor = gameState.generateSuccessor(index, move)
@@ -596,17 +627,17 @@ class MiniMaxAgent(OffensiveAgent):
     return action
 
   def minValue(self, gameState, index, depth, action):
-    print('--minValue--')
+    # print('--minValue--')
     if gameState.isOver() or depth == 0:
       return self.evaluate(gameState, action)
     
     #very big value (inf)
     minCost = float('inf')
-    print('index: %d'% index)
+    # print('index: %d'% index)
     if gameState.getAgentPosition(index) != None:
       #if we can see opponent move then we calculate move
       actions = gameState.getLegalActions(index)
-      print(actions)
+      # print(actions)
       for move in actions:
         successor = gameState.generateSuccessor(index, move)
         minCost = min(minCost, self.minValue(successor, index+2, depth-1, move))
@@ -622,7 +653,7 @@ class MiniMaxAgent(OffensiveAgent):
       return self.evaluate(gameState, action)
   
   def maxValue(self, gameState, index, depth, action):
-    print('--maxValue--')
+    # print('--maxValue--')
     if gameState.isOver() or depth == depth:
       #need to create evaluate function
       return self.evaluate(gameState, action) 
@@ -638,6 +669,9 @@ class MiniMaxAgent(OffensiveAgent):
 
 class DefensiveDummyAgent(DummyAgent):
   
+  def __init__(self, index, locationFinder):
+    DummyAgent.__init__(self, index, locationFinder)
+
   def chooseAction(self, gameState):
     """
     Picks among actions randomly.
@@ -654,8 +688,14 @@ class DefensiveDummyAgent(DummyAgent):
     bestActions = [a for a, v in zip(actions, values) if v == maxValue]
     #print("best actions")
     #print(bestActions)
+<<<<<<< HEAD
     self.location_finder.addDistance(self.index ,gameState.getAgentDistances(), gameState.getAgentState(self.index).getPosition(), gameState)
     self.location_finder.print()
+=======
+    # self.locationFinder.getGrid(gameState)
+    # self.locationFinder.addDistance(self.index, gameState.getAgentDistances(), gameState.getAgentState(self.index).getPosition(), gameState) 
+    #self.locationFinder.getFeatures(gameState, self)
+>>>>>>> agent1FinalTesting
     return random.choice(bestActions)
 
   def getSuccessor(self, gameState, action):
@@ -705,7 +745,11 @@ class DefensiveDummyAgent(DummyAgent):
       else:
         features['hazzyDist'] = distances[2] 
 
+<<<<<<< HEAD
     print(gameState.getAgentState(0))
+=======
+    # print(features['hazzyDist'])
+>>>>>>> agent1FinalTesting
 
     enemies = [successor.getAgentState(i) for i in self.getOpponents(successor)]
     invaders = [a for a in enemies if a.isPacman and a.getPosition() != None]
@@ -713,6 +757,7 @@ class DefensiveDummyAgent(DummyAgent):
     if len(invaders) > 0:
       dists = [self.getMazeDistance(myPos, a.getPosition()) for a in invaders]
       features['invaderDistance'] = min(dists)
+      print('Pacman Near: %d' % min(dists))
 
     if action == Directions.STOP: 
       features['stop'] = 1
@@ -725,169 +770,3 @@ class DefensiveDummyAgent(DummyAgent):
 
   def getWeights(self, gameState, action):
     return {'numInvaders':-1000, 'defending':100, 'invaderDistance':-10, 'stop':-100, 'reverse': -2, 'pelletDistance':-6, 'hazzyDist':-1}
-
-####################################
-#     Reinforcement Learning       #
-####################################
-
-#To run game with training session and small map
-#python3 capture.py -r myteam -b baselineteam -q --numGames 10 -l tinycapture
-
-class QLearningAgent(ReinforcementAgent):
-  """
-    Q-Learning Agent
-    
-    Functions:
-      - computeValueFromQValues
-      - computeActionFromQValues
-      - getQValue
-      - getAction
-      - update
-  """
-
-  def __init__(self, **args):
-    """
-    init parent class with parameters that are called from 
-    Agent1 subclass qValues is a dict that stores all the 
-    values of that state and action
-    """
-    ReinforcementAgent.__init__(self, **args)
-    self.qValues = util.Counter()
-
-  def getQValue(self, state, action):
-    """
-      Returns Q(state,action)
-      Should return 0.0 if we have never seen a state
-      or the Q node value otherwise
-    """
-    return self.qValues[(state, action)]
-
-  def computeValueFromQValues(self, state):
-    """
-      Returns max_action Q(state,action)
-      where the max is over legal actions.
-      If no legalActions available return 0.
-    """
-    if len(state.getLegalActions(self.index)) == 0:
-      return 0.0
-    else:
-      values = []
-      legalActions = state.getLegalActions(self.index)
-    print(legalActions)
-    for action in legalActions:
-      values.append(self.getQValue(state,action))
-
-
-    return max(values)
-
-  def computeActionFromQValues(self, state):
-    """
-      Compute the best action to take in a state.
-      If no legal actions are availabe return NONE.
-    """
-    legalActions = state.getLegalActions(self.index)
-    maxValue = 0
-    maxAction = None
-
-    for action in legalActions:
-      value = self.getQValue(state, action)
-      if value > maxValue or maxAction is None:
-        maxValue = value
-        maxAction = action
-    return maxAction
-
-  def chooseAction(self, state):
-    """
-      Compute the action to take in the current state.  With
-      probability self.epsilon, we should take a random action and
-      take the best policy action otherwise. 
-      If no legal actions are availabe return NONE.
-    """
-    # Pick Action 
-    legalActions = state.getLegalActions(self.index)
-    if len(legalActions) == 0:
-      return None
-    
-    if Directions.STOP in legalActions:
-      legalActions.remove(Directions.STOP)
-
-    #update q values
-    
-
-    #explore before exploit
-    if util.flipCoin(self.epsilon):
-      action = random.choice(legalActions)
-    else:
-      action = self.computeActionFromQValues(state)
-
-    #update q values
-    # reward = state
-    # print(legalActions)
-    "*** YOUR CODE HERE ***"
-    return action
-
-  def update(self, state, action, nextState, reward):
-    """
-      The parent class calls this to observe a
-      state = action => nextState and reward transition.
-      You should do your Q-Value update here
-
-      NOTE: You should never call this function,
-      it will be called on your behalf
-    """
-    # QLearning - Compute running average as we go (off policy learning)
-    # Q(s,a) = (1-alpha)*Q(s,a)+(alpha)[r + gamma * maxQ(s',a'))]
-    
-    # DEBUGGING
-    print('updating state qvalue')
-    value = (1-self.alpha) * (self.getQValue(state,action)) + self.alpha * (reward + self.discount * self.computeValueFromQValues(state))
-    self.qValues[(state,action)] = value
-    print(value)
-    
-    # WORKING CODE
-    # self.qValues[(state,action)] = (1-self.alpha) * (self.getQValue(state,action)) + self.alpha * (reward + self.discount * self.computeValueFromQValues(state))
-    
-
-  def getPolicy(self, state):
-    return self.computeActionFromQValues(state)
-
-  def getValue(self, state):
-    return self.computeValueFromQValues(state)
-  
-  # def final(self, state):
-  #   print('GAME FINISH!')
-
-
-class Agent1(QLearningAgent):
-
-  def __init__(self, index, numTraining=100, epsilon=0.5, alpha=0.5, gamma=1, **args):
-    """
-    index       - agent index
-    alpha       - learning rate
-    epsilon     - exploration rate
-    gamma       - discount factor
-    numTraining - number of training episodes, i.e. no learning after these many episodes
-
-    """
-    args['index'] = index
-    args['epsilon'] = epsilon
-    args['gamma'] = gamma
-    args['alpha'] = alpha
-    args['numTraining'] = numTraining
-    QLearningAgent.__init__(self, **args)
-  
-  def getAction(self, state):
-    """
-    Simply calls the getAction method of QLearningAgent and then
-    informs parent of action for Pacman.  Do not change or remove this
-    method.
-    """
-    action = QLearningAgent.getAction(self,state)
-    self.doAction(state,action)
-    return action
-
-    
-
-
-
-

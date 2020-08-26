@@ -88,7 +88,7 @@ class ReflexCaptureAgent(CaptureAgent):
       bestDist = 9999
       for action in actions:
         successor = self.getSuccessor(gameState, action)
-        print(successor)
+        # print(successor)
         pos2 = successor.getAgentPosition(self.index)
         dist = self.getMazeDistance(self.start,pos2)
         if dist < bestDist:

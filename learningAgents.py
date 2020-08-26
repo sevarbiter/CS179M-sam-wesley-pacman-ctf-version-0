@@ -13,75 +13,10 @@
 
 from captureAgents import CaptureAgent
 from game import Directions, Agent, Actions
-
+from finder import Finder
 import random,util,time
 
-class ValueEstimationAgent(CaptureAgent):
-    """
-    Abstract agent which assigns values to (state,action)
-    Q-Values for an environment. As well as a value to a
-    state and a policy given respectively by,
-
-    V(s) = max_{a in actions} Q(s,a)
-    policy(s) = arg_max_{a in actions} Q(s,a)
-
-    Both ValueIterationAgent and QLearningAgent inherit
-    from this agent. The QLearningAgent estimates
-    Q-Values while acting in the environment.
-    """
-
-    def __init__(self, alpha=1.0, epsilon=0.05, gamma=0.8, numTraining = 10):
-        """
-        Sets options, which can be passed in via the Pacman command line using -a alpha=0.5,...
-        alpha    - learning rate
-        epsilon  - exploration rate
-        gamma    - discount factor
-        numTraining - number of training episodes, i.e. no learning after these many episodes
-        """
-        self.alpha = float(alpha)
-        self.epsilon = float(epsilon)
-        self.discount = float(gamma)
-        self.numTraining = int(numTraining)
-
-    ####################################
-    #    Override These Functions      #
-    ####################################
-    def getQValue(self, state, action):
-        """
-        Should return Q(state,action)
-        """
-        util.raiseNotDefined()
-
-    def getValue(self, state):
-        """
-        What is the value of this state under the best action?
-        Concretely, this is given by
-
-        V(s) = max_{a in actions} Q(s,a)
-        """
-        util.raiseNotDefined()
-
-    def getPolicy(self, state):
-        """
-        What is the best action to take in the state. Note that because
-        we might want to explore, this might not coincide with getAction
-        Concretely, this is given by
-
-        policy(s) = arg_max_{a in actions} Q(s,a)
-
-        If many actions achieve the maximal Q-value,
-        it doesn't matter which is selected.
-        """
-        util.raiseNotDefined()
-
-    # def getAction(self, state):
-    #     """
-    #     state: can call state.getLegalActions()
-    #     Choose an action and return it.
-    #     """
-    #     util.raiseNotDefined()
-
-class ReinforcementAgent(ValueEstimationAgent):
+class ReinforcementAgent(CaptureAgent):
     """
       Abstract Reinforcemnt Agent: A ValueEstimationAgent
       which estimates Q-Values (as well as policies) from experience
@@ -116,7 +51,7 @@ class ReinforcementAgent(ValueEstimationAgent):
         """
         return self.actionFn(state)
 
-    def observeTransition(self, state,action,nextState,deltaReward):
+    def observeTransition(self, state,action,nextState, deltaReward):
         """
         Called by environment to inform agent that a transition has
         been observed. This will result in a call to self.update
@@ -124,6 +59,7 @@ class ReinforcementAgent(ValueEstimationAgent):
 
         NOTE: Do *not* override or call this function
         """
+        # print('TRANSITION')
         self.episodeRewards += deltaReward
         self.update(state,action,nextState,deltaReward)
 
@@ -146,8 +82,9 @@ class ReinforcementAgent(ValueEstimationAgent):
         self.episodesSoFar += 1
         if self.episodesSoFar >= self.numTraining:
             # Take off the training wheels
-            self.epsilon = 0.0    # no exploration
-            self.alpha = 0.0      # no learning
+            print('----------------EXPLOIT MODE----------------')
+            self.epsilon = 0.0    #no exploration
+            self.alpha = 0.0      #no learning
 
     def isInTraining(self):
         return self.episodesSoFar < self.numTraining
@@ -155,7 +92,7 @@ class ReinforcementAgent(ValueEstimationAgent):
     def isInTesting(self):
         return not self.isInTraining()
 
-    def __init__(self, index, timeForComputing=0.1, actionFn = None, numTraining=100, epsilon=0.5, alpha=0.5, gamma=1):
+    def __init__(self, index, locationFinder, timeForComputing=0.1, actionFn = None, numTraining=100, epsilon=0.5, alpha=0.5, gamma=1):
         """
         actionFn: Function which takes a state and returns the list of legal actions
 
@@ -167,6 +104,7 @@ class ReinforcementAgent(ValueEstimationAgent):
         CaptureAgent.__init__(self, index, timeForComputing)
         if actionFn == None:
             actionFn = lambda state: state.getLegalActions()
+        self.locationFinder = locationFinder
         self.actionFn = actionFn
         self.episodesSoFar = 0
         self.accumTrainRewards = 0.0
@@ -204,12 +142,15 @@ class ReinforcementAgent(ValueEstimationAgent):
         This is where we ended up after our last action.
         The simulation should somehow ensure this is called
         """
+        gameState = state.makeObservation(self.index)
+
         if not self.lastState is None:
-            reward = state.getScore() - self.lastState.getScore()
-            self.observeTransition(self.lastState, self.lastAction, state, reward)
-        return state
+            reward = self.getReward(gameState)    
+            self.observeTransition(self.lastState, self.lastAction, gameState, reward)
+        return gameState
 
     def registerInitialState(self, state):
+        CaptureAgent.registerInitialState(self, state)
         self.startEpisode()
         if self.episodesSoFar == 0:
             print('Beginning %d episodes of Training' % (self.numTraining))
@@ -218,20 +159,20 @@ class ReinforcementAgent(ValueEstimationAgent):
         """
         Called by Pacman game at the terminal state
         """
-        print('FINAL CALL')
-        deltaReward = state.getScore() - self.lastState.getScore()
-        self.observeTransition(self.lastState, self.lastAction, state, deltaReward)
-        self.stopEpisode()
+        # print('FINAL CALL')
+        # deltaReward = self.getScore(state) - self.lastState.getScore()
+        # self.observeTransition(self.lastState, self.lastAction, state, deltaReward)
+        # self.stopEpisode()
 
         # Make sure we have this var
         if not 'episodeStartTime' in self.__dict__:
             self.episodeStartTime = time.time()
         if not 'lastWindowAccumRewards' in self.__dict__:
             self.lastWindowAccumRewards = 0.0
-        self.lastWindowAccumRewards += state.getScore()
+        self.lastWindowAccumRewards += self.getScore(state)
 
-        NUM_EPS_UPDATE = 100
-        if self.episodesSoFar % NUM_EPS_UPDATE == 0:
+        NUM_EPS_UPDATE = 5
+        if self.episodesSoFar % NUM_EPS_UPDATE == 10:
             print('Reinforcement Learning Status:')
             windowAvg = self.lastWindowAccumRewards / float(NUM_EPS_UPDATE)
             if self.episodesSoFar <= self.numTraining:
@@ -254,4 +195,70 @@ class ReinforcementAgent(ValueEstimationAgent):
             msg = 'Training Done (turning off epsilon and alpha)'
             print('%s\n%s' % (msg,'-' * len(msg)))
 
+    def getReward(self, gameState):
+
+        '''
+        Modifiers
+        '''
+        SCORES = 15
+        DIED = -20
+        ATE_FOOD = 7
+        ATE_PACMAN = 5
+        reward = 0
+
+        #SCORES
+        if self.getScore(gameState) > self.lastState.getScore():
+            reward += self.getScore(gameState) - self.lastState.getScore() + SCORES
+            print('REWARD Scored: %d' % reward)
+        
+        #ATE_FOOD
+        foodList = self.getFood(gameState).asList()
+        prevFood = self.getFood(self.lastState).asList()
+        if len(foodList) > len(prevFood):
+            reward += len(foodList) - len(prevFood) + ATE_FOOD
+            print('REWARD Ate Food: %d' % reward)
+        
+        #DIED
+        if gameState.getAgentPosition(self.index) == gameState.getInitialAgentPosition(self.index):
+            lastX=self.lastState.getAgentPosition(self.index)[0]
+            lastY=self.lastState.getAgentPosition(self.index)[1]
+            currentX=gameState.getAgentPosition(self.index)[0]
+            currentY=gameState.getAgentPosition(self.index)[1]
+            if (lastX == currentX+1 or lastX == currentX-1) and (lastY == currentY+1 or lastY == currentY-1):
+                reward += DIED
+            # if(not(lastX == currentX+1 or lastX == currentX-1)):
+            # # print('current x: %d' % currentX)
+            # # print('last x: %d' % lastX)
+            # #reward += -1000
+            # # print('Reward Eaten: %d' % reward)
+            # j=1
+            # elif(not(lastY == currentY+1 or lastY == currentY-1)):
+            # # print('current x: %d' % currentX)
+            # # print('last x: %d' % lastX)
+            # #reward += -1000
+            # # print('Reward Eaten: %d' % reward)
+            # j=1 
+            # else:
+            # reward += DIED
+                print('REWARD DIED: %d' % reward)
+        # print('REWARD: %d' % reward)
+
+        #ATE_PACMAN
+        oldEnemies = [self.lastState.getAgentState(i) for i in self.getOpponents(self.lastState)]
+        newEnemies = [gameState.getAgentState(i) for i in self.getOpponents(gameState)]
+        oldPacmen = [a for a in oldEnemies if a.isPacman and a.getPosition() != None]
+        newPacmen = [a for a in newEnemies if a.isPacman and a.getPosition() != None]
+        if len(oldPacmen) > 0:
+            dists=[self.getMazeDistance(self.lastState.getAgentState(self.index).getPosition(), a.getPosition()) for a in oldPacmen]
+            if min(dists) == 1:
+                if len(newPacmen) == 0:
+                    reward += ATE_PACMAN
+                    print('REWARD Ate Pacman: %d' % reward)
+                else:
+                    if len(newPacmen) > 0:
+                        dists=[self.getMazeDistance(gameState.getAgentState(self.index).getPosition(), a.getPosition()) for a in oldPacmen]
+                    if min(dists) > 2:
+                        reward += ATE_PACMAN
+                        print('REWARD Ate Pacman: %d' % reward)
+        return reward
   
