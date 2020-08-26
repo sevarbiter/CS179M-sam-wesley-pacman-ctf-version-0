@@ -1,1 +1,1 @@
-{"closestFood": -1537961.6970197828, "ghostsNear": 771537.7905751478, "pacmanNear": 57826.314608044675, "foodCarrying": -22670791.778057046, "isScared": 74762.93748080666}
+{"nearestEatenFood": 0.8003244152381885, "isScared": 13.334087738606454, "nearestPowerPellet": -10.069814177664133, "ghostsNear": -14.400444800432952, "pacmanNear": -0.6523207937044506, "foodCarrying": 0.0}

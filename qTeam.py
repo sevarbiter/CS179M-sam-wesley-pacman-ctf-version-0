@@ -41,7 +41,7 @@ def createTeam(firstIndex, secondIndex, isRed, first = 'Agent1', second = 'Agent
 
 class ApproximateQLearning(CaptureAgent):
 
-    def __init__(self, index, locationFinder, timeForComputing=0.1, actionFn = None, numTraining=95, epsilon=0.8, alpha=0.5, gamma=1):
+    def __init__(self, index, locationFinder, timeForComputing=0.1, actionFn = None, numTraining=95, epsilon=0.8, alpha=0.2, gamma=1):
         """
         alpha    - learning rate
         epsilon  - exploration rate
@@ -67,10 +67,10 @@ class ApproximateQLearning(CaptureAgent):
         """
         MODIFIERS
         """
-        self.SCORES = 7
-        self.DIED = -7
-        self.ATE_FOOD = 5
-        self.ATE_PACMAN = 5
+        self.SCORES = 15
+        self.DIED = -3
+        self.ATE_FOOD = 4
+        self.ATE_PACMAN = 6
 
     def getPolicy(self, policyName):
         """
@@ -222,6 +222,7 @@ class ApproximateQLearning(CaptureAgent):
         if self.lastState != None:
             print('update called')
             self.update(gameState, self.getRewards(gameState))
+            self.locationFinder.updateMyFood(gameState, self.lastState, self)
         
         # print(self.getWeights())
 
@@ -315,8 +316,16 @@ class ApproximateQLearning(CaptureAgent):
         print('difference :', difference)
         #features = self.locationFinder.getFeatures(self.lastState, self) #update last weights
         for feature in features:
-            self.weights[feature] += self.LEARNING * features[feature] * difference
-
+            newWeight = self.weights[feature] + self.LEARNING*features[feature]*difference
+            #if feature == 'closestFood' and newWeight < 0:
+              #continue
+            #if newWeight > 10 or newWeight < -10:
+              #continue
+            self.weights[feature] = newWeight
+            if self.weights[feature] < 0:
+              self.weights[feature] = newWeight - 0.01*self.LEARNING
+            if self.weights[feature] > 0:
+              self.weights[feature] = newWeight + 0.01*self.LEARNING
         print(features)
         print(self.getWeights())
 
@@ -324,7 +333,7 @@ class Agent1(ApproximateQLearning):
 
     def __init__(self, index, locationFinder):
         ApproximateQLearning.__init__(self, index, locationFinder)
-        #self.ATE_FOOD =  2
+        self.ATE_FOOD =  10
         self.getPolicy("qPolicy0.txt")
     
     def getRewards(self, gameState):
@@ -360,12 +369,11 @@ class Agent1(ApproximateQLearning):
         if len(oldPacmen) > 0:
             dists=[self.getMazeDistance(self.lastState.getAgentState(self.index).getPosition(), a.getPosition()) for a in oldPacmen]
             if min(dists) == 1:
-                if len(newPacmen) == 0:
+                if len(newPacmen) == 0 and gameState.getAgentState(self.index).getPosition() != gameState.getInitialAgentPosition(self.index):
                     reward += self.ATE_PACMAN
                     print('REWARD Ate Pacman: %d' % reward)
-                else:
-                    if len(newPacmen) > 0:
-                        dists=[self.getMazeDistance(gameState.getAgentState(self.index).getPosition(), a.getPosition()) for a in oldPacmen]
+                elif len(newPacmen) > 0 and gameState.getAgentState(self.index).getPosition() != gameState.getInitialAgentPosition(self.index):
+                    dists=[self.getMazeDistance(gameState.getAgentState(self.index).getPosition(), a.getPosition()) for a in oldPacmen]
                     if min(dists) > 2:
                         reward += self.ATE_PACMAN
                         print('REWARD Ate Pacman: %d' % reward)
@@ -380,7 +388,7 @@ class Agent2(ApproximateQLearning):
     
     def __init__(self, index, locationFinder):
         ApproximateQLearning.__init__(self, index, locationFinder)
-        #self.ATE_PACMAN = 6
+        self.ATE_PACMAN = 8
         self.getPolicy("qPolicy1.txt")
     
     def getRewards(self, gameState):
@@ -416,12 +424,11 @@ class Agent2(ApproximateQLearning):
         if len(oldPacmen) > 0:
             dists=[self.getMazeDistance(self.lastState.getAgentState(self.index).getPosition(), a.getPosition()) for a in oldPacmen]
             if min(dists) == 1:
-                if len(newPacmen) == 0:
+                if len(newPacmen) == 0 and gameState.getAgentState(self.index).getPosition() != gameState.getInitialAgentPosition(self.index):
                     reward += self.ATE_PACMAN
                     print('REWARD Ate Pacman: %d' % reward)
-                else:
-                    if len(newPacmen) > 0:
-                        dists=[self.getMazeDistance(gameState.getAgentState(self.index).getPosition(), a.getPosition()) for a in oldPacmen]
+                elif len(newPacmen) > 0 and gameState.getAgentState(self.index).getPosition() != gameState.getInitialAgentPosition(self.index):
+                    dists=[self.getMazeDistance(gameState.getAgentState(self.index).getPosition(), a.getPosition()) for a in oldPacmen]
                     if min(dists) > 2:
                         reward += self.ATE_PACMAN
                         print('REWARD Ate Pacman: %d' % reward)
