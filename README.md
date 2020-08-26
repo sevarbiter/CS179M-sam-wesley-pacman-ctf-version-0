@@ -18,8 +18,13 @@ A team is made up of two agents. Our agents work indepentdly from one another, w
 
 The agents are implemented using approximate q learning. This method allows the agent to adjust it's weights as it explores game states in the beginning of its learning phases. The agent explores more often in the beginning stages and as games progress it will more often exploit states it is already aware of when it knows the rewards. Our learning sessions are about 1000 games, after that our agents will have a working policy to exploit from.
 
-### Reinforcement Learning
-We use the register intial
+### Design Layout
+
+![Class Design](/images/finalDesign.png)
+
+### Reninforcement Learning
+
+Each of our agents will update based on their current position in the environment. Using the state, action, and reward to update its polociy.
 
 ![Reinforcement Learning](/images/reLearning.png)
 
