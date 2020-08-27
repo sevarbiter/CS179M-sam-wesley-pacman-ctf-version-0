@@ -490,7 +490,16 @@ class Finder:
   def nearestEatenFood(self, gameState, agent):
     if self.mostRecentlyEaten == None:
       myFoodList = agent.getFoodYouAreDefending(gameState).asList()
-      dist = max([agent.getMazeDistance(gameState.getAgentState(agent.index).getPosition(), a) for a in myFoodList])
+      intitialFurthest = 0
+      for a in myFoodList:
+        furthest = 0
+        distToFood = agent.getMazeDistance(gameState.getInitialAgentPosition(agent.index), a)
+        if distToFood > furthest:
+          initialFurthest = a
+          furthest = distToFood
+      dist = agent.getMazeDistance(gameState.getAgentState(agent.index).getPosition(), initialFurthest)
+      if dist == 0:
+        dist = 1
       return 1/dist
     dist = agent.getMazeDistance(gameState.getAgentState(agent.index).getPosition(), self.mostRecentlyEaten)
     if dist == 0 or dist == 1 or dist == 2:
