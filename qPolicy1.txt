@@ -1,1 +1,1 @@
-{"nearestEatenFood": 5.299253502702926, "ghostsNear": 1.2938553609167738, "pacmanNear": 1.87384486278789}
+{"nearestEatenFood": 2.70972944406326, "pacmanNear": 2.805586822208766}

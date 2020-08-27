@@ -217,6 +217,7 @@ class Finder:
     if agent.index == 0 or agent.index == 1:
       features['closestFood'] = self.closestFood(gameState, agent)
       features['foodCarrying'] = self.foodCarryingHeader(gameState, agent)
+      features['ghostsNear'] = self.nearby(gameState, 0, agent)
     else:
       features['nearestEatenFood'] = self.nearestEatenFood(gameState, agent)
       #features['isScared'] = self.isScared(gameState, agent)
@@ -224,7 +225,6 @@ class Finder:
 
     # features['randomClosestFood'] = self.randomClosestFood(gameState, agent)
 
-    features['ghostsNear'] = self.nearby(gameState, 0, agent)
 
     features['pacmanNear'] = self.nearby(gameState, 1, agent)
 

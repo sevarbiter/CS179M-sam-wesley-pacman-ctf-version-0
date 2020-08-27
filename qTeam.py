@@ -68,7 +68,7 @@ class ApproximateQLearning(CaptureAgent):
         MODIFIERS
         """
         self.SCORES = 125
-        self.DIED = -250
+        self.DIED = -300
         self.ATE_FOOD = 2
         self.ATE_PACMAN = 6
 
@@ -328,14 +328,15 @@ class ApproximateQLearning(CaptureAgent):
               if newWeight < -10:
                 newWeight = -10
             self.weights[feature] = newWeight
-            band = 0.005*self.LEARNING
+            band = 0.5*self.LEARNING*(abs(self.weights[feature]/10))
+            print(band)
             if self.weights[feature] > 0:
-              if self.weights[feature] < band:
+              if self.weights[feature] < .0001:
                 self.weights[feature] = 0
               else:
                 self.weights[feature] = newWeight - band
             if self.weights[feature] < 0:
-              if self.weights[feature] > band:
+              if self.weights[feature] > .0001:
                 self.weights[feature] = 0
               else:
                 self.weights[feature] = newWeight + band
