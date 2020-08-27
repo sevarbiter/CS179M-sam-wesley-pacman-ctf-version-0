@@ -82,24 +82,24 @@ class ApproximateQLearning(CaptureAgent):
         else:
           self.weights = util.Counter()
           test = open(policyName, 'r').read()
-          print("FILE READ: ",test)
+          # print("FILE READ: ",test)
           parsedDict = json.loads(test)
           for features in parsedDict:
             self.weights[features] = parsedDict[features]
-          print('STARTING FEATURES: ',self.getWeights())
+          # print('STARTING FEATURES: ',self.getWeights())
         
         if os.stat("buffer"+policyName).st_size == 0:
           self.buffer = []
         else:
           self.buffer = util.Counter()
           b = open("buffer"+policyName, 'r').read()
-          print("FILE READ: ",b)
+          # print("FILE READ: ",b)
           parsedBuffer = json.loads(b)
           self.buffer = parsedBuffer
         #   print('PARSED :',parsedDict)
         #   for features in range(len(parsedDict)):
             # self.buffer[features] = parsedDict[features]
-          print('STARTING BUFFER: ',self.getBuffer())
+          # print('STARTING BUFFER: ',self.getBuffer())
     
     def writePolicy(self, policyName):
         f = open(policyName,"w+")
@@ -428,7 +428,7 @@ class Agent2(ApproximateQLearning):
         #SCORES
         if self.getScore(gameState) > self.lastState.getScore():
             reward += self.getScore(gameState) - self.lastState.getScore() + self.SCORES
-            print('REWARD Scored: %d' % reward)
+            # print('REWARD Scored: %d' % reward)
         
         #ATE_FOOD
         foodList = self.getFood(gameState).asList()
@@ -436,7 +436,7 @@ class Agent2(ApproximateQLearning):
         if len(foodList) > len(prevFood):
             reward += len(foodList) - len(prevFood) + self.ATE_FOOD
             #reward += len(foodList) - len(prevFood)
-            print('REWARD Ate Food: %d' % reward)
+            # print('REWARD Ate Food: %d' % reward)
         
         #DIED
         if gameState.getAgentPosition(self.index) == gameState.getInitialAgentPosition(self.index):
@@ -446,7 +446,7 @@ class Agent2(ApproximateQLearning):
             currentY=gameState.getAgentPosition(self.index)[1]
             if not (lastX == currentX+1 or lastX == currentX-1) and not (lastY == currentY+1 or lastY == currentY-1):
                 reward += self.DIED
-                print('REWARD DIED: %d' % reward)
+                # print('REWARD DIED: %d' % reward)
 
         #ATE_PACMAN
         oldEnemies = [self.lastState.getAgentState(i) for i in self.getOpponents(self.lastState)]
@@ -458,15 +458,15 @@ class Agent2(ApproximateQLearning):
             if min(dists) == 1:
                 if len(newPacmen) == 0 and gameState.getAgentState(self.index).getPosition() != gameState.getInitialAgentPosition(self.index):
                     reward += self.ATE_PACMAN
-                    print('REWARD Ate Pacman: %d' % reward)
+                    # print('REWARD Ate Pacman: %d' % reward)
                 elif len(newPacmen) > 0 and gameState.getAgentState(self.index).getPosition() != gameState.getInitialAgentPosition(self.index):
                     dists=[self.getMazeDistance(gameState.getAgentState(self.index).getPosition(), a.getPosition()) for a in oldPacmen]
                     if min(dists) > 2:
                         reward += self.ATE_PACMAN
-                        print('REWARD Ate Pacman: %d' % reward)
+                        # print('REWARD Ate Pacman: %d' % reward)
         return reward
     
     def final(self, gameState):
-        print('AGENT2')
+        # print('AGENT2')
         ApproximateQLearning.final(self, gameState)
         self.writePolicy("qPolicy1.txt")
