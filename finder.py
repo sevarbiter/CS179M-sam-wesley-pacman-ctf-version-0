@@ -304,7 +304,7 @@ class Finder:
         dists = [agent.getMazeDistance(gameState.getAgentState(agent.index).getPosition(), a) for a in self.ghostPos]
         minDist = min(dists)
         if minDist > 5:
-          minDist = minDist*2
+          return 0
         if minDist == 0:
           minDist = .5
         if flag == 1:
