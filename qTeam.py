@@ -41,7 +41,7 @@ def createTeam(firstIndex, secondIndex, isRed, first = 'Agent1', second = 'Agent
 
 class ApproximateQLearning(CaptureAgent):
 
-    def __init__(self, index, locationFinder, timeForComputing=0.1, actionFn = None, numTraining=95, epsilon=0, alpha=0, gamma=1):
+    def __init__(self, index, locationFinder, timeForComputing=0.1, actionFn = None, numTraining=100, epsilon=0, alpha=0, gamma=1):
         """
         alpha    - learning rate
         epsilon  - exploration rate
@@ -67,8 +67,8 @@ class ApproximateQLearning(CaptureAgent):
         """
         MODIFIERS
         """
-        self.SCORES = 10
-        self.DIED = -20
+        self.SCORES = 125
+        self.DIED = -250
         self.ATE_FOOD = 2
         self.ATE_PACMAN = 6
 
@@ -302,7 +302,8 @@ class ApproximateQLearning(CaptureAgent):
             difference =  reward - prevQValue
         else:
             maxQ = self.getMaxQValue(gameState)
-            self.buffer.append((maxQ, reward))
+            if self.LEARNING > 0:
+              self.buffer.append((maxQ, reward))
             # print(self.buffer)
             avgList = sample(self.buffer, int(len(self.buffer)/10))
             #print('maxQ :',  maxQ)
@@ -321,10 +322,13 @@ class ApproximateQLearning(CaptureAgent):
             newWeight = self.weights[feature] + self.LEARNING*features[feature]*difference
             #if feature == 'closestFood' and newWeight < 0:
               #continue
-            #if newWeight > 10 or newWeight < -10:
-              #continue
+            if newWeight > 10 or newWeight < -10:
+              if newWeight > 10:
+                newWeight = 10
+              if newWeight < -10:
+                newWeight = -10
             self.weights[feature] = newWeight
-            band = 0.1*self.LEARNING
+            band = 0.005*self.LEARNING
             if self.weights[feature] > 0:
               if self.weights[feature] < band:
                 self.weights[feature] = 0
@@ -342,11 +346,30 @@ class Agent1(ApproximateQLearning):
 
     def __init__(self, index, locationFinder):
         ApproximateQLearning.__init__(self, index, locationFinder)
-        self.ATE_FOOD =  5
+        self.ATE_FOOD =  12
         self.getPolicy("qPolicy0.txt")
     
     def getRewards(self, gameState):
         reward = 0
+        #MOVE TOWARDS FOOD
+        myPos = gameState.getAgentState(self.index).getPosition()
+        myLastPos = self.lastState.getAgentState(self.index).getPosition()
+        foodList = self.getFood(gameState).asList()
+        food = 0
+        minDist = 1000
+        for a in foodList:
+          dist = self.getMazeDistance(myPos, a)
+          if dist < minDist:
+            minDist = dist
+            food = a
+        if len(foodList) > 0:
+          if gameState.isOnRedTeam(self.index):
+            if self.getMazeDistance(myPos, food) < self.getMazeDistance(myLastPos, food) and myPos[0] < gameState.data.food.width/2:
+              reward += .5
+          else:
+            if self.getMazeDistance(myPos, food) < self.getMazeDistance(myLastPos, food) and myPos[0] > gameState.data.food.width/2:
+              reward += .5
+
         #SCORES
         if self.getScore(gameState) > self.lastState.getScore():
             reward += self.getScore(gameState) - self.lastState.getScore() + self.SCORES
@@ -397,7 +420,7 @@ class Agent2(ApproximateQLearning):
     
     def __init__(self, index, locationFinder):
         ApproximateQLearning.__init__(self, index, locationFinder)
-        self.ATE_PACMAN = 8
+        self.ATE_PACMAN = 20
         self.getPolicy("qPolicy1.txt")
     
     def getRewards(self, gameState):

@@ -204,7 +204,7 @@ class Finder:
     spot = list(set(myLastFoodList)-set(myFoodList))
     if len(spot) > 0:
       self.mostRecentlyEaten = spot[0]
-    print(self.mostRecentlyEaten)
+    #print(self.mostRecentlyEaten)
 
   def getFeatures(self, gameState, agent):
     """
@@ -216,10 +216,11 @@ class Finder:
     # features['ghostDistance'] = -(self.nearby(gameState, 3, agent))
     if agent.index == 0 or agent.index == 1:
       features['closestFood'] = self.closestFood(gameState, agent)
+      features['foodCarrying'] = self.foodCarryingHeader(gameState, agent)
     else:
       features['nearestEatenFood'] = self.nearestEatenFood(gameState, agent)
-      features['isScared'] = self.isScared(gameState, agent)
-      features['nearestPowerPellet'] = self.nearestFriendlyPowerPellet(gameState, agent)
+      #features['isScared'] = self.isScared(gameState, agent)
+      #features['nearestPowerPellet'] = self.nearestFriendlyPowerPellet(gameState, agent)
 
     # features['randomClosestFood'] = self.randomClosestFood(gameState, agent)
 
@@ -232,8 +233,6 @@ class Finder:
     #features['inDeadend'] = self.inDeadend(gameState, agent)
 
     # features['scaredGhostNear'] = self.nearby(gameState, 2, agent)
-
-    features['foodCarrying'] = self.foodCarryingHeader(gameState, agent)
 
     #features['isScared'] = self.isScared(gameState, agent)
 
@@ -287,6 +286,8 @@ class Finder:
         minDist = min(dists)
         if minDist == 0:
           minDist = .5
+        if gameState.getAgentState(agent.index).scaredTimer > 0 and (minDist == .5 or minDist == 1 or minDist == 2):
+          minDist = -minDist
         return 1/minDist
       else:
         return 0
@@ -302,6 +303,8 @@ class Finder:
       if len(self.ghostPos) > 0:
         dists = [agent.getMazeDistance(gameState.getAgentState(agent.index).getPosition(), a) for a in self.ghostPos]
         minDist = min(dists)
+        if minDist > 5:
+          minDist = minDist*2
         if minDist == 0:
           minDist = .5
         if flag == 1:
@@ -486,9 +489,20 @@ class Finder:
 
   def nearestEatenFood(self, gameState, agent):
     if self.mostRecentlyEaten == None:
-      return 0
+      myFoodList = agent.getFoodYouAreDefending(gameState).asList()
+      intitialFurthest = 0
+      for a in myFoodList:
+        furthest = 0
+        distToFood = agent.getMazeDistance(gameState.getInitialAgentPosition(agent.index), a)
+        if distToFood > furthest:
+          initialFurthest = a
+          furthest = distToFood
+      dist = agent.getMazeDistance(gameState.getAgentState(agent.index).getPosition(), initialFurthest)
+      if dist == 0:
+        dist = 1
+      return 1/dist
     dist = agent.getMazeDistance(gameState.getAgentState(agent.index).getPosition(), self.mostRecentlyEaten)
-    if dist == 0:
+    if dist == 0 or dist == 1 or dist == 2:
       dist = 1
     return 1/dist
 
