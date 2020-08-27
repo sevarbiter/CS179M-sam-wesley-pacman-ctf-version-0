@@ -23,7 +23,7 @@ The agents are implemented using approximate q learning. This method allows the 
 
 ![Class Design](/images/finalDesign.png)
 
-### Reninforcement Learning
+### Reinforcement Learning
 
 Each of our agents will update based on their current position in the environment. Using the state, action, and reward to update its policy.
 
