@@ -362,7 +362,7 @@ class Agent1(ApproximateQLearning):
           if dist < minDist:
             minDist = dist
             food = a
-        if foodList > 0:
+        if len(foodList) > 0:
           if gameState.isOnRedTeam(self.index):
             if self.getMazeDistance(myPos, food) < self.getMazeDistance(myLastPos, food) and myPos[0] < gameState.data.food.width/2:
               reward += .5
