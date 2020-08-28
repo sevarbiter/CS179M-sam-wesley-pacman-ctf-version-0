@@ -91,14 +91,10 @@ These are the features we have implemented for the agent to have access to, but 
 - neaarestEatenFood
 - isScared
 - nearestPowerPellet
-- randomClosestFood
 - ghostsNear
 - pacmanNear
 - inTunnel
-- inDeadend
-- scaredGhostNear
 - foodCarrying
-- isScared
 - deadend
 
 #### Buffer
