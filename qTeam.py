@@ -7,7 +7,6 @@ import json
 from game import Directions
 from util import nearestPoint
 from util import raiseNotDefined
-#from myTeam import DefensiveDummyAgent
 from finder import Finder
 from random import sample
 
@@ -82,24 +81,18 @@ class ApproximateQLearning(CaptureAgent):
         else:
           self.weights = util.Counter()
           test = open("./policies/"+policyName, 'r').read()
-          # print("FILE READ: ",test)
           parsedDict = json.loads(test)
           for features in parsedDict:
             self.weights[features] = parsedDict[features]
-          # print('STARTING FEATURES: ',self.getWeights())
         
         if os.stat("./policies/buffer"+policyName).st_size == 0:
           self.buffer = []
         else:
           self.buffer = util.Counter()
           b = open("./policies/buffer"+policyName, 'r').read()
-          # print("FILE READ: ",b)
           parsedBuffer = json.loads(b)
           self.buffer = parsedBuffer
-        #   print('PARSED :',parsedDict)
-        #   for features in range(len(parsedDict)):
-            # self.buffer[features] = parsedDict[features]
-          # print('STARTING BUFFER: ',self.getBuffer())
+
     
     def writePolicy(self, policyName):
         """
@@ -122,7 +115,6 @@ class ApproximateQLearning(CaptureAgent):
         and initiates starting episodes to keep track of the number of
         games played
         """
-         #self.start I dont know where we used this yet called in baselineTeam?????
         self.start = gameState.getAgentPosition(self.index)
         CaptureAgent.registerInitialState(self, gameState)
         self.startEpisode()
@@ -172,7 +164,6 @@ class ApproximateQLearning(CaptureAgent):
         information for the user to see how the agent performed
         during the x amount of episodes it has trained for
         """
-        #observationHistory comes from default captureAgents.py
         self.observationHistory = []
 
         if not 'episodeStartTime' in self.__dict__:
@@ -222,8 +213,7 @@ class ApproximateQLearning(CaptureAgent):
 
         features = self.locationFinder.getFeatures(succesor,self)
         for feature in features:
-             #print(features)
-             #print(self.getWeights())
+
              qValue += features[feature] * self.weights[feature]
         return qValue
     
@@ -236,17 +226,11 @@ class ApproximateQLearning(CaptureAgent):
 
         If no legal actions are availabe return NONE.
         """
-        # self.episodeRewards += deltaReward
-        #print(self.lastState)
-        # print('----------')
-        # print('Agent', self.index)
+
         if self.lastState != None:
-            # print('update called')
             self.update(gameState, self.getRewards(gameState))
             self.locationFinder.updateMyFood(gameState, self.lastState, self)
         
-        # print(self.getWeights())
-
         legalActions = gameState.getLegalActions(self.index)
 
         if len(legalActions) == 0:
@@ -262,7 +246,6 @@ class ApproximateQLearning(CaptureAgent):
             self.locationFinder.addLocations(gameState, self)
             action = self.computeActionFromQValues(gameState)
         
-        #what are we using this for???
         self.locationFinder.getGrid(gameState) 
 
         #update lastState and lastAction
@@ -273,9 +256,6 @@ class ApproximateQLearning(CaptureAgent):
         #action, and weights.
         if len(self.buffer) ==  1000:
             self.buffer.pop(0)
-
-        # print('BUFFER :',list(self.buffer.queue))
-        # print('BUFFER Size After :', len(self.buffer))
 
         return action
     
@@ -303,12 +283,10 @@ class ApproximateQLearning(CaptureAgent):
 
         maxValue = 0
         maxAction = None
-        #print("------------")
-        #print("Agent%d" % self.index)
+
         for action in legalActions:
             value = self.getQValue(gameState, action)
-            #print('Value: %d' % value)
-            #print('Action:', action)
+
             if value > maxValue or maxAction is None:
                 maxValue = value
                 maxAction = action
@@ -330,7 +308,6 @@ class ApproximateQLearning(CaptureAgent):
         features = self.locationFinder.getFeatures(gameState,self)
         
         prevQValue = self.getQValue(self.lastState, self.lastAction)
-        # print('Reward : ',reward)
         difference = 0
         if len(gameState.getLegalActions(self.index)) == 0:
             difference =  reward - prevQValue
@@ -338,31 +315,27 @@ class ApproximateQLearning(CaptureAgent):
             maxQ = self.getMaxQValue(gameState)
             if self.LEARNING > 0:
               self.buffer.append((maxQ, reward))
-            # print(self.buffer)
             avgList = sample(self.buffer, int(len(self.buffer)/10))
-            #print('maxQ :',  maxQ)
-            # print('avgList :', len(avgList))
+
             total = self.DISCOUNT*maxQ
             for i in avgList:
                 total += i[1] + self.DISCOUNT*i[0]
-            # print('total of avgList :', total)
             total = total/(len(avgList) + 1)
             total = reward + total
             difference = total - prevQValue
-            #difference = (reward + self.DISCOUNT*maxQ) - prevQValue
-        # print('difference :', difference)
-        #features = self.locationFinder.getFeatures(self.lastState, self) #update last weights
+
         for feature in features:
             newWeight = self.weights[feature] + self.LEARNING*features[feature]*difference
-            #if feature == 'closestFood' and newWeight < 0:
-              #continue
+
             if newWeight > 10 or newWeight < -10:
               if newWeight > 10:
                 newWeight = 10
               if newWeight < -10:
                 newWeight = -10
+
             self.weights[feature] = newWeight
             band = 0.005*self.LEARNING
+
             if self.weights[feature] > 0:
               if self.weights[feature] < band:
                 self.weights[feature] = 0
@@ -373,8 +346,6 @@ class ApproximateQLearning(CaptureAgent):
                 self.weights[feature] = 0
               else:
                 self.weights[feature] = newWeight + band
-        print(features)
-        print(self.getWeights())
 
 class Agent1(ApproximateQLearning):
     """
@@ -420,15 +391,12 @@ class Agent1(ApproximateQLearning):
         #SCORES
         if self.getScore(gameState) > self.lastState.getScore():
             reward += self.getScore(gameState) - self.lastState.getScore() + self.SCORES
-            print('REWARD Scored: %d' % reward)
         
         #ATE_FOOD
         foodList = self.getFood(gameState).asList()
         prevFood = self.getFood(self.lastState).asList()
         if len(foodList) > len(prevFood):
             reward += len(foodList) - len(prevFood) + self.ATE_FOOD
-            #reward += len(foodList) - len(prevFood)
-            print('REWARD Ate Food: %d' % reward)
         
         #DIED
         if gameState.getAgentPosition(self.index) == gameState.getInitialAgentPosition(self.index):
@@ -438,7 +406,6 @@ class Agent1(ApproximateQLearning):
             currentY=gameState.getAgentPosition(self.index)[1]
             if not (lastX == currentX+1 or lastX == currentX-1) and not (lastY == currentY+1 or lastY == currentY-1):
                 reward += self.DIED
-                print('REWARD DIED: %d' % reward)
 
         #ATE_PACMAN
         oldEnemies = [self.lastState.getAgentState(i) for i in self.getOpponents(self.lastState)]
@@ -450,19 +417,16 @@ class Agent1(ApproximateQLearning):
             if min(dists) == 1:
                 if len(newPacmen) == 0 and gameState.getAgentState(self.index).getPosition() != gameState.getInitialAgentPosition(self.index):
                     reward += self.ATE_PACMAN
-                    print('REWARD Ate Pacman: %d' % reward)
                 elif len(newPacmen) > 0 and gameState.getAgentState(self.index).getPosition() != gameState.getInitialAgentPosition(self.index):
                     dists=[self.getMazeDistance(gameState.getAgentState(self.index).getPosition(), a.getPosition()) for a in oldPacmen]
                     if min(dists) > 2:
                         reward += self.ATE_PACMAN
-                        print('REWARD Ate Pacman: %d' % reward)
         return reward
     
     def final(self, gameState):
         """
         Call the parent class final function and store the policy to external file.
         """
-        # print('AGENT1')
         ApproximateQLearning.final(self, gameState)
         self.writePolicy("qPolicy0.txt")
 
@@ -490,15 +454,12 @@ class Agent2(ApproximateQLearning):
         #SCORES
         if self.getScore(gameState) > self.lastState.getScore():
             reward += self.getScore(gameState) - self.lastState.getScore() + self.SCORES
-            # print('REWARD Scored: %d' % reward)
         
         #ATE_FOOD
         foodList = self.getFood(gameState).asList()
         prevFood = self.getFood(self.lastState).asList()
         if len(foodList) > len(prevFood):
             reward += len(foodList) - len(prevFood) + self.ATE_FOOD
-            #reward += len(foodList) - len(prevFood)
-            # print('REWARD Ate Food: %d' % reward)
         
         #DIED
         if gameState.getAgentPosition(self.index) == gameState.getInitialAgentPosition(self.index):
@@ -508,7 +469,6 @@ class Agent2(ApproximateQLearning):
             currentY=gameState.getAgentPosition(self.index)[1]
             if not (lastX == currentX+1 or lastX == currentX-1) and not (lastY == currentY+1 or lastY == currentY-1):
                 reward += self.DIED
-                # print('REWARD DIED: %d' % reward)
 
         #ATE_PACMAN
         oldEnemies = [self.lastState.getAgentState(i) for i in self.getOpponents(self.lastState)]
@@ -520,18 +480,15 @@ class Agent2(ApproximateQLearning):
             if min(dists) == 1:
                 if len(newPacmen) == 0 and gameState.getAgentState(self.index).getPosition() != gameState.getInitialAgentPosition(self.index):
                     reward += self.ATE_PACMAN
-                    # print('REWARD Ate Pacman: %d' % reward)
                 elif len(newPacmen) > 0 and gameState.getAgentState(self.index).getPosition() != gameState.getInitialAgentPosition(self.index):
                     dists=[self.getMazeDistance(gameState.getAgentState(self.index).getPosition(), a.getPosition()) for a in oldPacmen]
                     if min(dists) > 2:
                         reward += self.ATE_PACMAN
-                        # print('REWARD Ate Pacman: %d' % reward)
         return reward
     
     def final(self, gameState):
         """
         Call the parent class final function and store the policy to external file.
         """
-        # print('AGENT2')
         ApproximateQLearning.final(self, gameState)
         self.writePolicy("qPolicy1.txt")

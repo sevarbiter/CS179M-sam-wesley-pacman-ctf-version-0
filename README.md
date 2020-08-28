@@ -20,7 +20,7 @@ Inside `qTeam.py` change the Aproximate Q Learning class episilon and alpha to v
 
 run `python3 capture.py -r qTeam -b baselineTeam -l defaultCapture -n 200 -Q`
 
-##### Exploiting:
+#### Exploiting:
 
 To run our current working agent with current policy, turn off epsilon and alpha (set to 0) in `qTeam.py` parent class.
 
