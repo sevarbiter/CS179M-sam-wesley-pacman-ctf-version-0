@@ -263,9 +263,7 @@ class ApproximateQLearning(CaptureAgent):
             action = self.computeActionFromQValues(gameState)
         
         #what are we using this for???
-        self.locationFinder.getGrid(gameState)
-        self.locationFinder.addDistance(self.index, gameState.getAgentDistances(), \
-            gameState.getAgentState(self.index).getPosition(), gameState)
+        self.locationFinder.getGrid(gameState) 
 
         #update lastState and lastAction
         self.lastState = gameState
