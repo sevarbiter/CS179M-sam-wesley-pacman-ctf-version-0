@@ -74,25 +74,25 @@ class ApproximateQLearning(CaptureAgent):
 
     def getPolicy(self, policyName):
         """
-        Checks to see if there is a policy already written
+        Checks to see if there is a policy and buffer is already written
         if there is then load policy else create new policy
         """
-        if os.stat(policyName).st_size == 0:
+        if os.stat("./policies/"+policyName).st_size == 0:
           self.weights = util.Counter()
         else:
           self.weights = util.Counter()
-          test = open(policyName, 'r').read()
+          test = open("./policies/"+policyName, 'r').read()
           # print("FILE READ: ",test)
           parsedDict = json.loads(test)
           for features in parsedDict:
             self.weights[features] = parsedDict[features]
           # print('STARTING FEATURES: ',self.getWeights())
         
-        if os.stat("buffer"+policyName).st_size == 0:
+        if os.stat("./policies/buffer"+policyName).st_size == 0:
           self.buffer = []
         else:
           self.buffer = util.Counter()
-          b = open("buffer"+policyName, 'r').read()
+          b = open("./policies/buffer"+policyName, 'r').read()
           # print("FILE READ: ",b)
           parsedBuffer = json.loads(b)
           self.buffer = parsedBuffer
@@ -102,12 +102,16 @@ class ApproximateQLearning(CaptureAgent):
           # print('STARTING BUFFER: ',self.getBuffer())
     
     def writePolicy(self, policyName):
-        f = open(policyName,"w+")
+        """
+        Takes a policy name and writes out the current policy
+        to an external file for later access when the game starts.
+        """
+        f = open("./policies/"+policyName,"w+")
         dumps = json.dumps(self.getWeights())
         f.write(dumps)
         f.close()
 
-        b = open("buffer"+policyName,"w+")
+        b = open("./policies/buffer"+policyName,"w+")
         dumpsB = json.dumps(self.getBuffer())
         b.write(dumpsB)
         b.close()
@@ -126,9 +130,15 @@ class ApproximateQLearning(CaptureAgent):
             print('Beginning %d episodes of Training' % (self.numTraining))
     
     def getWeights(self):
+        """
+        Returns the current weigthts
+        """
         return self.weights
     
     def getBuffer(self):
+        """
+        Returns the current buffer
+        """
         return self.buffer
 
     def startEpisode(self):
@@ -157,9 +167,13 @@ class ApproximateQLearning(CaptureAgent):
             self.alpha = 0.0      #no learning
     
     def final(self, gameState):
+        """
+        Takes in the game state, prints out training
+        information for the user to see how the agent performed
+        during the x amount of episodes it has trained for
+        """
         #observationHistory comes from default captureAgents.py
         self.observationHistory = []
-        #-----
 
         if not 'episodeStartTime' in self.__dict__:
             self.episodeStartTime = time.time()
@@ -192,6 +206,11 @@ class ApproximateQLearning(CaptureAgent):
             print('%s\n%s' % (msg,'-' * len(msg)))
     
     def getRewards(self, gameState):
+        """
+        This function needs to be overwritten in the subclass
+        evaluates the rewards and returns the current rewards for the given
+        game state
+        """
         pass
 
     def getQValue(self, gameState, action):
@@ -212,15 +231,17 @@ class ApproximateQLearning(CaptureAgent):
         """
         Compute the action to take in the current state.  With
         probability self.epsilon, we should take a random action and
-        take the best policy action otherwise. 
+        take the best policy action otherwise. Stores the current game state
+        and reward to self.lastState and self.lastAction respectively.
+
         If no legal actions are availabe return NONE.
         """
         # self.episodeRewards += deltaReward
         #print(self.lastState)
-        print('----------')
-        print('Agent', self.index)
+        # print('----------')
+        # print('Agent', self.index)
         if self.lastState != None:
-            print('update called')
+            # print('update called')
             self.update(gameState, self.getRewards(gameState))
             self.locationFinder.updateMyFood(gameState, self.lastState, self)
         
@@ -261,6 +282,11 @@ class ApproximateQLearning(CaptureAgent):
         return action
     
     def getMaxQValue(self, gameState):
+        """
+        Computes the max q values by obtaining the current legal
+        actions for the game state and returns the max value
+        from all possible actions.
+        """
         maxVal = []
         for action in gameState.getLegalActions(self.index):
             maxVal.append(self.getQValue(gameState, action))
@@ -292,11 +318,21 @@ class ApproximateQLearning(CaptureAgent):
 
 
     def update(self, gameState, reward):
+        """
+        Takes in the current gameState and reward, calls for the current game state
+        features. Calculates the current MaxQValue and reward, and appends to the buffer.
+        We take a 100 samples from the buffer and obtain the average q value and reward.
+        Take the difference from the previous q value and the average q value, using the difference
+        we upadte our weights accordingly with our approximate q value formula.
+
+        Applying the rubber feature to the weights so that we don't the values
+        go out of proportion.
+        """
 
         features = self.locationFinder.getFeatures(gameState,self)
         
         prevQValue = self.getQValue(self.lastState, self.lastAction)
-        print('Reward : ',reward)
+        # print('Reward : ',reward)
         difference = 0
         if len(gameState.getLegalActions(self.index)) == 0:
             difference =  reward - prevQValue
@@ -316,7 +352,7 @@ class ApproximateQLearning(CaptureAgent):
             total = reward + total
             difference = total - prevQValue
             #difference = (reward + self.DISCOUNT*maxQ) - prevQValue
-        print('difference :', difference)
+        # print('difference :', difference)
         #features = self.locationFinder.getFeatures(self.lastState, self) #update last weights
         for feature in features:
             newWeight = self.weights[feature] + self.LEARNING*features[feature]*difference
@@ -343,6 +379,9 @@ class ApproximateQLearning(CaptureAgent):
         print(self.getWeights())
 
 class Agent1(ApproximateQLearning):
+    """
+    Offsenvie Agent overwrite getRewards and final functions.
+    """
 
     def __init__(self, index, locationFinder):
         ApproximateQLearning.__init__(self, index, locationFinder)
@@ -350,6 +389,16 @@ class Agent1(ApproximateQLearning):
         self.getPolicy("qPolicy0.txt")
     
     def getRewards(self, gameState):
+        """
+        The function takes in the game state, obtains rewards
+        for the following actions:
+
+        MOVE TOWARDS FOOD
+        SCORES
+        ATE FOOD
+        DIED
+        ATE PACMAN
+        """
         reward = 0
         #MOVE TOWARDS FOOD
         myPos = gameState.getAgentState(self.index).getPosition()
@@ -412,18 +461,33 @@ class Agent1(ApproximateQLearning):
         return reward
     
     def final(self, gameState):
-        print('AGENT1')
+        """
+        Call the parent class final function and store the policy to external file.
+        """
+        # print('AGENT1')
         ApproximateQLearning.final(self, gameState)
         self.writePolicy("qPolicy0.txt")
 
 class Agent2(ApproximateQLearning):
-    
+    """
+    Offsenvie Agent overwrite getRewards and final functions.
+    """
+
     def __init__(self, index, locationFinder):
         ApproximateQLearning.__init__(self, index, locationFinder)
         self.ATE_PACMAN = 20
         self.getPolicy("qPolicy1.txt")
     
     def getRewards(self, gameState):
+        """ 
+        The function takes in the game state, obtains rewards
+        for the following actions:
+
+        SCORES
+        ATE FOOD
+        DIED
+        ATE PACMAN
+        """
         reward = 0
         #SCORES
         if self.getScore(gameState) > self.lastState.getScore():
@@ -467,6 +531,9 @@ class Agent2(ApproximateQLearning):
         return reward
     
     def final(self, gameState):
+        """
+        Call the parent class final function and store the policy to external file.
+        """
         # print('AGENT2')
         ApproximateQLearning.final(self, gameState)
         self.writePolicy("qPolicy1.txt")

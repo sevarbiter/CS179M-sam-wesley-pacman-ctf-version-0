@@ -6,7 +6,19 @@ The challenge is to design agents to play Capture-the-Flag in a Pacman-like aren
 ![Pacman Game Layout](/images/cft.png)
 
 ### Running the Agent:
-To run our working agent.
+Required Files:
+`./policies`
+`qTeam.py`
+`finder.py`
+
+Training the Agent:
+Inside `qTeam.py` change the Aproximate Q Learning class episilon and alpha to values greater than 0, default values 0.8 and 0.4.
+
+run `python3 capture.py -r qTeam -b baselineTeam -l defaultCapture -n 200 -Q`
+
+Exploiting:
+
+To run our current working agent with current policy, turn off epsilon and alpha (set to 0) in `qTeam.py` parent class.
 
 run `python3 capture.py -r qTeam -b baselineTeam -l defaultCapture`
 
