@@ -88,7 +88,7 @@ Although we are able to approximate and adjust weights accordingly, the agents p
 These are the features we have implemented for the agent to have access to, but not all are active as some can be detrimental in learning process.
 
 - closestFood
-- neaarestEatenFood
+- nearestEatenFood
 - isScared
 - nearestPowerPellet
 - ghostsNear
